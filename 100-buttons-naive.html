@@ -1,0 +1,51 @@
+<head>
+<style>
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+  body button {
+    font-size: 20px;
+  }
+</style>
+</head>
+<body>
+  <h2 id="display">not yet clicked</h2>
+  <button id="spawner">create one more button</button>
+  <main id="buttons"></main>
+</body>
+<script>
+  function createButton(id, parent, onClick) {
+      const b = document.createElement('button')
+      b.style.margin= '.2rem'
+      b.innerText=`button ${id}`
+      parent.append(b)
+      
+      console.assert(!!onClick, 'createButton received no onClick callback')
+      b.addEventListener('click', onClick)
+  }
+  
+  
+  function spawnButton() {
+    const id = Math.floor(Math.random() * 100)
+    createButton(id, document.querySelector('#buttons'), () => displayNumber(id))
+  }
+  
+  
+  function displayNumber(x) {
+    document.querySelector('#display').innerText = `button ${x}`
+  }
+  
+  
+  window.addEventListener('load', () => {
+    document.querySelector('#spawner').addEventListener('click', spawnButton)
+    
+    const buttonContainer = document.querySelector('#buttons')
+    
+    for(let i = 0; i < 5; i += 1) {
+      createButton(i, buttonContainer, () => displayNumber(i))
+    }
+  })
+</script>

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="keywords" content="basic,tags,ins,del,ol,ul">
+  <meta name="description" content="a demo for various basic tags in HTML">
+  <title>Basic Tags Showcase</title>
+  <base target="_blank" href="https://developer.mozilla.org/"/>
+  <style>
+    * {
+      font-size: 40px;
+    }
+    
+    ins::before,del::before {
+      position:absolute;
+      left: .2rem;
+    }
+    del::before {
+      content:"-";
+    }
+    ins::before {
+      content:"+";
+    }
+    
+    ins,del {
+      position: relative;
+      padding: 0 1.8rem;
+    }
+    ins {
+      background-color: green;
+    }
+    del {
+      background-color: red;
+    }
+  </style>
+</head>
+<body>
+  <dl>
+    <dt>Documents</dt>
+    <dd>
+      <img src="favicon-48x48.cbbd161b.png" height="48" width="48" alt="MDN logo">
+      <p><strong><em>单标签</em>不要写自关闭的斜杠 /</strong></p>
+      <p><del>&lt;img /&gt;</del></p>
+      <p><ins>&lt;img &gt;</del></p>
+    </dd>
+    <dd>
+      <img src="favicon-48x48.cbbd161b.png" height="48" width="48" alt="MDN logo" />
+      <p><a href="./"><ins>MDN</ins></a></p>
+    </dd>
+    <dd>
+      <img src="https://www.mcdonalds.com/content/dam/sites/tw/menu/FullMenuLogo.png" height="108" width="108" alt="not MDN logo" />
+      <p><a href="https://qq.com"><del>NOT MDN</del></a></p>
+    </dd>
+    <dt>Tutorials</dt>
+    <dd>
+      <img src="favicon-48x48.cbbd161b.png" height="48" width="48" alt="MDN logo">
+      <p><ins>MDN</ins></p>
+    </dd>
+    <dd>
+      <img src="favicon-48x48.cbbd161b.png" height="48" width="48" alt="MDN logo" />
+      <p><del>FAKE MDN</del></p>
+    </dd>
+  </dl>
+</body>
+</html>

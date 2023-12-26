@@ -1,0 +1,58 @@
+<head>
+<style>
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+  body button {
+    font-size: 20px;
+  }
+</style>
+</head>
+<body>
+  <h2 id="display">not yet clicked</h2>
+  <button id="spawner">create one more button</button>
+  <main id="buttons"></main>
+</body>
+<script>
+  function handleButtonClick(e) {
+    const buttonId = e.target.id.split(' ')[1]
+    console.assert(Number.parseInt(buttonId) != Math.NaN, 'handleButtonClick received invalid button id')
+    
+    displayNumber(buttonId)
+  }
+
+  function createButton(id, parent) {
+      const b = document.createElement('button')
+      b.style.margin= '.2rem'
+      b.innerText=`button ${id}`
+      parent.append(b)
+      
+      b.id = b.innerText
+  }
+  
+  
+  function spawnButton() {
+    createButton(Math.floor(Math.random() * 100), document.querySelector('#buttons'))
+  }
+  
+  
+  function displayNumber(x) {
+    document.querySelector('#display').innerText = `button ${x}`
+  }
+  
+  
+  window.addEventListener('load', () => {
+    document.querySelector('#spawner').addEventListener('click', spawnButton)
+    document.querySelector('#buttons').addEventListener('click', handleButtonClick)
+    
+    
+    const buttonContainer = document.querySelector('#buttons')
+    
+    for(let i = 0; i < 5; i += 1) {
+      createButton(i, buttonContainer)
+    }
+  })
+</script>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>小米手机</title>
+    <style>
+      body {
+        background-color: #f5f5f5;
+      }
+
+      ul {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 0;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      .product {
+        border: solid #f0f0f0 1px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.6rem;
+        background-color: white;
+        padding: 0 0.8rem 2rem 0.8rem;
+        margin: 0.4rem;
+      }
+      .product-price {
+        margin-top: 0.4rem;
+        font-size: 0.8rem;
+      }
+      .product-price__onSale > span {
+        color: red;
+      }
+      .product-price__soldOut {
+        color: gray;
+        text-decoration: line-through;
+      }
+      .product-price__soldOut > * {
+        color: gray;
+      }
+      .product-price__soldOut::before {
+        content: "已售罄";
+      }
+      .product-name {
+        font-size: 1rem;
+      }
+      .product-feature {
+        font-size: 0.8rem;
+        color: gray;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>热卖机型</h1>
+    <ul>
+      <li class="product">
+        <div class="product-hero">
+          <img
+            src="assets/1.webp"
+            height="200"
+            width="200"
+            alt="小米10 青春版 5G 蓝色"
+          />
+        </div>
+        <div class="product-name">
+          用<code>&lt;ul&gt;</code>和<code>&lt;li&gt;</code>来罗列
+        </div>
+        <div class="product-feature">
+          用<code>&lt;ul&gt;</code>和<code>&lt;li&gt;</code>来罗列各个机型
+        </div>
+        <div class="product-price product-price__onSale">
+          <span>2099</span>
+          元起
+        </div>
+      </li>
+      <li class="product">
+        <div class="product-hero">
+          <img
+            src="assets/1.webp"
+            height="200"
+            width="200"
+            alt="小米10 青春版 5G 蓝色"
+          />
+        </div>
+        <div class="product-name">小米10 青春版 5G</div>
+        <div class="product-feature">50倍潜望式变焦 / 轻薄5G手机</div>
+        <div class="product-price product-price__onSale">
+          <span>2099</span>
+          元起
+        </div>
+      </li>
+      <li class="product">
+        <div class="product-hero">
+          <img src="assets/2.webp" height="200" width="200" alt="小米10 黑色" />
+        </div>
+        <div class="product-name">小米10</div>
+        <div class="product-feature">骁龙865 / 1亿像素相机</div>
+        <div class="product-price product-price__soldOut">
+          <span>3799</span>
+          元起
+        </div>
+      </li>
+      <li class="product">
+        <div class="product-hero">
+          <img
+            src="assets/3.webp"
+            height="200"
+            width="200"
+            alt="Redmi K30 Pro 白色"
+          />
+        </div>
+        <div class="product-name">Redmi K30 Pro</div>
+        <div class="product-feature">双模5G，骁龙865，弹出全面屏</div>
+        <div class="product-price product-price__onSale">
+          <span>2699</span>
+          元起
+        </div>
+      </li>
+      <li class="product">
+        <div class="product-hero">
+          <img
+            src="assets/4.webp"
+            height="200"
+            width="200"
+            alt="Redmi K30 Pro 变焦版 灰色"
+          />
+        </div>
+        <div class="product-name">Redmi K30 Pro</div>
+        <div class="product-feature">双模5G，骁龙865，弹出全面屏</div>
+        <div class="product-price product-price__onSale">
+          <span>3499</span>
+          元起
+        </div>
+      </li>
+    </ul>
+  </body>
+</html>
