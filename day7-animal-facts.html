@@ -15,7 +15,7 @@
       margin: 0 auto;
     }
 
-    .news-card-wrap {
+    .news-card--wrap {
       width: 800px;
     }
 
@@ -24,19 +24,19 @@
       padding: 12px 10px;
     }
 
-    .news-card-hero {
+    .news-card--hero {
       width: 200px;
       height: auto;
       display: inline-block;
       vertical-align: middle;
     }
 
-    .news-card-title {
+    .news-card--title {
       border-bottom: solid 5px green;
       margin-bottom: 12px;
     }
 
-    .news-card-text {
+    .news-card--text {
       padding: 0;
       margin: 0;
       display: inline-block;
@@ -46,29 +46,29 @@
       text-indent: 2em;
     }
 
-    .news-card-text__baseline {
+    .news-card--text__baseline {
       vertical-align: bottom;
     }
 
-    .news-card-text__middle {
+    .news-card--text__middle {
       vertical-align: middle;
     }
   </style>
 </head>
 
 <body>
-  <ul class="news-card-wrap">
+  <ul class="news-card--wrap">
     <li class="news-card">
-      <h2 class="news-card-title">猫头鹰</h2>
-      <img class="news-card-hero" src="https://placehold.co/400x250" alt="有趣的野生动物照片" width="400" height="250">
-      <p class="news-card-text">
+      <h2 class="news-card--title">猫头鹰</h2>
+      <img class="news-card--hero" src="https://placehold.co/400x250" alt="有趣的野生动物照片" width="400" height="250">
+      <p class="news-card--text">
         此处图片宽度定死，卡片宽度定死，如果文字的宽度不加限制或限制得太宽，文字段落会自动换行到图片下面，也就不能把图片和文字摆在同一行了。
       </p>
     </li>
     <li class="news-card">
-      <h2 class="news-card-title">猴子</h2>
-      <img class="news-card-hero" src="https://placehold.co/400x250" alt="有趣的野生动物照片" width="400" height="250">
-      <p class="news-card-text">
+      <h2 class="news-card--title">猴子</h2>
+      <img class="news-card--hero" src="https://placehold.co/400x250" alt="有趣的野生动物照片" width="400" height="250">
+      <p class="news-card--text">
         此处<code>&lt;img&gt;</code>和<code>&lt;p&gt;</code>都是<code>inline</code>的，行距被图片高度撑开，使用<code>vertical-align</code>来上下对齐本<code>&lt;p&gt;</code>
         <br />
         <br />
@@ -76,18 +76,18 @@
       </p>
     </li>
     <li class="news-card">
-      <h2 class="news-card-title">北极熊</h2>
-      <img class="news-card-hero" src="https://placehold.co/400x250" alt="有趣的野生动物照片" width="400" height="250">
-      <p class="news-card-text news-card-text__baseline">
+      <h2 class="news-card--title">北极熊</h2>
+      <img class="news-card--hero" src="https://placehold.co/400x250" alt="有趣的野生动物照片" width="400" height="250">
+      <p class="news-card--text news-card--text__baseline">
         此处<code>&lt;img&gt;</code>和<code>&lt;p&gt;</code>都是<code>inline</code>的，行距被图片高度撑开，使用<code>vertical-align</code>来上下对齐本<code>&lt;p&gt;</code>。此处北极熊的<code>&lt;p&gt;</code>是对齐到底部的。
         Lorem ipsum dolor sit, amet consectetur adipisicing elit. Accusantium
         alias pariatur nam ducimus dolore nihil
       </p>
     </li>
     <li class="news-card">
-      <h2 class="news-card-title">长颈鹿-订正</h2>
-      <img class="news-card-hero" src="https://placehold.co/400x650" alt="有趣的野生动物照片" width="400" height="650">
-      <p class="news-card-text news-card-text__middle">
+      <h2 class="news-card--title">长颈鹿-订正</h2>
+      <img class="news-card--hero" src="https://placehold.co/400x650" alt="有趣的野生动物照片" width="400" height="650">
+      <p class="news-card--text news-card--text__middle">
         此处长颈鹿的<code>&lt;img&gt;</code>图片特别高，要将图片和<code>&lt;img&gt;</code>都设置成<code>inline-block</code>然后再用<code>vertical-align</code>来居中对齐。
         Lorem ipsum dolor sit, amet consectetur adipisicing elit. Accusantium
         alias pariatur nam ducimus dolore nihil
