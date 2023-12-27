@@ -2,6 +2,7 @@ header {
   text-align: center;
   border-bottom: solid 2px #d0d0d0;
   padding-bottom: 0.6em;
+  color: var(--text-color);
 }
 
 .meta {
