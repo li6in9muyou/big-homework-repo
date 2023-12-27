@@ -12,6 +12,7 @@ aside {
   border-bottom: solid 1px #808080;
 }
 
+/* expand the size of a tag so that it can be clicked on */
 .quick-access--btn > a {
   width: 100%;
   height: 100%;
