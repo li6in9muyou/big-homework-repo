@@ -22,41 +22,41 @@ aside {
 }
 
 .quick-access--btn__phone {
-  background-image: url(img/phone.png);
+  background-image: url(../img/phone.png);
 }
 
 .quick-access--btn__phone:hover {
-  background-image: url(img/phone-hover.png);
+  background-image: url(../img/phone-hover.png);
 }
 
 .quick-access--btn__service {
-  background-image: url(img/service.png);
+  background-image: url(../img/service.png);
 }
 
 .quick-access--btn__service:hover {
-  background-image: url(img/service-hover.png);
+  background-image: url(../img/service-hover.png);
 }
 
 .quick-access--btn__shopping {
-  background-image: url(img/shopping.png);
+  background-image: url(../img/shopping.png);
 }
 
 .quick-access--btn__shopping:hover {
-  background-image: url(img/shopping-hover.png);
+  background-image: url(../img/shopping-hover.png);
 }
 
 .quick-access--btn__tool {
-  background-image: url(img/tool.png);
+  background-image: url(../img/tool.png);
 }
 
 .quick-access--btn__tool:hover {
-  background-image: url(img/tool-hover.png);
+  background-image: url(../img/tool-hover.png);
 }
 
 .quick-access--btn__user {
-  background-image: url(img/user.png);
+  background-image: url(../img/user.png);
 }
 
 .quick-access--btn__user:hover {
-  background-image: url(img/user-hover.png);
+  background-image: url(../img/user-hover.png);
 }
