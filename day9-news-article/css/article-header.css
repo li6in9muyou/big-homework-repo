@@ -4,8 +4,7 @@ header {
   padding-bottom: 0.6em;
 }
 
-.meta,
-.meta button {
+.meta {
   color: var(--gray);
 }
 

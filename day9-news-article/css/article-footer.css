@@ -2,9 +2,8 @@
   text-align: left;
 }
 
-.keywords ul,
-.keywords li {
-  display: inline-block;
+.keywords > a {
+  color: var(--blue-500);
 }
 
 .app-prompt-btn {
@@ -15,6 +14,7 @@
   color: var(--blue-500);
   font-size: 1.2em;
   width: 90%;
+  cursor: pointer;
 }
 
 .app-prompt-btn:hover {

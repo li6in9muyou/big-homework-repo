@@ -5,3 +5,7 @@
 .font-bold {
   font-weight: 700;
 }
+
+.text-gray {
+  color: var(--gray);
+}

@@ -18,6 +18,7 @@
       --blue-500: #0454a7;
       --blue-300: #dee4f3;
       --gray: #666;
+      --text-color: #333;
     }
 
     main {
@@ -26,10 +27,6 @@
       margin: 12px auto;
       border: solid 2px #b0b0b0;
       border-top: solid 6px #368;
-    }
-
-    a {
-      color: var(--blue-500);
     }
 
     .text>p {
@@ -69,13 +66,13 @@
     <header>
       <h1>新闻标题 各比念冰光眼村假久音十羊</h1>
       <p class="meta">
-        <span>2023年12月27日 10:07</span>
+        <span class="text-gray">2023年12月27日 10:07</span>
         <span class="meta--interaction">
           <span><a class="text-red" href="#">本台新闻综合</a></span>
-          <span>本台</span>
-          <button>我有话说(<span class="text-red">7370</span>人参与)</button>
+          <span class="text-gray">本台</span>
+          <a class="text-gray">我有话说(<span class="text-red">7370</span>人参与)</a>
         </span>
-        <button>收藏本文</button>
+        <a class="text-gray">收藏本文</a>
       </p>
     </header>
     <section class="text">
@@ -105,9 +102,9 @@
             2023年12月17日 10:18 来自Chrome浏览器
           </span>
           <span class="realtime-news--interaction">
-            <button>转发(400)</button>
-            <button>收藏</button>
-            <button>评论(59)</button>
+            <a>转发(400)</a>
+            <a>收藏</a>
+            <a>评论(59)</a>
           </span>
         </footer>
       </section>
@@ -136,13 +133,11 @@
     <footer>
       <div class="keywords">
         <span class="font-bold">文章关键词：</span>
-        <ul>
-          <li><a href="#">关键</a></li>
-          <li><a href="#">词乙</a></li>
-          <li><a href="#">关键词丙</a></li>
-          <li><a href="#">词丁</a></li>
-          <li><a href="#">关键戊</a></li>
-        </ul>
+        <a href="#">关键</a>
+        <a href="#">词乙</a>
+        <a href="#">关键词丙</a>
+        <a href="#">词丁</a>
+        <a href="#">关键戊</a>
       </div>
       <button class="app-prompt-btn">
         点击下载【本台手机客户端】，最新新闻资讯尽在掌握
