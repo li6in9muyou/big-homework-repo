@@ -1,0 +1,62 @@
+aside {
+  position: absolute;
+  right: 0;
+  top: 20%;
+}
+
+.quick-access--btn {
+  box-sizing: border-box;
+  width: 100px;
+  height: 100px;
+  background-color: #e0e0e0;
+  background-repeat: no-repeat;
+  background-size: 80% 80%;
+  background-position: center;
+  border-bottom: solid 1px #808080;
+}
+
+.quick-access--btn > a {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.quick-access--btn__phone {
+  background-image: url(img/phone.png);
+}
+
+.quick-access--btn__phone:hover {
+  background-image: url(img/phone-hover.png);
+}
+
+.quick-access--btn__service {
+  background-image: url(img/service.png);
+}
+
+.quick-access--btn__service:hover {
+  background-image: url(img/service-hover.png);
+}
+
+.quick-access--btn__shopping {
+  background-image: url(img/shopping.png);
+}
+
+.quick-access--btn__shopping:hover {
+  background-image: url(img/shopping-hover.png);
+}
+
+.quick-access--btn__tool {
+  background-image: url(img/tool.png);
+}
+
+.quick-access--btn__tool:hover {
+  background-image: url(img/tool-hover.png);
+}
+
+.quick-access--btn__user {
+  background-image: url(img/user.png);
+}
+
+.quick-access--btn__user:hover {
+  background-image: url(img/user-hover.png);
+}
