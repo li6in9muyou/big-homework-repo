@@ -8,24 +8,16 @@
   <meta name="description" content="本台第一时间为您带来重大新闻的图文报道">
   <title>新闻标题 各比念冰光眼村假久音十羊</title>
 
+  <link rel="stylesheet" href="css/resets.css">
+  <link rel="stylesheet" href="css/article-header.css">
+  <link rel="stylesheet" href="css/article-footer.css">
+  <link rel="stylesheet" href="css/realtime-news-insert.css">
+  <link rel="stylesheet" href="css/utility.css">
   <style>
     :root {
       --blue-500: #14407d;
       --blue-300: #d2d9ea;
       --gray: #82827f;
-    }
-
-    .text-blue-500 {
-      color: #14407d;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-    }
-
-    ul {
-      list-style: none;
     }
 
     main {
@@ -36,49 +28,8 @@
       border-top: solid 6px #368;
     }
 
-    .header {
-      text-align: center;
-      border-bottom: solid 2px #d0d0d0;
-      padding-bottom: .6em;
-    }
-
-    .meta {
-      color: var(--gray);
-    }
-
-    .font-bold {
-      font-weight: 700;
-    }
-
-    .footer {
-      text-align: center;
-    }
-
-    .keywords {
-      text-align: left;
-    }
-
-    .keywords--list>li {
-      display: inline-block;
-    }
-
-    .keywords--list {
-      display: inline-block;
-    }
-
     a {
       color: var(--blue-500);
-      text-decoration: none;
-    }
-
-    .app-prompt-btn {
-      border: solid 2px var(--blue-500);
-      background-color: var(--blue-300);
-      margin: 14px;
-      padding: 4px 12px;
-      color: var(--blue-500);
-      font-size: 1.2em;
-      width: 90%;
     }
 
     .text>p {
@@ -107,75 +58,26 @@
       margin: 1.4em 0;
     }
 
-    button {
-      background-color: transparent;
-      border: none;
-      font-size: unset;
-      cursor: pointer;
-    }
-
-    .meta button {
-      color: var(--gray);
-    }
-
-    .meta--interaction {
-      margin: 0 26px;
-    }
-
-    .meta--interaction a {
-      color: #FF0000;
-    }
-
-    .meta--interaction>span {
-      margin-right: .6em;
-    }
-
-    .realtime-news--interaction>button:nth-of-type(2) {
-      border-right: solid 1px black;
-      border-left: solid 1px black;
-      padding: 0 4px;
-    }
-
-    .realtime-news--interaction {
-      margin-left: 10px;
-    }
-
-    h1 {
-      font-family: serif;
-      margin-bottom: 20px;
-      font-size: 2em;
-    }
-
-    .text-red {
-      color: #ff0000;
-    }
-
-    .realtime-news>footer {
-      text-align: right;
-      font-size: .8em;
-    }
-
-    .realtime-news {
-      border: dashed 1px var(--gray);
-      padding: 16px;
+    main>footer {
+      text-align: center;
     }
   </style>
 </head>
 
 <body>
   <main>
-    <section class="header">
+    <header>
       <h1>新闻标题 各比念冰光眼村假久音十羊</h1>
       <p class="meta">
         <span>2023年12月27日 10:07</span>
         <span class="meta--interaction">
-          <span class="text-red"><a href="#">本台新闻综合</a></span>
+          <span><a class="text-red" href="#">本台新闻综合</a></span>
           <span>本台</span>
           <button>我有话说(<span class="text-red">7370</span>人参与)</button>
         </span>
         <button>收藏本文</button>
       </p>
-    </section>
+    </header>
     <section class="text">
       <div class="hero">
         <img src="https://placehold.co/600x400" alt="新闻主图" width="600" height="400" class="hero-pic">
@@ -191,7 +93,7 @@
       </p>
       <section class="realtime-news">
         <p>
-          <span class="text-blue-500">
+          <span>
             <a href="#">本台热点快讯：</a>
           </span>
           <span>
@@ -231,10 +133,10 @@
         dolore!草寺條；但位去現生比多山玉朋地爸采上新丁錯園青珠！王從弟多雨同申主記連卜；行上豆方蝶干尼們唱，吉息造只、南坐奶。久幸浪動魚平杯好唱牠候何巴，自掃流可風消具做歡南行邊節封苦室乙青也：香了字色都。兆消員了清行右支父天時說耍辛乾共都三林鼻，玉像抄太文竹汁學犬天斥化根荷什、清法而不吉父具到回刃戶嗎真它馬。吃寸什米鳥直丟吉亮丁車七走菜這乾；遠南各九完歌南根。
       </p>
     </section>
-    <section class="footer">
+    <footer>
       <div class="keywords">
         <span class="font-bold">文章关键词：</span>
-        <ul class="keywords--list">
+        <ul>
           <li><a href="#">关键</a></li>
           <li><a href="#">词乙</a></li>
           <li><a href="#">关键词丙</a></li>
@@ -245,9 +147,8 @@
       <button class="app-prompt-btn">
         点击下载【本台手机客户端】，最新新闻资讯尽在掌握
       </button>
-    </section>
+    </footer>
   </main>
-
 </body>
 
 </html>

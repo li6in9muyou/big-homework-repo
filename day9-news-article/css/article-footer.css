@@ -1,0 +1,18 @@
+.keywords {
+  text-align: left;
+}
+
+.keywords ul,
+.keywords li {
+  display: inline-block;
+}
+
+.app-prompt-btn {
+  border: solid 2px var(--blue-500);
+  background-color: #d2d9ea;
+  margin: 14px;
+  padding: 4px 12px;
+  color: var(--blue-500);
+  font-size: 1.2em;
+  width: 90%;
+}

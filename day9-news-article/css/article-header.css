@@ -1,0 +1,27 @@
+header {
+  text-align: center;
+  border-bottom: solid 2px #d0d0d0;
+  padding-bottom: 0.6em;
+}
+
+.meta {
+  color: var(--gray);
+}
+
+.meta button {
+  color: var(--gray);
+}
+
+.meta--interaction {
+  margin: 0 26px;
+}
+
+.meta--interaction > span {
+  margin-right: 0.6em;
+}
+
+h1 {
+  font-family: serif;
+  margin: 20px 0;
+  font-size: 2em;
+}
