@@ -13,13 +13,14 @@
       margin: 50px auto;
       list-style: none;
       padding: 0;
-      width: 750px;
+      width: 1000px;
     }
 
     ul>li {
       width: 45%;
       display: inline-block;
       white-space: nowrap;
+      margin-bottom: 10px;
     }
 
     a {
@@ -61,24 +62,31 @@
       background-position: -18px -58px;
     }
 
-    .badge__hot {
-      background-position: -120px -17px;
+    .badge {
+      background-image: url(img/trending-list-icons.png);
+      background-repeat: no-repeat;
+      display: inline-block;
       margin-left: 6px;
+      width: 16px;
+      height: 16px;
+    }
+
+    .badge__hot {
+      background-position: -120px -20px;
     }
 
     .badge__new {
-      background-position: -155px -17px;
-      margin-left: 6px;
+      background-position: -155px -20px;
     }
   </style>
 </head>
 
 <body>
   <ul>
-    <li><i class="ranking ranking__one">1</i><a href="#">热榜第一 重大国内国际新闻</a><i class="ranking badge__hot">&nbsp;</i></li>
+    <li><i class="ranking ranking__one">1</i><a href="#">热榜第一 重大国内国际新闻</a><i class="badge badge__hot">&nbsp;</i></li>
     <li><i class="ranking">4</i><a href="#">热榜第四 <code>li</code>处设置 <code>nowrap</code> 让文本不要换行不要换行</a><i
-        class="ranking badge__new">&nbsp;</i></li>
-    <li><i class="ranking ranking__two">2</i><a href="#">热榜第二 重大国内国际新闻重大国内</a><i class="ranking badge__new">&nbsp;</i>
+        class="badge badge__new">&nbsp;</i></li>
+    <li><i class="ranking ranking__two">2</i><a href="#">热榜第二 重大国内国际新闻重大国内</a><i class="badge badge__new">&nbsp;</i>
     </li>
     <li><i class="ranking">5</i><a href="#">热榜第五 重大国内国际新闻新闻</a></li>
     <li><i class="ranking ranking__three">3</i><a href="#">热榜第三 重大国内国新闻新闻</a></li>
