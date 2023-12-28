@@ -22,6 +22,15 @@
       white-space: nowrap;
     }
 
+    a {
+      color: unset;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
     .ranking {
       background-image: url(img/trending-list-icons.png);
       background-repeat: no-repeat;
@@ -66,13 +75,14 @@
 
 <body>
   <ul>
-    <li><i class="ranking ranking__one">1</i><span>热榜第一 重大国内国际新闻</span><i class="ranking badge__hot">&nbsp;</i></li>
-    <li><i class="ranking">4</i><span>热榜第四 <code>li</code>处设置 <code>nowrap</code> 让文本不要换行不要换行</span><i
+    <li><i class="ranking ranking__one">1</i><a href="#">热榜第一 重大国内国际新闻</a><i class="ranking badge__hot">&nbsp;</i></li>
+    <li><i class="ranking">4</i><a href="#">热榜第四 <code>li</code>处设置 <code>nowrap</code> 让文本不要换行不要换行</a><i
         class="ranking badge__new">&nbsp;</i></li>
-    <li><i class="ranking ranking__two">2</i><span>热榜第二 重大国内国际新闻重大国内</span><i class="ranking badge__new">&nbsp;</i></li>
-    <li><i class="ranking">5</i><span>热榜第五 重大国内国际新闻新闻</span></li>
-    <li><i class="ranking ranking__three">3</i><span>热榜第三 重大国内国新闻新闻</span></li>
-    <li><i class="ranking">6</i><span>热榜第六 重大国内国际新闻</span></li>
+    <li><i class="ranking ranking__two">2</i><a href="#">热榜第二 重大国内国际新闻重大国内</a><i class="ranking badge__new">&nbsp;</i>
+    </li>
+    <li><i class="ranking">5</i><a href="#">热榜第五 重大国内国际新闻新闻</a></li>
+    <li><i class="ranking ranking__three">3</i><a href="#">热榜第三 重大国内国新闻新闻</a></li>
+    <li><i class="ranking">6</i><a href="#">热榜第六 重大国内国际新闻</a></li>
   </ul>
 </body>
 
