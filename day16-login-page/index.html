@@ -90,11 +90,11 @@
       color: #aaa;
     }
 
-    .font-sm {
+    .fz16 {
       font-size: 16px;
     }
 
-    .font-bg {
+    .fz28 {
       font-size: 28px;
     }
 
@@ -112,7 +112,7 @@
   <main>
     <form action="https://httpbin.org/post" method="post">
       <table>
-        <caption class="font-bg font-bold">会员登录</caption>
+        <caption class="fz28 font-bold">会员登录</caption>
         <tr>
           <td><label for="input-id">登录账号</label></td>
           <td><input required type="text" name="id" id="input-id" placeholder="邮箱/ID/手机号"></td>
@@ -124,8 +124,8 @@
         <tr>
           <td></td>
           <td>
-            <input type="checkbox" name="remember-me" id="remember-me">
-            <label for="remember-me" class="text-gray-200 font-sm">两周内自动登录</label>
+            <input type="checkbox" name="remember" id="remember">
+            <label for="remember" class="text-gray-200 fz16">两周内自动登录</label>
           </td>
         </tr>
         <tr>
