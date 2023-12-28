@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="会员登录,QQ登录,新浪微博登录,百度账号登录">
+  <meta name="description" content="登录后享受更多优惠">
+  <title>会员登录</title>
+
+  <style>
+    main {
+      width: 760px;
+      margin: 30px auto;
+    }
+
+    table {
+      margin: 0 auto;
+    }
+
+    td {
+      padding: 10px 16px;
+    }
+
+    tr:nth-of-type(-n+2) input {
+      vertical-align: middle;
+    }
+
+    .text-gray {
+      color: lightgray;
+    }
+
+    input[type="checkbox"] {
+      display: inline-block;
+      height: 18px;
+      width: 18px;
+    }
+
+    input[type="submit"] {
+      width: 64px;
+      height: 22px;
+      background: url(img/icons.png) -10px -78px;
+      border: none;
+      display: inline-block;
+      vertical-align: middle;
+      transform: scale(1.2);
+      margin-right: 8px;
+      cursor: pointer;
+    }
+
+    tr:nth-of-type(3) input,
+    tr:nth-of-type(3) label {
+      vertical-align: middle;
+    }
+
+    [icon]::before {
+      transform: scale(1.5);
+      content: "";
+      display: inline-block;
+      margin-right: 12px;
+      background: url(img/icons.png);
+    }
+
+    [icon="qq"]::before {
+      width: 15px;
+      height: 15px;
+      background-position: -205px -78px;
+    }
+
+    [icon="sina"]::before {
+      width: 19px;
+      height: 15px;
+      background-position: -166px -78px;
+    }
+
+    [icon="baidu"]::before {
+      width: 14px;
+      height: 14px;
+      background-position: -10px -120px;
+    }
+
+    a[icon] {
+      color: #666;
+      font-size: 16px;
+      vertical-align: bottom;
+      margin-right: 6px;
+    }
+
+    .text-gray-200 {
+      color: #aaa;
+    }
+
+    .font-sm {
+      font-size: 16px;
+    }
+
+    .font-bg {
+      font-size: 28px;
+    }
+
+    .font-bold {
+      font-weight: bold;
+    }
+
+    form {
+      font-size: 21px;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <form action="https://httpbin.org/post" method="post">
+      <table>
+        <caption class="font-bg font-bold">会员登录</caption>
+        <tr>
+          <td><label for="input-id"></label>登录账号</td>
+          <td><input required type="text" name="id" id="input-id" placeholder="邮箱/ID/手机号"></td>
+        </tr>
+        <tr>
+          <td><label for="input-pwd"></label>密码</td>
+          <td><input required type="password" name="pwd" id="input-pwd" placeholder="密码"></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <input type="checkbox" name="remember-me" id="remember-me">
+            <label for="remember-me" class="text-gray-200 font-sm">两周内自动登录</label>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <input type="submit" value="">
+            <a href="#">忘记密码</a>
+          </td>
+        </tr>
+        <tr>
+          <td>其他帐号登录</td>
+          <td>
+            <a icon="qq" href="#">QQ帐号</a>
+            <a icon="sina" href="#"">新浪微博</a>
+            <a icon="baidu" href="#">百度账号</a>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <a href="#">还不是会员？立即注册</a>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </main>
+</body>
+
+</html>
