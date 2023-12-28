@@ -56,19 +56,51 @@
       font-family: sans-serif;
     }
 
-    li:nth-of-type(1) i:nth-of-type(1) {
+    li[rank]::before {
+      content: ' ';
+      background-image: url(img/trending-list-icons.png);
+      background-repeat: no-repeat;
+      background-position: -58px -58px;
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      margin-right: 6px;
+      font-style: normal;
+      line-height: 24px;
+      text-align: center;
+      color: #91aecd;
+      font-family: sans-serif;
+      vertical-align: middle;
+    }
+
+    li[rank='1']::before {
       background-position: -18px -18px;
       color: white;
+      content: "1";
     }
 
-    li:nth-of-type(3) i:nth-of-type(1) {
+    li[rank='2']::before {
       background-position: -58px -18px;
       color: white;
+      content: "2";
     }
 
-    li:nth-of-type(5) i:nth-of-type(1) {
+    li[rank='3']::before {
       color: white;
       background-position: -18px -58px;
+      content: "3";
+    }
+
+    li[rank='4']::before {
+      content: "4";
+    }
+
+    li[rank='5']::before {
+      content: "5";
+    }
+
+    li[rank='6']::before {
+      content: "6";
     }
 
     li::after {
@@ -96,12 +128,12 @@
 <body>
   <div class="container">
     <ul>
-      <li icon="hot"><i>1</i><a href="#">热榜第一 重大国内国际新闻</a></li>
-      <li icon="hot"><i>4</i><a href="#">热榜第四 <code>li</code>处设置 <code>nowrap</code> 让文本不要换行不要换行</a></li>
-      <li icon="new"><i>2</i><a href="#">热榜第二 本新闻标题很长本新闻标题很长本新闻标题很长本新闻标题很长</a></li>
-      <li><i>5</i><a href="#">热榜第五 重大国内国际新闻新闻</a></li>
-      <li icon="new"><i>3</i><a href="#">热榜第三 重大国内国新闻新闻</a></li>
-      <li><i>6</i><a href="#">热榜第六 重大国内国际新闻</a></li>
+      <li icon="hot" rank="1"><a href="#">热榜第一 重大国内国际新闻</a></li>
+      <li icon="hot" rank="4"><a href="#">热榜第四 <code>li</code>处设置 <code>nowrap</code> 让文本不要换行不要换行</a></li>
+      <li icon="new" rank="2"><a href="#">热榜第二 本新闻标题很长本新闻标题很长本新闻标题很长本新闻标题很长</a></li>
+      <li rank="5"><a href="#">热榜第五 重大国内国际新闻新闻</a></li>
+      <li icon="new" rank="3"><a href="#">热榜第三 重大国内国新闻新闻</a></li>
+      <li rank="6"><a href="#">热榜第六 重大国内国际新闻</a></li>
     </ul>
   </div>
 </body>
