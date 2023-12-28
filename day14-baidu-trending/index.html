@@ -23,7 +23,6 @@
     ul>li {
       width: 45%;
       display: inline-block;
-      white-space: nowrap;
       margin-bottom: 10px;
     }
 
@@ -35,6 +34,7 @@
       max-width: 300px;
       text-overflow: ellipsis;
       overflow: hidden;
+      white-space: nowrap;
     }
 
     a:hover {
@@ -57,7 +57,7 @@
     }
 
     li[rank]::before {
-      content: ' ';
+      content: attr(rank);
       background-image: url(img/trending-list-icons.png);
       background-repeat: no-repeat;
       background-position: -58px -58px;
@@ -76,31 +76,16 @@
     li[rank='1']::before {
       background-position: -18px -18px;
       color: white;
-      content: "1";
     }
 
     li[rank='2']::before {
       background-position: -58px -18px;
       color: white;
-      content: "2";
     }
 
     li[rank='3']::before {
       color: white;
       background-position: -18px -58px;
-      content: "3";
-    }
-
-    li[rank='4']::before {
-      content: "4";
-    }
-
-    li[rank='5']::before {
-      content: "5";
-    }
-
-    li[rank='6']::before {
-      content: "6";
     }
 
     li::after {
@@ -122,6 +107,7 @@
     [icon=new]::after {
       background-position: -154px -20px;
     }
+    
   </style>
 </head>
 
