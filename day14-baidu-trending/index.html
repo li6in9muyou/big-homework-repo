@@ -32,7 +32,7 @@
       text-decoration: underline;
     }
 
-    .ranking {
+    li i:nth-of-type(1) {
       background-image: url(img/trending-list-icons.png);
       background-repeat: no-repeat;
       background-position: -58px -58px;
@@ -47,22 +47,22 @@
       font-family: sans-serif;
     }
 
-    .ranking__one {
+    li:nth-of-type(1) i:nth-of-type(1) {
       background-position: -18px -18px;
       color: white;
     }
 
-    .ranking__two {
+    li:nth-of-type(3) i:nth-of-type(1) {
       background-position: -58px -18px;
       color: white;
     }
 
-    .ranking__three {
+    li:nth-of-type(5) i:nth-of-type(1) {
       color: white;
       background-position: -18px -58px;
     }
 
-    .badge {
+    li i:nth-of-type(2) {
       background-image: url(img/trending-list-icons.png);
       background-repeat: no-repeat;
       display: inline-block;
@@ -71,11 +71,11 @@
       height: 16px;
     }
 
-    .badge__hot {
+    i[icon*=hot] {
       background-position: -120px -20px;
     }
 
-    .badge__new {
+    i[icon*=new] {
       background-position: -155px -20px;
     }
   </style>
@@ -83,14 +83,12 @@
 
 <body>
   <ul>
-    <li><i class="ranking ranking__one">1</i><a href="#">热榜第一 重大国内国际新闻</a><i class="badge badge__hot">&nbsp;</i></li>
-    <li><i class="ranking">4</i><a href="#">热榜第四 <code>li</code>处设置 <code>nowrap</code> 让文本不要换行不要换行</a><i
-        class="badge badge__new">&nbsp;</i></li>
-    <li><i class="ranking ranking__two">2</i><a href="#">热榜第二 重大国内国际新闻重大国内</a><i class="badge badge__new">&nbsp;</i>
-    </li>
-    <li><i class="ranking">5</i><a href="#">热榜第五 重大国内国际新闻新闻</a></li>
-    <li><i class="ranking ranking__three">3</i><a href="#">热榜第三 重大国内国新闻新闻</a></li>
-    <li><i class="ranking">6</i><a href="#">热榜第六 重大国内国际新闻</a></li>
+    <li><i>1</i><a href="#">热榜第一 重大国内国际新闻</a><i icon="hot">&nbsp;</i></li>
+    <li><i>4</i><a href="#">热榜第四 <code>li</code>处设置 <code>nowrap</code> 让文本不要换行不要换行</a><i icon="hot">&nbsp;</i></li>
+    <li><i>2</i><a href="#">热榜第二 重大国内国际新闻重大国内</a><i icon="new">&nbsp;</i></li>
+    <li><i>5</i><a href="#">热榜第五 重大国内国际新闻新闻</a></li>
+    <li><i>3</i><a href="#">热榜第三 重大国内国新闻新闻</a></li>
+    <li><i>6</i><a href="#">热榜第六 重大国内国际新闻</a></li>
   </ul>
 </body>
 
