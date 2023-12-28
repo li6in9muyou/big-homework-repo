@@ -1,4 +1,4 @@
-.realtime-news--interaction > a:nth-of-type(2) {
+.realtime-news--interaction__separator {
   border-right: solid 1px var(--text-color);
   border-left: solid 1px var(--text-color);
   padding: 0 4px;
