@@ -1,5 +1,6 @@
 .divider {
   text-align: center;
+  white-space: nowrap;
 }
 
 .divider > div {
