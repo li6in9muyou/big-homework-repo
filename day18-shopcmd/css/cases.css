@@ -16,7 +16,6 @@
 
 .case > span {
   position: absolute;
-  z-index: 99;
   bottom: 0;
   left: 0;
   height: 46px;
@@ -35,17 +34,15 @@
 
 .case > img {
   position: relative;
-  z-index: 2;
 }
 
-.case > img:hover {
-  z-index: 0;
+.case:hover.case::after {
+  display: block;
 }
 
 .case::after {
-  z-index: 1;
   content: "";
-  display: block;
+  display: none;
   position: absolute;
   top: 0;
   left: 0;
