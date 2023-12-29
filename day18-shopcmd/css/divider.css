@@ -1,11 +1,27 @@
 .divider {
   text-align: center;
   white-space: nowrap;
+  position: relative;
+  min-width: fit-content;
 }
 
-.divider > div {
+.divider > h2 {
   display: inline-block;
   vertical-align: middle;
+  font-size: 25px;
+  color: #333333;
+  font-weight: bold;
+}
+
+.divider > span {
+  font-size: 14px;
+  color: #666666;
+  text-transform: uppercase;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  bottom: -23px;
 }
 
 .divider::before,
@@ -14,4 +30,12 @@
   content: "";
   width: 417px;
   border-top: solid 1px #cccccc;
+}
+
+.divider::before {
+  margin-right: 34px;
+}
+
+.divider::after {
+  margin-left: 34px;
 }
