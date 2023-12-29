@@ -114,8 +114,3 @@
   right: -100px;
   transform: rotate(45deg);
 }
-
-.cases--btn__right::after {
-  margin-right: 6px;
-  margin-top: 6px;
-}
