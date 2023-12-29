@@ -29,15 +29,19 @@
     }
 
     a[logo] {
-      display: inline-block;
+      display: block;
       background-position: -278px -10px;
       width: 223px;
       height: 100px;
-      vertical-align: middle;
+    }
+
+    header h1 {
+      float: left;
       margin-right: min(379px, 10vw);
     }
 
     nav {
+      float: right;
       height: 100px;
       line-height: 100px;
       text-align: center;
@@ -86,15 +90,21 @@
 </head>
 
 <body>
-  <nav>
-    <a href="#" logo icon></a>
-    <a href="#">首页</a>
-    <a href="#" class="mr58">云云商城</a>
-    <a href="#">智慧门店</a>
-    <a href="#">营销平台</a>
-    <a href="#">媒体联盟</a>
-    <a href="#">关于云道</a>
-  </nav>
+  <header>
+    <div class="w1056 clearfix center">
+      <h1>
+        <a href="#" logo icon></a>
+      </h1>
+      <nav>
+        <a href="#">首页</a>
+        <a href="#" class="mr58">云云商城</a>
+        <a href="#">智慧门店</a>
+        <a href="#">营销平台</a>
+        <a href="#">媒体联盟</a>
+        <a href="#">关于云道</a>
+      </nav>
+    </div>
+  </header>
   <section>
     <img class="banner" src="img/banner-1.jpg" alt="每家企业都需要一个官方商城" width="1903" height="620">
   </section>
