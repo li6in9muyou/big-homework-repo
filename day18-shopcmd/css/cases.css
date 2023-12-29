@@ -7,10 +7,11 @@
   width: 322px;
   display: inline-block;
   cursor: pointer;
+  font-size: 0;
 }
 
-p.case:nth-of-type(-n + 2) {
-  margin-right: 40px;
+p.case:not(:first-of-type) {
+  margin-left: 40px;
 }
 
 .case > span {
