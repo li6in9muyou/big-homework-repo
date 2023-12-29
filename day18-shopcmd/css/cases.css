@@ -10,7 +10,7 @@
   font-size: 0;
 }
 
-p.case:not(:first-of-type) {
+.case:not(:first-of-type) {
   margin-left: 40px;
 }
 
