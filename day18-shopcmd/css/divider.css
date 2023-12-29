@@ -1,11 +1,11 @@
-.divider {
+.subtitle {
   text-align: center;
   white-space: nowrap;
   position: relative;
   min-width: fit-content;
 }
 
-.divider > h2 {
+.subtitle > h2 {
   display: inline-block;
   vertical-align: middle;
   font-size: 25px;
@@ -13,7 +13,7 @@
   font-weight: bold;
 }
 
-.divider > span {
+.subtitle > span {
   font-size: 14px;
   color: #666666;
   text-transform: uppercase;
@@ -24,18 +24,18 @@
   bottom: -23px;
 }
 
-.divider::before,
-.divider::after {
+.subtitle::before,
+.subtitle::after {
   display: inline-block;
   content: "";
   width: 417px;
   border-top: solid 1px #cccccc;
 }
 
-.divider::before {
+.subtitle::before {
   margin-right: 34px;
 }
 
-.divider::after {
+.subtitle::after {
   margin-left: 34px;
 }
