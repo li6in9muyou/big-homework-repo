@@ -1,0 +1,26 @@
+.partners {
+  margin: 0 auto;
+  margin-top: 50px;
+}
+
+.partners td {
+  width: 200px;
+  height: 78px;
+  border: dashed 1px #cccccc;
+  border-top: none;
+  border-left: none;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.partners tr:last-of-type > td {
+  border-bottom: none;
+}
+
+.partners tr > td:last-of-type {
+  border-right: none;
+}
+
+.partners a {
+  display: inline-block;
+}

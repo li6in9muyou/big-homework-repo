@@ -1,0 +1,27 @@
+[icon] {
+  background-image: url(../img/icon-sprites.png);
+}
+
+[icon="programs"] {
+  width: 167px;
+  height: 46px;
+  background-position: -10px -162px;
+}
+
+[icon="cases"] {
+  width: 167px;
+  height: 45px;
+  background-position: -197px -162px;
+}
+
+[icon="taobao"] {
+  width: 103px;
+  height: 40px;
+  background-position: -384px -162px;
+}
+
+[icon="pdd"] {
+  width: 103px;
+  height: 40px;
+  background-position: -226px -152px;
+}

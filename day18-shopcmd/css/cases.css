@@ -1,0 +1,104 @@
+.cases-wrap {
+  background-color: #ffffff;
+}
+
+.case {
+  position: relative;
+  width: 322px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+p.case:nth-of-type(-n + 2) {
+  margin-right: 40px;
+}
+
+.case > span {
+  position: absolute;
+  z-index: 99;
+  bottom: 0;
+  left: 0;
+  height: 46px;
+  background-color: rgba(0, 0, 0, 0.4);
+  color: white;
+  line-height: 46px;
+  text-align: center;
+  width: 100%;
+  font-size: 14px;
+}
+
+.cases {
+  position: relative;
+}
+
+.case > img {
+  position: relative;
+  z-index: 2;
+}
+
+.case > img:hover {
+  z-index: 0;
+}
+
+.case::after {
+  z-index: 1;
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  width: 72px;
+  height: 72px;
+  background: url(../img/icon-sprites.png) -10px -228px;
+}
+
+.cases--btn {
+  border: none;
+  position: absolute;
+  top: calc(50% - 30px);
+  width: 60px;
+  height: 60px;
+  background-color: #0909091a;
+  border-radius: 100%;
+  text-align: center;
+  cursor: pointer;
+}
+
+.cases--btn:active,
+.cases--btn:hover {
+  background-color: #0f83e8b4;
+}
+
+.cases--btn::after {
+  box-sizing: border-box;
+  content: "";
+  display: inline-block;
+  width: 21px;
+  height: 21px;
+  border: solid 5px white;
+  border-left: none;
+  border-bottom: none;
+  line-height: 60px;
+  vertical-align: middle;
+  /* magic number to visually center arrow in the circle */
+  margin-right: 6px;
+  margin-top: 6px;
+}
+
+.cases--btn__left {
+  left: -100px;
+  transform: rotate(-135deg);
+}
+
+.cases--btn__right {
+  right: -100px;
+  transform: rotate(45deg);
+}
+
+.cases--btn__right::after {
+  margin-right: 6px;
+  margin-top: 6px;
+}

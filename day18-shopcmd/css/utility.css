@@ -1,0 +1,50 @@
+.border-none {
+  border: none;
+}
+
+.fz14 {
+  font-size: 14px;
+}
+
+.c66 {
+  color: #666666;
+}
+
+.center {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lh24 {
+  line-height: 24px;
+}
+
+.mt24 {
+  margin-top: 24px;
+}
+
+.mt50 {
+  margin-top: 50px;
+}
+
+.w1056 {
+  width: 1056px;
+}
+
+.clearfix {
+  zoom: 1;
+}
+
+.clearfix::after,
+.clearfix::before {
+  content: "";
+  display: table;
+}
+
+.clearfix::after {
+  clear: both;
+  visibility: hidden;
+  font-size: 0;
+  height: 0;
+}

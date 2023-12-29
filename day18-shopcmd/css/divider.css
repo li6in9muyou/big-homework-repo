@@ -1,0 +1,16 @@
+.divider {
+  text-align: center;
+}
+
+.divider > div {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.divider::before,
+.divider::after {
+  display: inline-block;
+  content: "";
+  width: 417px;
+  border-top: solid 1px #cccccc;
+}
