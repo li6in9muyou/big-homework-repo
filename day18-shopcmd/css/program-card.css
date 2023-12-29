@@ -11,8 +11,8 @@
   position: relative;
 }
 
-.program-card:nth-of-type(-n + 2) {
-  margin-right: 48px;
+.program-card:not(:first-of-type) {
+  margin-left: 48px;
 }
 
 .program-card > p {
