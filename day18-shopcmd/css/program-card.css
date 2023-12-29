@@ -11,7 +11,7 @@
   position: relative;
 }
 
-section.program-card:nth-of-type(-n + 2) {
+.program-card:nth-of-type(-n + 2) {
   margin-right: 48px;
 }
 
