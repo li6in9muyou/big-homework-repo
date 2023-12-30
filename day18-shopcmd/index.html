@@ -62,12 +62,8 @@
     footer {
       height: 170px;
       background-color: #212425;
-      padding-top: 50px;
       text-align: center;
       box-sizing: border-box;
-    }
-
-    footer>p {
       font-size: 14px;
       color: #888888;
     }
@@ -82,7 +78,11 @@
       padding: 0 15px;
     }
 
-    footer>p:last-of-type {
+    footer>p:nth-of-type(1) {
+      padding-top: 50px;
+    }
+
+    footer>p:nth-of-type(2) {
       padding-top: 33px;
     }
   </style>
