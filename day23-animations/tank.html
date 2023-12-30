@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="CSS,圆角,阴影,动画">
+  <meta name="description" content="用CSS3特性绘制一台坦克">
+  <link rel="stylesheet" href="css/resets.css">
+  <title>坦克动画</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      height: 100%;
+    }
+
+    .clearfix {
+      zoom: 1;
+    }
+
+    .clearfix:after,
+    .clearfix:before {
+      content: "";
+      display: table;
+    }
+
+    .clearfix:after {
+      clear: both;
+      visibility: hidden;
+      font-size: 0;
+      height: 0;
+    }
+
+    body {
+      background-color: #333;
+      padding: 0;
+    }
+
+    .camouflage {
+      background-image: repeating-linear-gradient(45deg, green, darkgreen 20px);
+    }
+
+    .hull {
+      margin: 200px auto;
+      position: relative;
+      width: 320px;
+      height: 80px;
+      border-radius: 40px 40px 0 0;
+      padding-top: 80px;
+      transition: 3s;
+    }
+
+    .track {
+      border-radius: 35px;
+      border: dashed brown 10px;
+    }
+
+    .wheel {
+      float: left;
+      width: 50px;
+      height: 50px;
+      border-radius: 100%;
+      background: radial-gradient(circle, lightyellow 18px, black 18px);
+    }
+
+    .turret {
+      position: absolute;
+      height: 80px;
+      width: 160px;
+      left: calc(50% - 80px);
+      top: -80px;
+      border-radius: 50px;
+      z-index: 0;
+    }
+
+    .barrel {
+      position: absolute;
+      height: 40px;
+      width: 280px;
+      background-color: black;
+      z-index: -1;
+      left: 200px;
+      bottom: 100px;
+      transform-origin: left;
+      transition: 1s;
+    }
+
+    .barrel:hover {
+      transform: rotate(-45deg);
+    }
+
+    .hull:hover {
+      transform: translateX(100px);
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="hull camouflage">
+    <div class="turret camouflage">
+    </div>
+    <div class="barrel"></div>
+    <ul class="track clearfix">
+      <li class="wheel"></li>
+      <li class="wheel"></li>
+      <li class="wheel"></li>
+      <li class="wheel"></li>
+      <li class="wheel"></li>
+      <li class="wheel"></li>
+    </ul>
+  </div>
+</body>
+
+</html>
