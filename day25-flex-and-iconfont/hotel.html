@@ -96,6 +96,8 @@
     }
 
     .sub-nav>ul>li {
+      /* seemingly redundant but if omitting this dots created by text-overflow: ellipsis are in black */
+      color: white;
       background-color: #ff9594;
       width: calc(100% / 2 - var(--nav-spacing));
       margin-left: 2px;
