@@ -26,6 +26,9 @@
     html,
     body {
       height: 100%;
+    }
+
+    body {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -35,8 +38,9 @@
 
       /* without resetting align-items, users with smaller screen can not view all products */
       body {
+        justify-content: start;
         align-items: normal;
-        padding-left: 14px;
+        padding: 0 8px;
       }
     }
 
@@ -48,20 +52,23 @@
     }
 
     .product-list {
-      max-width: 944px;
-      box-sizing: border-box;
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+      min-width: 800px;
+      max-width: 1500px;
     }
 
     .product {
       position: relative;
       cursor: pointer;
+      width: calc((100% - 3 * 8px) / 4);
     }
 
     .product>img {
       display: block;
+      width: 100%;
+      height: auto;
     }
 
     .detail {
