@@ -9,6 +9,10 @@
   <title>平价酒店订购网</title>
   <link rel="stylesheet" href="css/resets.css">
   <style>
+    :root {
+      --nav-spacing: 2px;
+    }
+
     @font-face {
       font-family: 'iconfont';
       src: url('css/iconfont.ttf') format('truetype');
@@ -20,6 +24,10 @@
       font-style: normal;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     html,
@@ -65,9 +73,8 @@
     }
 
     .sub-nav--category {
-      box-sizing: border-box;
       background-color: #ff9594;
-      flex-grow: 1;
+      width: calc((100% - 2 * var(--nav-spacing)) / 3);
       color: white;
       display: flex;
       flex-direction: column;
@@ -85,7 +92,6 @@
       flex-grow: 2;
       display: flex;
       flex-wrap: wrap;
-      --nav-spacing: 2px;
       row-gap: var(--nav-spacing);
     }
 
@@ -104,7 +110,8 @@
     }
 
     .sub-nav__no-category>ul>li {
-      width: calc(100% / 3 - var(--nav-spacing));
+      width: calc((100% - 2 * var(--nav-spacing)) / 3);
+
     }
 
     .sub-nav__no-category>ul>li:nth-of-type(3n + 1) {
