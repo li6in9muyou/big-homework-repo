@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="平价,订酒店,订旅店">
+  <meta name="description" content="本站提供最便宜最好最优质的酒店订购服务">
+  <title>平价酒店订购网</title>
+  <link rel="stylesheet" href="css/resets.css">
+  <style>
+    @font-face {
+      font-family: 'iconfont';
+      src: url('css/iconfont.ttf') format('truetype');
+    }
+
+    .iconfont {
+      font-family: "iconfont" !important;
+      font-size: 16px;
+      font-style: normal;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    code {
+      font-family: monospace;
+    }
+
+    body {
+      display: flex;
+      align-items: start;
+      justify-content: center;
+    }
+
+    .banner>img {
+      object-fit: cover;
+      object-position: center;
+      max-width: 100%;
+      display: block;
+    }
+
+    .container {
+      max-width: 100%;
+      border: solid 2px #333;
+      border-top: none;
+    }
+
+    nav {
+      display: flex;
+      flex-direction: column;
+      margin: 0 auto;
+      align-content: stretch;
+      padding: 2px;
+    }
+
+    .sub-nav {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 2px;
+    }
+
+    .sub-nav--category {
+      box-sizing: border-box;
+      background-color: #ff9594;
+      flex-grow: 1;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .sub-nav--category>i {
+      font-size: 20px;
+      margin-top: 10px;
+    }
+
+    .sub-nav>ul {
+      flex-grow: 2;
+      display: flex;
+      flex-wrap: wrap;
+      --nav-spacing: 2px;
+      row-gap: var(--nav-spacing);
+    }
+
+    .sub-nav>ul>li {
+      background-color: #ff9594;
+      width: calc(100% / 2 - var(--nav-spacing));
+      margin-left: 2px;
+      line-height: 50px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .sub-nav a {
+      color: white;
+      text-decoration: none;
+    }
+
+    .sub-nav__no-category>ul>li {
+      width: calc(100% / 3 - var(--nav-spacing));
+    }
+
+    .sub-nav__no-category>ul>li:nth-of-type(3n + 1) {
+      margin-left: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <section class="banner">
+      <img src="img/banner.jpg" alt="本站提供最便宜最好最优质的酒店订购服务" width="1536" height="307">
+    </section>
+    <nav>
+      <section class="sub-nav">
+        <div class="sub-nav--category">
+          <span>酒店</span>
+          <i class="iconfont">&#xe8ae;</i>
+        </div>
+        <ul>
+          <li><a href="#">国内酒店</a></li>
+          <li><a href="#">国外酒店</a></li>
+          <li><a href="#">国内外酒店</a></li>
+          <li><a href="#">海内酒店</a></li>
+        </ul>
+      </section>
+      <section class="sub-nav">
+        <div class="sub-nav--category">
+          <span>飞机</span>
+          <i class="iconfont">&#xe601;</i>
+        </div>
+        <ul>
+          <li><a href="#">国内酒店</a></li>
+          <li><a href="#">国外酒店</a></li>
+          <li><a href="#">国内外酒店</a></li>
+          <li><a href="#">海内酒店</a></li>
+        </ul>
+      </section>
+      <section class="sub-nav">
+        <div class="sub-nav--category">
+          <span>火车</span>
+          <i class="iconfont">&#xe66b;</i>
+        </div>
+        <ul>
+          <li><a href="#">国内酒店</a></li>
+          <li><a href="#">国外酒店</a></li>
+          <li><a href="#">国内外酒店</a></li>
+          <li><a href="#">海内酒店</a></li>
+        </ul>
+      </section>
+      <section class="sub-nav sub-nav__no-category">
+        <ul>
+          <li><a href="#"><code>nth-of-type</code>形式一定是<code>\dn +|- \d</code></a></li>
+          <li><a href="#">国外酒店</a></li>
+          <li><a href="#">国内外的酒店</a></li>
+          <li><a href="#">不要把数字写到前面</a></li>
+          <li><a href="#">海内酒店</a></li>
+          <li><a href="#">海内酒店</a></li>
+        </ul>
+      </section>
+    </nav>
+  </div>
+</body>
+
+</html>
