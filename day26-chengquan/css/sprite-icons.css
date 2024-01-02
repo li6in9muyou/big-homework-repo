@@ -4,7 +4,7 @@
   display: inline-block;
 }
 
-footer [icon="arrow-right"]::after {
+[icon="arrow-right"]::after {
   content: "";
   width: 6px;
   height: 12px;
@@ -12,7 +12,15 @@ footer [icon="arrow-right"]::after {
   margin-left: 8px;
 }
 
-footer [icon="custom-service"]::before {
+[icon="arrow-right__orange"]::after {
+  content: "";
+  width: 6px;
+  height: 12px;
+  background-position: -352px -172px;
+  margin-left: 8px;
+}
+
+[icon="custom-service"]::before {
   content: "";
   width: 43px;
   height: 43px;
@@ -24,4 +32,39 @@ footer [icon="custom-service"]::before {
   width: 13px;
   height: 6px;
   background-position: -326px -146px;
+}
+
+[icon="slogan"]::after,
+[icon="slogan"]::before {
+  width: 76px;
+  height: 70px;
+  background-position: -230px -10px;
+}
+
+[icon="notification"]::after,
+[icon="notification"]::before {
+  width: 90px;
+  height: 90px;
+  background-position: -10px -120px;
+}
+
+[icon="shoppinp_bag"]::after,
+[icon="shoppinp_bag"]::before {
+  width: 90px;
+  height: 90px;
+  background-position: -120px -120px;
+}
+
+[icon="globe "]::after,
+[icon="globe "]::before {
+  width: 90px;
+  height: 90px;
+  background-position: -120px -10px;
+}
+
+[icon="diamond"]::after,
+[icon="diamond "]::before {
+  width: 90px;
+  height: 90px;
+  background-position: -10px -10px;
 }

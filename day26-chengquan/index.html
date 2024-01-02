@@ -17,6 +17,160 @@
       text-decoration: none;
       color: unset;
     }
+
+    .slogan {
+      position: relative;
+      top: -59px;
+      padding: 0 34px;
+      width: 1160px;
+      height: 118px;
+      background-color: #ffffff;
+      box-shadow: 0px 0px 54px 0px rgba(92, 107, 143, 0.21);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0 auto;
+    }
+
+    .slogan>[icon]::after {
+      content: "";
+    }
+
+    .slogan>a {
+      width: 150px;
+      height: 40px;
+      border-radius: 20px;
+      border: solid 1px #ff7200;
+      display: inline-block;
+      line-height: 38px;
+      text-align: center;
+      box-sizing: border-box;
+      color: #ff7200;
+    }
+
+
+    .programs {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .programs [icon]::after {
+      content: "";
+    }
+
+    .programs>.program {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 108px;
+      font-size: 16px;
+      color: #fff;
+      height: 400px;
+      width: 280px;
+      box-sizing: border-box;
+      transition: .2s;
+      border: solid 1px #fff;
+    }
+
+    .programs>.program:hover {
+      border: solid 1px #fff;
+      transform: scale(1.135);
+      z-index: 1;
+    }
+
+    .programs>.program:hover::after {
+      opacity: 1;
+    }
+
+    .programs>.program::after {
+      content: "";
+      opacity: 0;
+      position: absolute;
+      top: -8px;
+      left: -8px;
+      background-size: cover;
+      background-repeat: no-repeat;
+      filter: blur(1px);
+      height: calc(100% + 16px);
+      width: calc(100% + 16px);
+      z-index: -1;
+    }
+
+    .programs>.program:nth-child(1),
+    .programs>.program:nth-child(1)::after {
+      background-image: linear-gradient(#242d3e80, #242d3e80), url(img/program-1.jpg);
+    }
+
+    .programs>.program:nth-child(2),
+    .programs>.program:nth-child(2)::after {
+      background-image: linear-gradient(#242d3e80, #242d3e80), url(img/program-2.jpg);
+    }
+
+    .programs>.program:nth-child(3),
+    .programs>.program:nth-child(3)::after {
+      background-image: linear-gradient(#242d3e80, #242d3e80), url(img/program-3.jpg);
+    }
+
+    .programs>.program:nth-child(4),
+    .programs>.program:nth-child(4)::after {
+      background-image: linear-gradient(#242d3e80, #242d3e80), url(img/program-4.png);
+    }
+
+    .programs>.program:nth-child(1):hover,
+    .programs>.program:nth-child(1):hover::after {
+      background-image: url(img/program-1.jpg);
+    }
+
+    .programs>.program:nth-child(2):hover,
+    .programs>.program:nth-child(2):hover::after {
+      background-image: url(img/program-2.jpg);
+    }
+
+    .programs>.program:nth-child(3):hover,
+    .programs>.program:nth-child(3):hover::after {
+      background-image: url(img/program-3.jpg);
+    }
+
+    .programs>.program:nth-child(4):hover,
+    .programs>.program:nth-child(4):hover::after {
+      background-image: url(img/program-4.png);
+    }
+
+    .program>i {
+      margin-bottom: 38px;
+    }
+
+    .program>h4 {
+      font-size: 28px;
+      margin-bottom: 18px;
+    }
+
+    .program>span {
+      margin-bottom: 24px;
+    }
+
+    .btn[icon]::after {
+      content: "";
+    }
+
+    .btn-detail {
+      width: 150px;
+      height: 40px;
+      border-radius: 20px;
+      border: solid 1px #e6e6e6;
+      display: inline-block;
+      line-height: 38px;
+      text-align: center;
+      box-sizing: border-box;
+      color: #e6e6e6;
+    }
+
+    section:nth-of-type(1) {
+      padding: 160px 0 148px 0;
+      text-align: center;
+    }
   </style>
   <script>
     const debounce = (fn) => {
@@ -64,6 +218,40 @@
   <div class="banner">
     <img src="img/bg-header.jpg" alt="品牌赋能 和合共生" width="1920" height="680">
   </div>
+  <p class="slogan">
+    <i icon="slogan"></i>
+    <span>橙券，是权益营销方案提供商，为实现品牌-市场-用户的紧密互联提供强有力的智慧支持。</span>
+    <a href="#" icon="arrow-right__orange">了解更多</a>
+  </p>
+  <section>
+    <h2><img src="img/title-programs.png" alt=""></h2>
+    <ul class="programs">
+      <li class="program">
+        <i icon="notification"></i>
+        <h4>橙营销</h4>
+        <span>服了又有小BUG</span>
+        <a href="#" icon="arrow-right" class="btn-detail">了解更多</a>
+      </li>
+      <li class="program">
+        <i icon="notification"></i>
+        <h4>橙积分</h4>
+        <span>让积分发挥更大价值</span>
+        <a href="#" icon="arrow-right" class="btn-detail">了解更多</a>
+      </li>
+      <li class="program">
+        <i icon="notification"></i>
+        <h4>橙金融</h4>
+        <span>智慧金融解决方案服务商</span>
+        <a href="#" icon="arrow-right" class="btn-detail">了解更多</a>
+      </li>
+      <li class="program">
+        <i icon="notification"></i>
+        <h4>橙福利</h4>
+        <span>开创员工福利新时代</span>
+        <a href="#" icon="arrow-right" class="btn-detail">了解更多</a>
+      </li>
+    </ul>
+  </section>
 </body>
 <footer>
   <section class="contact">
