@@ -98,8 +98,10 @@
 .program > h4 {
   font-size: 28px;
   margin-bottom: 18px;
+  font-weight: 400;
 }
 
 .program > span {
   margin-bottom: 24px;
+  font-weight: 500;
 }
