@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="css/footer.css">
   <link rel="stylesheet" href="css/header.css">
   <link rel="stylesheet" href="css/programs.css">
+  <link rel="stylesheet" href="css/showcases.css">
+  <link rel="stylesheet" href="css/logos.css">
   <style>
     a {
       text-decoration: none;
@@ -72,114 +74,15 @@
       color: #e6e6e6;
     }
 
-    section:nth-of-type(1) {
+    .program-section {
       padding: 160px 0 148px 0;
       text-align: center;
     }
 
-    section:nth-of-type(2) {
+    .showcase-section {
       padding: 82px 0 142px 0;
       text-align: center;
       background-color: #f8fafd;
-    }
-
-    .showcases-wrap {
-      position: relative;
-    }
-
-    .showcase--tabs {
-      display: flex;
-      gap: 15px;
-      margin-top: 86px;
-      justify-content: center;
-    }
-
-    .showcase--tab {
-      font-size: 18px;
-      color: #333;
-      box-sizing: border-box;
-      width: 181px;
-      height: 50px;
-      line-height: 50px;
-      text-align: center;
-      background-color: #fff;
-      box-shadow: 0px -1px 21px 0px rgba(192, 192, 192, 0.35);
-      border-radius: 25px;
-      cursor: pointer;
-    }
-
-    .showcase--tab:hover,
-    .showcase--tab__active {
-      background-color: #ff7200;
-      color: #fff
-    }
-
-    .showcases {
-      display: flex;
-      justify-content: center;
-      gap: 60px;
-      margin-top: 98px;
-    }
-
-    .showcase {
-      font-size: 14px;
-      color: #666;
-      padding: 93px 45px 0 45px;
-      box-sizing: border-box;
-      width: 500px;
-      height: 391px;
-      background-color: #ffffff;
-      box-shadow: 0px 0px 20px 0px rgba(192, 192, 192, 0.35);
-    }
-
-    .showcase>p {
-      text-indent: 2em;
-      text-align: left;
-      margin-top: 66px;
-    }
-
-    .showcase-wrap {
-      position: relative;
-    }
-
-    button.showcase-btn {
-      position: absolute;
-    }
-
-    .showcase--btn {
-      box-sizing: border-box;
-      position: absolute;
-      top: calc(50% - 53px / 2);
-      width: 53px;
-      height: 53px;
-      background-image: url(img/chengquan-sprites.png);
-      cursor: pointer;
-    }
-
-    .showcase--btn__left {
-      background-position: -230px -100px;
-      left: calc(50%);
-      transform: translateX(calc(-1 * (30px + 500px + 18px + 53px)));
-    }
-
-    .showcase--btn__right {
-      background-position: -326px -10px;
-      right: calc(50%);
-      transform: translateX(calc(30px + 500px + 18px + 53px));
-    }
-
-    .showcase__active {
-      position: absolute;
-      height: 452px;
-      top: -26px;
-    }
-
-    [logo] {
-      object-fit: none;
-    }
-
-    [logo="5"] {
-      object-position: -248px -85px;
     }
   </style>
   <script>
@@ -233,7 +136,7 @@
     <span>橙券，是权益营销方案提供商，为实现品牌-市场-用户的紧密互联提供强有力的智慧支持。</span>
     <a href="#" icon="arrow-right__orange">了解更多</a>
   </p>
-  <section>
+  <section class="program-section">
     <h2><img src="img/title-programs.png" alt=""></h2>
     <ul class="programs">
       <li class="program">
@@ -262,7 +165,7 @@
       </li>
     </ul>
   </section>
-  <section>
+  <section class="showcase-section">
     <h2><img src="img/title-customers.png" alt="用科技 为企业赋能" width="302" height="79"></h2>
     <ul class="showcase--tabs">
       <li class="showcase--tab showcase--tab__active">金融行业</li>

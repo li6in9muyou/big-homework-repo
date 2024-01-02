@@ -1,0 +1,27 @@
+[logo] {
+  object-fit: none;
+}
+
+[logo="1"] {
+  object-position: -10px -10px;
+}
+
+[logo="2"] {
+  object-position: -10px -85px;
+}
+
+[logo="3"] {
+  object-position: -10px -160px;
+}
+
+[logo="4"] {
+  object-position: -248px -10px;
+}
+
+[logo="5"] {
+  object-position: -248px -85px;
+}
+
+[logo="6"] {
+  object-position: -248px -160px;
+}
