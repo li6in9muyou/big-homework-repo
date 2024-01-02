@@ -31,13 +31,7 @@ footer .contact > p:nth-of-type(2) {
 }
 
 footer .contact > a {
-  display: inline-block;
-  width: 150px;
-  height: 40px;
-  border-radius: 20px;
-  border: solid 1px #e6e6e6;
-  opacity: 0.5;
-  line-height: 40px;
+  color: #fff;
 }
 
 footer .contact .sep {
