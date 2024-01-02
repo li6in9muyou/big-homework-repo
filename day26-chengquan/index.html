@@ -11,112 +11,11 @@
   <link rel="stylesheet" href="css/resets.css">
   <link rel="stylesheet" href="css/sprite-icons.css">
   <link rel="stylesheet" href="css/footer.css">
+  <link rel="stylesheet" href="css/header.css">
   <style>
     a {
       text-decoration: none;
       color: unset;
-    }
-
-    header {
-      position: fixed;
-      top: 0;
-      width: 100vw;
-      padding-top: 22px;
-      box-sizing: border-box;
-      color: #c8c8c8;
-      height: 71px;
-      font-size: 16px;
-    }
-
-    html:not([data-scroll='0']) header {
-      background-color: #fff;
-      color: #000;
-    }
-
-    html:not([data-scroll='0']) nav img {
-      object-position: -10px -230px;
-    }
-
-    nav {
-      display: flex;
-      justify-content: space-between;
-      width: 1048px;
-      margin: 0 auto;
-    }
-
-    nav img {
-      width: 92px;
-      height: 36px;
-      object-position: -122px -230px;
-      object-fit: none;
-    }
-
-    .nav--pages {
-      display: flex;
-      gap: 46px;
-      align-items: center;
-    }
-
-    .nav--pages__active,
-    .nav--pages a:hover,
-    .nav--pages a:active,
-    .nav--pages a:focus {
-      color: #fff;
-    }
-
-    html:not([data-scroll='0']) .nav--pages__active,
-    html:not([data-scroll='0']) .nav--pages a:hover,
-    html:not([data-scroll='0']) .nav--pages a:active,
-    html:not([data-scroll='0']) .nav--pages a:focus {
-      color: #ff7200;
-    }
-
-    .banner>img {
-      object-position: center;
-      object-fit: cover;
-      width: 100%;
-      height: auto;
-    }
-
-    .nav--pages [icon="arrow-down"]::after {
-      content: "";
-      margin-left: 9px;
-      position: relative;
-      top: -.2em;
-      transition: .3s;
-    }
-
-    .nav--pages>li:hover>[icon="arrow-down"]::after {
-      transform: scaleY(-1);
-    }
-
-    .nav--pages>li:nth-of-type(2) {
-      cursor: pointer;
-      position: relative;
-    }
-
-    .nav--subnav:focus-within,
-    .nav--pages>li:nth-of-type(2):hover>.nav--subnav {
-      height: 84px;
-      padding: 20px 12px 4px 12px;
-    }
-
-    .nav--subnav {
-      padding: 0px 12px;
-      width: 100%;
-      position: absolute;
-      top: 100%;
-      left: -20%;
-      text-align: center;
-      line-height: 28px;
-      height: 0;
-      transition: .3s;
-      overflow: hidden;
-      background-color: rgba(0, 0, 0, .2);
-    }
-
-    html:not([data-scroll='0']) .nav--subnav {
-      background-color: #fff;
     }
   </style>
   <script>
