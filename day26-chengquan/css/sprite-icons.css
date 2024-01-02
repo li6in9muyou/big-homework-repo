@@ -1,0 +1,20 @@
+[icon]::before,
+[icon]::after {
+  background-image: url(../img/chengquan-sprites.png);
+  display: inline-block;
+}
+
+footer [icon="arrow-right"]::after {
+  content: "";
+  width: 6px;
+  height: 12px;
+  background-position: -326px -172px;
+  margin-left: 8px;
+}
+
+footer [icon="custom-service"]::before {
+  content: "";
+  width: 43px;
+  height: 43px;
+  background-position: -326px -83px;
+}
