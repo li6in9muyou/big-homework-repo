@@ -18,3 +18,10 @@ footer [icon="custom-service"]::before {
   height: 43px;
   background-position: -326px -83px;
 }
+
+[icon="arrow-down"]::after,
+[icon="arrow-down"]::before {
+  width: 13px;
+  height: 6px;
+  background-position: -326px -146px;
+}
