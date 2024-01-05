@@ -61,6 +61,20 @@ html:not([data-scroll="0"]) .nav--pages a:focus {
   height: auto;
 }
 
+.banner {
+  position: relative;
+  font-size: 0;
+}
+
+.banner > .banner--text {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  top: 0;
+  left: 0;
+}
+
 .nav--pages [icon="arrow-down"]::after {
   content: "";
   margin-left: 9px;
