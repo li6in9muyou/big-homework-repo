@@ -75,8 +75,7 @@ footer .contact > a::after {
   text-align: center;
   font-size: 12px;
   color: #cecece;
-  padding: 18px 35px;
-  padding-bottom: 0;
+  padding: 18px 0 0 35px;
 }
 
 .connect--telephone > .wechat > p {
@@ -94,7 +93,7 @@ footer .contact > a::after {
 
 .connect--divider {
   border-right: solid 1px #4c4f5f;
-  margin: 4px 60px;
+  margin: 4px 90px;
 }
 
 .links {
