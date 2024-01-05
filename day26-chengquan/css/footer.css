@@ -107,16 +107,16 @@ footer .contact > a::after {
   width: 100px;
 }
 
-.links--section > h4 {
+.links--section > dt {
   color: white;
   font-size: 16px;
 }
 
-.links--section li:first-of-type {
+.links--section > dd:first-of-type {
   margin-top: 42px;
 }
 
-.links--section li {
+.links--section > dd {
   margin-top: 20px;
   color: #cecece;
   font-size: 14px;
