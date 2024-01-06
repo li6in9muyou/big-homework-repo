@@ -43,11 +43,15 @@
     .breadcrumb {
       font-size: 16px;
       color: #999;
+      display: flex;
     }
 
-    .breadcrumb>strong {
+    a.breadcrumb--part:hover {
+      text-decoration: underline;
+    }
+
+    .breadcrumb--part__cwd {
       color: #333;
-      font-weight: normal;
     }
 
     .news-wrap {
@@ -156,7 +160,11 @@
     </div>
   </div>
   <div class="news-wrap">
-    <div class="breadcrumb">新闻动态><strong>甬江潮起|鼎信厚积薄发荣获奖杯</strong></div>
+    <div class="breadcrumb">
+      <a href="news.html" class="breadcrumb--part">新闻动态</a>
+      <div class="breadcrumb--sep">></div>
+      <a href="#" class="breadcrumb--part breadcrumb--part__cwd">甬江潮起|鼎信厚积薄发荣获奖杯</a>
+    </div>
     <section class="news-meta">
       <h1>甬江潮起|鼎信厚积薄发荣获奖杯</h1>
       <p>2019-01-11</p>
