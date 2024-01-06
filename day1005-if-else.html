@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-Hans">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="keywords" content="JavaScript,if,else">
+  <meta name="description" content="JavaScript 条件控制语句">
+  <title>JavaScript 条件控制语句</title>
+  <script>
+    // 求两个数的最大数
+    var max, a = 10, b = 13;
+    if (a > b) {
+      max = a;
+    } else {
+      max = b;
+    }
+
+    // 判断一个数是偶数还是奇数
+    var x = 111;
+    if (x % 2 === 0) {
+      console.log(x + '是偶数');
+    } else {
+      console.log(x + '是奇数');
+    }
+
+    // 分数转换
+    var grade = 'E', score = 55;
+    if (score >= 90) {
+      grade = 'A';
+    } else if (score >= 80) {
+      grade = 'B';
+    } else if (score >= 70) {
+      grade = 'C';
+    } else if (score >= 60) {
+      grade = 'D';
+    }
+    console.log(score + '分是' + grade);
+
+    // 判断四季
+    var season = '冬', nthMonth = 1;
+    if (3 <= nthMonth && nthMonth <= 5) {
+      season = '春';
+    } else if (6 <= nthMonth && nthMonth <= 8) {
+      season = '夏';
+    } else if (9 <= nthMonth && nthMonth <= 11) {
+      season = '秋';
+    }
+    console.log(nthMonth + '月是' + season + '季');
+
+    // 判断一个人的年龄是否满18岁
+    var age = 19;
+    if (age >= 18) {
+      console.log(age + '岁是成年');
+    } else {
+      console.log(age + '岁是未成年');
+    }
+
+    // 判断一个年份是闰年还是平年
+    var year = 2000;
+    if ((year % 4 === 0 && year % 100 !== 0)
+      || (year % 400 === 0)) {
+      console.log(year + '年是闰年');
+    } else {
+      console.log(year + '年不是闰年');
+    }
+  </script>
+</head>
+
+<body>
+</body>
+
+</html>
