@@ -49,25 +49,13 @@
       margin: 0 auto;
     }
 
-    .slogan>[icon]::after {
+    .slogan>i[icon]::after {
       content: "";
     }
 
     .slogan>a {
-      font-weight: 500;
-      width: 150px;
-      height: 40px;
-      border-radius: 20px;
       border: solid 1px #ff7200;
-      display: inline-block;
-      line-height: 38px;
-      text-align: center;
-      box-sizing: border-box;
       color: #ff7200;
-    }
-
-    .btn[icon]::after {
-      content: "";
     }
 
     .btn-detail {
@@ -81,6 +69,16 @@
       box-sizing: border-box;
       color: #e6e6e6;
       font-weight: 500;
+    }
+
+    .btn-detail::after {
+      content: "";
+      margin-left: 8px;
+      transition: 200ms;
+    }
+
+    .btn-detail:hover::after {
+      transform: translateX(4px);
     }
   </style>
   <script src="js/header.js"></script>
@@ -117,7 +115,7 @@
   <div class="slogan">
     <i icon="slogan"></i>
     <p>橙券，是权益营销方案提供商，为实现品牌-市场-用户的紧密互联提供强有力的智慧支持。</p>
-    <a href="#" icon="arrow-right__orange">了解更多</a>
+    <a href="#" class="btn-detail" icon="arrow-right__orange">了解更多</a>
   </div>
   <section class="program-section">
     <h2><img src="img/title-programs.png" alt=""></h2>

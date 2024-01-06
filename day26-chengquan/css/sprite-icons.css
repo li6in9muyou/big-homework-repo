@@ -5,19 +5,15 @@
 }
 
 [icon="arrow-right"]::after {
-  content: "";
   width: 6px;
   height: 12px;
   background-position: -326px -172px;
-  margin-left: 8px;
 }
 
 [icon="arrow-right__orange"]::after {
-  content: "";
   width: 6px;
   height: 12px;
   background-position: -352px -172px;
-  margin-left: 8px;
 }
 
 [icon="custom-service"]::before {

@@ -39,10 +39,6 @@ footer .contact .sep {
   padding: 0 26px;
 }
 
-footer .contact > a::after {
-  margin-left: 8px;
-}
-
 .connect--hotline > .number {
   display: flex;
   flex-direction: column;
