@@ -100,3 +100,15 @@
   top: -26px;
   color: #333;
 }
+
+.showcase__active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  bottom: 0;
+  background-color: #ff7200;
+  width: 80px;
+  height: 2px;
+}
