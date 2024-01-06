@@ -2,8 +2,20 @@
   margin-top: 137px;
 }
 
+.mt-55 {
+  margin-top: 55px;
+}
+
+.mt-60 {
+  margin-top: 60px;
+}
+
 .mb-20 {
   margin-bottom: 20px;
+}
+
+.pt-25 {
+  padding-top: 25px;
 }
 
 .font-40 {
@@ -12,6 +24,10 @@
 
 .font-22 {
   font-size: 22px;
+}
+
+.font-20 {
+  font-size: 20px;
 }
 
 .text-regular {
