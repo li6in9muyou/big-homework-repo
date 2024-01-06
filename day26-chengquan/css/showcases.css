@@ -58,11 +58,12 @@
   position: relative;
 }
 
-.showcase-btn {
-  position: absolute;
+.showcase--btn:hover {
+  opacity: 0.6;
 }
 
 .showcase--btn {
+  opacity: 1;
   box-sizing: border-box;
   position: absolute;
   top: calc(50% - 53px / 2);
