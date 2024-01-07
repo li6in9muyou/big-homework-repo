@@ -72,6 +72,18 @@
       firstAge += step;
     }
     console.log("第一个小朋友年龄是", firstAge);
+
+    // 打印乘法表
+    var bigger = 1;
+    for (var bigger = 1; bigger <= 9; bigger++) {
+      var row = "";
+      for (var smaller = 1; smaller <= bigger; smaller++) {
+        var item = bigger + "x" + smaller + "=" + bigger * smaller;
+        row += item;
+        row += " ";
+      }
+      console.log(row)
+    }
   </script>
 </head>
 
