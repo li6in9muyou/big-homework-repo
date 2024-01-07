@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-Hans">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="keywords" content="JavaScript,while,for">
+  <meta name="description" content="JavaScript 循环语句">
+  <title>JavaScript 循环语句</title>
+  <script>
+    // 求1-100乘积
+    var product = 1n;
+    for (let i = 1n; i <= 100n; i++) {
+      product *= i;
+    }
+    console.log("1-100乘积是 " + product);
+
+    // 求1-100奇数和
+    var oddSum = 0;
+    for (let i = 1; i <= 100; i++) {
+      if (i % 2 === 1) {
+        oddSum += i;
+      }
+    }
+    console.log("1-100奇数和是", oddSum);
+
+    // 求1-100能被3整除的数之和
+    var threeMultiplesSum = 0;
+    for (let i = 1; i <= 100; i++) {
+      if (i % 3 === 0) {
+        threeMultiplesSum += i;
+      }
+    }
+    console.log("1-100能被3整除的数之和是", threeMultiplesSum);
+
+    // 求1-100不能被7整除的数之和
+    var noSevenMultiplesSum = 0;
+    for (let i = 1; i <= 100; i++) {
+      if (i % 7 !== 0) {
+        noSevenMultiplesSum += i;
+      }
+    }
+    console.log("1-100不能被7整除的数之和是", noSevenMultiplesSum);
+
+    // 一万元年复利千分之三，五年本息多少钱
+    var loan = 10000;
+    var rate = 0.003;
+    var term = 5;
+    for (let t = 0; t < term; t++) {
+      loan = loan + loan * rate;
+    }
+    console.log("一万元年复利千分之三，五年本息是", loan);
+
+    // 百马百石问题
+    var EPSILON = 1e-6;
+    for (big = 1; big <= 100; big++) {
+      for (mid = 1; mid <= 100; mid++) {
+        for (small = 1; small <= 100; small++) {
+          var okHorseCount = big + mid + small === 100;
+          var okLoadCount = EPSILON > Math.abs(2 * big + mid + 0.5 * small - 100);
+          if (okHorseCount && okLoadCount) {
+            console.log("百马百石问题的一个解是", big, "匹大马", mid, "匹中马", small, "匹小马");
+          }
+        }
+      }
+    }
+
+    // 小朋友年龄问题
+    var childrenCnt = 5;
+    var step = 2;
+    var firstAge = 3;
+    for (var i = 0; i < childrenCnt - 1; i++) {
+      firstAge += step;
+    }
+    console.log("第一个小朋友年龄是", firstAge);
+  </script>
+</head>
+
+<body>
+</body>
+
+</html>
