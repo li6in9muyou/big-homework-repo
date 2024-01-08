@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-Hans">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="keywords" content="JavaScript,数组,数组遍历">
+  <meta name="description" content="JavaScript 数据基础">
+  <title>JavaScript 数组基础</title>
+  <script>
+    // 看数组 观察变化找规律
+    // 每次都右移2位
+    var arr = ['a', 'b', 'c', 'd', 'e']
+    console.log('初始', arr)
+    for (var i = 0; i < 15; i++) {
+      for (var shiftCnt = 0; shiftCnt < 2; shiftCnt++) {
+        var tail = arr[arr.length - 1];
+        for (var idx = arr.length - 2; idx >= 0; idx--) {
+          arr[idx + 1] = arr[idx];
+        }
+        arr[0] = tail;
+      }
+      console.log('第', i + 1, '次', arr);
+    }
+
+    // 抽丝剥茧
+    var arr = ['鸡腿', 101, '3', '奥利奥', 9, false, '33a', 1.333, '巧克力'];
+    var sum = 0;
+    for (var i of arr) {
+      if (typeof i === 'number' && i === parseInt(i)) {
+        sum += i;
+      }
+    }
+    console.log(arr, "中所有类型为number的整数之和为", sum)
+  </script>
+</head>
+
+<body>
+</body>
+
+</html>
