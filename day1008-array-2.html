@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-Hans">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="keywords" content="JavaScript,数组,数组遍历">
+  <meta name="description" content="JavaScript 数组2">
+  <title>JavaScript 数组2</title>
+  <script>
+    // 求一组数中的所有数的和和平均值
+    var sum = 0;
+    var arr = [1, 2, 3, 4, 1, 2, 3, 4, 2, 3, 1, 1, 0];
+    for (var i of arr) {
+      sum += i;
+    }
+    var avg = sum / arr.length;
+    console.log(arr, '所有数的和', sum, '平均数', avg);
+
+    // 求一组数中的最大值和最小值，以及所在位置
+    var maxIdx = 0, minIdx = 0;
+    var arr = [1, 2, 3, 4, 1, 2, 3, 4, 2, 3, 1, 1, 0];
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i] > arr[maxIdx]) {
+        maxIdx = i;
+      }
+      if (arr[i] < arr[minIdx]) {
+        minIdx = i;
+      }
+    }
+    console.log(arr, '最大值', arr[maxIdx], '在', maxIdx, '最小值', arr[minIdx], '在', minIdx);
+
+    // 将字符串数组用 | 或其他符号分割
+    var arr = ['1', '2', '3', '4', '1', '2', '3', '4', '2', '3', '1', '1', '0'];
+    console.log(arr.join('|'));
+
+    // 要求将数组中的0项去掉，将不为0的值存入一个新的数组，生成新的数组
+    var arr = [1, 2, 3, 0, 1, 0, 3, 4, 2, 0, 0, 1, 0];
+    var nonZero = [];
+    for (var i of arr) {
+      if (i !== 0) {
+        nonZero.push(i);
+      }
+    }
+    console.log('有零的', arr, '没有零的', nonZero);
+
+    // 查找数组[1, 2, 3, 4, 1, 2, 3, 4, 2, 3, 1, 1, 0]中所有值为1的项的下标 输出为新数组
+    var arr = [1, 2, 3, 4, 1, 2, 3, 4, 2, 3, 1, 1, 0];
+    var onesIdx = [];
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i] === 1) {
+        onesIdx.push(i);
+      }
+    }
+    console.log(arr, '1的下标是', onesIdx);
+
+    // 翻转数组[1, 2, 3, 4, 5] => [5, 4, 3, 2, 1]
+    var orig = [1, 2, 3, 4, 5];
+    var arr = orig.slice();
+    for (var i = 0; i < Math.floor(arr.length / 2); i++) {
+      var j = arr.length - 1 - i;
+      var tmp = arr[j];
+      arr[j] = arr[i];
+      arr[i] = tmp;
+    }
+    console.log(orig, '翻转之后是', arr);
+  </script>
+</head>
+
+<body>
+</body>
+
+</html>
