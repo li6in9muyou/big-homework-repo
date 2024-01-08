@@ -21,7 +21,7 @@
 
 
     /*============================分割线========================== */
-    console.log(x); //这里打印值是多少? function
+    console.log(x); //这里打印值是多少? function ...40...
     var x = function () {
       x = 90;
     };
@@ -39,7 +39,7 @@
 
     var x = 20;
     function fn1() {
-      console.log(x); //这里打印值是多少? 1
+      console.log(x); //这里打印值是多少? 1 订正：40 fn1闭包包住全局变量x
     }
     x = 30;
     function fn2() {
@@ -89,8 +89,8 @@
       var a = b = 3;
     }
 
-    console.log(b); //这里打印值是多少? 3
-    console.log(a); //这里打印值是多少? ReferenceError
+    console.log(b); //这里打印值是多少? 3 订正：ReferenceError 赋值语句不执行没有在全局作用域自动隐式声明b
+    console.log(a); //这里打印值是多少? ReferenceError 订正：不执行 上面报错这里不执行了
   </script>
 
 </body>
