@@ -46,20 +46,17 @@
     var rate = 0.003;
     var term = 5;
     for (let t = 0; t < term; t++) {
-      loan = loan + loan * rate;
+      loan *= 1 + rate;
     }
     console.log("一万元年复利千分之三，五年本息是", loan);
 
     // 百马百石问题
-    var EPSILON = 1e-6;
-    for (big = 1; big <= 100; big++) {
-      for (mid = 1; mid <= 100; mid++) {
-        for (small = 1; small <= 100; small++) {
-          var okHorseCount = big + mid + small === 100;
-          var okLoadCount = EPSILON > Math.abs(2 * big + mid + 0.5 * small - 100);
-          if (okHorseCount && okLoadCount) {
-            console.log("百马百石问题的一个解是", big, "匹大马", mid, "匹中马", small, "匹小马");
-          }
+    for (var big = 1; big <= 50; big++) {
+      for (var mid = 1; mid <= 100; mid++) {
+        var small = 100 - big - mid;
+        var okLoadCount = 1e-6 > Math.abs(2 * big + mid + 0.5 * small - 100);
+        if (okLoadCount) {
+          console.log("百马百石问题的一个解是", big, "匹大马", mid, "匹中马", small, "匹小马");
         }
       }
     }
@@ -74,6 +71,7 @@
     console.log("第一个小朋友年龄是", firstAge);
 
     // 打印乘法表
+    var table = "";
     var bigger = 1;
     for (var bigger = 1; bigger <= 9; bigger++) {
       var row = "";
@@ -82,8 +80,10 @@
         row += item;
         row += " ";
       }
-      console.log(row)
+      table += row;
+      table += "\n";
     }
+    console.log(table);
   </script>
 </head>
 
