@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>作用域练习</title>
+</head>
+
+<body>
+  <script>
+    var x = 10;
+    function fn() {
+      x = 20;
+      console.log(x); //这里打印值是多少?
+      var x = 30;
+    }
+    x = 30;
+    fn();
+    console.log(x); //这里打印值是多少?
+
+
+    /*============================分割线========================== */
+    console.log(x); //这里打印值是多少?
+    var x = function () {
+      x = 90;
+    };
+
+    x();
+    var x = 30;
+
+    function x() {
+      x = 40;
+    }
+
+    console.log(x); //这里打印值是多少?
+
+    /*============================分割线========================== */
+
+    var x = 20;
+    function fn1() {
+      console.log(x); //这里打印值是多少?
+    }
+    x = 30;
+    function fn2() {
+      var x = 1;
+      fn1();
+    }
+    x = 40;
+
+    fn2();
+
+
+    /*============================分割线========================== */
+    var x = 20;
+    function fn() {
+      if (x) {
+        var x = 30;
+      }
+      console.log(x); //这里打印值是多少?
+    }
+    fn();
+    console.log(x); //这里打印值是多少?
+
+    /*============================分割线========================== */
+
+    function fun(param) {
+      console.log(param); //这里打印值是多少?
+      var param = function () {
+        console.log(1);
+      };
+      console.log(param); //这里打印值是多少?
+    }
+    fun(5);
+
+    /*============================分割线========================== */
+    var foo = 1;
+    function bar() {
+      function foo() { }
+      foo = 10;
+      console.log(foo); //这里打印值是多少?
+    }
+    bar();
+    console.log(foo); //这里打印值是多少?
+
+    /*============================分割线========================== */
+
+    function fn() {
+      var a = b = 3;
+    }
+
+    console.log(b); //这里打印值是多少?
+    console.log(a); //这里打印值是多少?
+  </script>
+
+</body>
+
+</html>
