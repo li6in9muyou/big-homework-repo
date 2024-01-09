@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>this,instanceof,</title>
+</head>
+
+<body>
+  <script>
+    var a;
+    // new Object 法
+    function createRect1(w, h) {
+      var self = new Object();
+      self.width = w;
+      self.height = h;
+      self.getArea = function () {
+        return self.width * self.height;
+      };
+      return self;
+    }
+    a = createRect1(100, 100);
+    console.log(a.getArea());
+
+    // object 字面量创建法
+    function createRect2(w, h) {
+      return {
+        width: w,
+        height: h,
+        getArea: function () {
+          return this.width * this.height;
+        }
+      };
+    }
+    a = createRect2(100, 200);
+    console.log(a.getArea(), "a instanceof Object", a instanceof Object);
+
+    // 构造函数法
+    function Rect(w, h) {
+      this.width = w;
+      this.height = h;
+      this.getArea = function () {
+        return this.width * this.height;
+      };
+    }
+    a = new Rect(100, 300);
+    console.log(a.getArea(), "a instanceof Rect", a instanceof Rect);
+
+    // instance of 运算符
+    var CLASSES = [Number, String, Boolean, Array, Function, Object];
+    var VALUES = [null, NaN, 999, new Number(NaN), "", new String(""), false, new Boolean(), [], function () { }, {}, Object, Function, Number];
+    var VALUES_EXPR = ["null", "NaN", "999", "new Number(NaN)", "\"\"", "new String(\"\")", "false", "new Boolean()", "[]", "function () { }", "{}", "Object", "Function", "Number"];
+
+    var buildTableRow = function (value) {
+      var ans = {};
+      for (var klass of CLASSES) {
+        ans[String(klass)] = (value instanceof klass);
+      }
+      return ans;
+    };
+    var data = {};
+    for (var i = 0; i < VALUES.length; i++) {
+      data[VALUES_EXPR[i]] = buildTableRow(VALUES[i]);
+    }
+    console.table(data);
+    console.info("这说明除了 Function 和 Object，字面量都不能 instanceof 得到 true，要用new Xxxx() 才能得到 Number 的 instanceof 得 true");
+    console.info("并且函数同时能 true Function 和 Object");
+
+    function padArray(target, padding, len = 7) {
+      return target.concat(padding.slice(0, len - target.length));
+    }
+
+    function f() {
+      console.log(this.x);
+    }
+    console.info("直接调用得undefined");
+    f();
+
+    (function () {
+      this.x = "执行上下文里面的this.x";
+      f();
+    })();
+
+    ({
+      x: "Object 里面的属性方法",
+      f: f
+    }).f();
+
+    function F() {
+      this.x = "构造函数中的this.x";
+      this.f = f;
+    }
+    (new F()).f();
+    var fa = new F();
+    fa.x = "F的一个实例的x";
+    fa.f();
+  </script>
+</body>
+
+</html>
