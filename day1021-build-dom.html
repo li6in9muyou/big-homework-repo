@@ -100,6 +100,9 @@
         delete attrs["contentText"];
         delete attrs["children"];
 
+        attrs["class"] = attrs["className"];
+        delete attrs["className"];
+
         return Object.entries(attrs).filter(kv => kv[1] !== "")
           .map(kv => `${kv[0]}="${kv[1]}"`)
           .join(" ");
