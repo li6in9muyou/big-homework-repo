@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOM 入门</title>
+
+  <style>
+    p {
+      padding-left: 40px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>h1</h1>
+  <ul class="klass">
+    <li>a</li>
+    <li>b</li>
+    <li>c</li>
+  </ul>
+  <p>
+    p
+    <span>p-span</span>
+    pp
+    <span class="hidden">pp-span</span>
+    ppp
+    <span>ppp-span</span>
+  </p>
+
+  <script>
+    var oUl = document.querySelector("ul");
+    console.log(oUl.innerHTML, oUl.innerText);
+    console.log(oUl.children);
+    console.log(oUl.childNodes);
+    console.log(oUl.firstChild);
+    console.log(oUl.firstElementChild);
+    console.log(oUl.lastChild);
+    console.log(oUl.lastElementChild);
+
+    var oP = document.querySelector("p");
+    var aSpan = oP.querySelectorAll("span");
+    console.log(aSpan[0].parentElement);
+    console.log(aSpan[0].parentNode);
+    console.log(aSpan[1].nextElementSibling);
+    console.log(aSpan[1].nextSibling);
+    console.log(aSpan[2].previousElementSibling);
+    console.log(aSpan[2].previousSibling);
+
+    console.log("innerHTML", oP.innerHTML);
+    console.log("innerText", oP.innerText);
+    console.log("textContent", oP.textContent);
+
+    oP.append(oP.lastElementChild.cloneNode(true), oP.lastElementChild.cloneNode(true), oP.lastElementChild.cloneNode(true));
+
+    oP.style.display = "flex";
+    oP.style.gap = "3em";
+
+    oP.replaceChild(aSpan[1], aSpan[0]);
+
+    var inserted = document.createElement("span");
+    inserted.textContent = "inserted";
+    // #text does not have insertAdjacentElement
+    // aSpan[1].nextSibling.insertAdjacentElement("afterend", inserted);
+    document.querySelector("span:nth-of-type(2)").insertAdjacentElement("beforebegin", inserted);
+  </script>
+</body>
+
+</html>
