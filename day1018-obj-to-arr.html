@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>作业 - 数据处理题目</title>
+</head>
+
+<body>
+  <script>
+    /*
+     将下面这个对象转为数组 并实现 一个排序方法 一个筛选方法 
+   */
+
+    /*
+     例子 :
+     
+      formattingSort('height');   调用 formattingSort 传参 'height' 就以height属性值为排序属性 升序排序
+ 
+      [{
+        name: 'Dan',
+        age: 1,
+        sex: 1,
+        weight: '79kg',
+        height: '110cm'
+      },
+      {
+        name: 'meney',
+        age: 4,
+        sex: 1,
+        weight: '69kg',
+        height: '160cm'
+      },
+      {
+        name: 'joker',
+        age: 1,
+        sex: 0,
+        weight: '99kg',
+        height: '190cm'
+      },
+      {
+        name: 'jojo',
+        age: 18,
+        sex: 1,
+        weight: '90kg',
+        height: '195cm'
+      },
+      {
+        name: 'stack',
+        age: 99,
+        sex: 1,
+        weight: '199kg',
+        height: '1190cm'
+      }]
+ 
+ 
+ 
+       formattingFilter('age',function(item){
+         return item > 10;
+       });
+ 
+       调用 formattingFilter 传参 'age' 和回调函数 
+       以age属性为过滤条件 条件为 function回调函数的return公式
+ 
+         
+      [{
+        name: 'jojo',
+        age: 18,
+        sex: 1,
+        weight: '90kg',
+        height: '195cm'
+      },
+      {
+        name: 'stack',
+        age: 99,
+        sex: 1,
+        weight: '199kg',
+        height: '1190cm'
+      }]
+    
+    */
+
+
+    var oData = {
+      'joker': {
+        age: 1,
+        sex: 0,
+        weight: '99kg',
+        height: '190cm'
+      },
+      'meney': {
+        age: 4,
+        sex: 1,
+        weight: '69kg',
+        height: '160cm'
+      },
+      'Dan': {
+        age: 1,
+        sex: 1,
+        weight: '79kg',
+        height: '110cm'
+      },
+      'jojo': {
+        age: 18,
+        sex: 0,
+        weight: '90kg',
+        height: '195cm'
+      },
+      'stack': {
+        age: 99,
+        sex: 0,
+        weight: '199kg',
+        height: '1190cm'
+      }
+    };
+
+    var arrData = Object.entries(oData).map(function (kv) {
+      kv[1].name = kv[0];
+      return kv[1];
+    });
+    console.log(oData, arrData);
+
+    function formattingSort(arr, key) {
+      return arr.sort(function (a, b) {
+        return a[key] > b[key] ? 1 : -1;
+      });
+    }
+
+    console.log(formattingSort(arrData.slice(), "age"));
+    console.log(formattingSort(arrData.slice(), "sex"));
+    console.log(formattingSort(arrData.slice(), "weight"));
+    console.log(formattingSort(arrData.slice(), "height"));
+    console.log(formattingSort(arrData.slice(), "name"));
+
+    function formattingFilter(arr, key, filter) {
+      return arr.filter((v) => filter(v[key]));
+    }
+
+    console.log(formattingFilter(arrData.slice(), "age", function (age) {
+      return age > 10;
+    }));
+    console.log(formattingFilter(arrData.slice(), "sex", function (sex) {
+      return sex === 0;
+    }));
+    console.log(formattingFilter(arrData.slice(), "weight", function (w) {
+      return parseInt(w) >= 90;
+    }));
+  </script>
+</body>
+
+</html>
