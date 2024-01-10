@@ -59,7 +59,7 @@
       }
       rootElem.className = root.className;
       rootElem.textContent = root.contentText;
-      root.children.map(n => buildDom(n)).forEach(d => rootElem.append(d));
+      rootElem.append(...root.children.map(n => buildDom(n)));
       return rootElem;
     }
 
