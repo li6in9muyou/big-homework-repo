@@ -78,7 +78,7 @@
     f();
 
     (function () {
-      this.x = "执行上下文里面的this.x";
+      this.x = "执行上下文里面的this.x 订正：此处 this 指向了 window 这其实是一个全局变量了 跟执行上下文没啥关系";
       f();
     })();
 
