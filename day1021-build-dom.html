@@ -81,6 +81,9 @@
           case "contentText":
             rootElem.textContent = root[key];
             break;
+          case "alt":
+            rootElem[key] = root[key] || " ";
+            break;
           default:
             if (root[key] !== "") {
               rootElem[key] = root[key];
@@ -105,6 +108,7 @@
 
         return Object.entries(attrs).filter(kv => kv[1] !== "")
           .map(kv => `${kv[0]}="${kv[1]}"`)
+          .concat(["alt"].filter(k => attrs[k] === "").map(k => `${k}=" "`))
           .join(" ");
       }
 
