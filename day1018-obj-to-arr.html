@@ -122,6 +122,9 @@
     console.log(oData, arrData);
 
     function formattingSort(arr, key) {
+      if (arr[0] && arr[0][key] === undefined) {
+        return arr;
+      }
       return arr.sort(function (a, b) {
         return a[key] > b[key] ? 1 : -1;
       });
@@ -134,6 +137,9 @@
     console.log(formattingSort(arrData.slice(), "name"));
 
     function formattingFilter(arr, key, filter) {
+      if (arr[0] && arr[0][key] === undefined) {
+        return arr;
+      }
       return arr.filter((v) => filter(v[key]));
     }
 
