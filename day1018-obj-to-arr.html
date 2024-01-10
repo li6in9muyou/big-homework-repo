@@ -115,14 +115,19 @@
       }
     };
 
-    var arrData = Object.entries(oData).map(function (kv) {
-      kv[1].name = kv[0];
-      return kv[1];
-    });
+
+    function formatting(objects) {
+      return Object.entries(objects).map(function (kv) {
+        kv[1].name = kv[0];
+        return kv[1];
+      });
+    }
+
+    var arrData = formatting(oData);
     console.log(oData, arrData);
 
     function formattingSort(arr, key) {
-      if (arr[0] && arr[0][key] === undefined) {
+      if (arr.length === 0 || !(key in arr[0])) {
         return arr;
       }
       return arr.sort(function (a, b) {
@@ -136,11 +141,11 @@
     console.log(formattingSort(arrData.slice(), "height"));
     console.log(formattingSort(arrData.slice(), "name"));
 
-    function formattingFilter(arr, key, filter) {
-      if (arr[0] && arr[0][key] === undefined) {
+    function formattingFilter(arr, key, filterFn) {
+      if (arr.length === 0 || !(key in arr[0])) {
         return arr;
       }
-      return arr.filter((v) => filter(v[key]));
+      return arr.filter((v) => filterFn(v[key]));
     }
 
     console.log(formattingFilter(arrData.slice(), "age", function (age) {
