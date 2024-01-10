@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>以下列虚拟对象添加对应的标签到页面上</title>
+</head>
+
+<body>
+  <section></section>
+  <section></section>
+  <script>
+    /* 
+      将这个虚拟节点数据 具象化成实际标签 
+    */
+    var element = {
+      tagName: 'div',
+      id: 'header',
+      className: 'title fw400 c666 fz28',
+      contentText: '我是一个header标签',
+      children: [
+        {
+          tagName: 'h1',
+          id: '',
+          className: 'logo',
+          contentText: '我是logo',
+          children: []
+        },
+        {
+          tagName: 'ul',
+          id: '',
+          className: 'nav',
+          contentText: '',
+          children: [
+            {
+              tagName: 'li',
+              id: '',
+              className: 'list',
+              contentText: '导航1',
+              children: []
+            },
+            {
+              tagName: 'li',
+              id: '',
+              className: 'list',
+              contentText: '导航2',
+              children: []
+            },
+          ]
+        }
+      ]
+    };
+
+    function buildDom(root) {
+      var rootElem = document.createElement(root.tagName);
+      if (root.id !== '') {
+        rootElem.id = root.id;
+      }
+      rootElem.className = root.className;
+      rootElem.textContent = root.contentText;
+      root.children.map(n => buildDom(n)).forEach(d => rootElem.append(d));
+      return rootElem;
+    }
+
+    function buildDomInnerHTML(root) {
+      var childText = root.children.map(c => buildDomInnerHTML(c)).join("");
+      var idText = `id="${root.id}"`;
+      var rootElem = `<${root.tagName} ${root.id && idText} class="${root.className}">${root.contentText}${childText}</${root.tagName}>`;
+      return rootElem;
+    }
+
+    document.querySelector('section:nth-of-type(1)').append(buildDom(element));
+    document.querySelector('section:nth-of-type(2)').innerHTML = buildDomInnerHTML(element);
+  </script>
+</body>
+
+</html>
