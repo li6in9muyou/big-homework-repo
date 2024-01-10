@@ -114,7 +114,6 @@
 
       var childText = root.children.map(c => buildDomInnerHTML(c)).join("");
       var rootElem = `<${root.tagName} ${attrText(root)}>${root.contentText ?? ""}${childText}</${root.tagName}>`;
-      console.log(rootElem);
       return rootElem;
     }
 
