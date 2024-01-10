@@ -73,19 +73,41 @@
 
     function buildDom(root) {
       var rootElem = document.createElement(root.tagName);
-      if (root.id !== '') {
-        rootElem.id = root.id;
+      for (const key in root) {
+        switch (key) {
+          case "tagName":
+            // this case is handled above
+            break;
+          case "contentText":
+            rootElem.textContent = root[key];
+            break;
+          default:
+            if (root[key] !== "") {
+              rootElem[key] = root[key];
+            }
+            break;
+        }
       }
-      rootElem.className = root.className;
-      rootElem.textContent = root.contentText;
       rootElem.append(...root.children.map(n => buildDom(n)));
       return rootElem;
     }
 
     function buildDomInnerHTML(root) {
+
+      function attrText(r) {
+        var attrs = Object.assign({}, r);
+        delete attrs["tagName"];
+        delete attrs["contentText"];
+        delete attrs["children"];
+
+        return Object.entries(attrs).filter(kv => kv[1] !== "")
+          .map(kv => `${kv[0]}="${kv[1]}"`)
+          .join(" ");
+      }
+
       var childText = root.children.map(c => buildDomInnerHTML(c)).join("");
-      var idText = `id="${root.id}"`;
-      var rootElem = `<${root.tagName} ${root.id && idText} class="${root.className}">${root.contentText}${childText}</${root.tagName}>`;
+      var rootElem = `<${root.tagName} ${attrText(root)}>${root.contentText ?? ""}${childText}</${root.tagName}>`;
+      console.log(rootElem);
       return rootElem;
     }
 
