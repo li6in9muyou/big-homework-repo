@@ -143,6 +143,7 @@
       },
     ];
 
+    var oBanner = document.querySelector(".banner");
     var oSlider = document.querySelector(".banner>.slider");
     var oCarousel = document.querySelector(".banner>.carousel");
     var prevBtn = document.querySelector(".banner--btn__left");
@@ -174,6 +175,21 @@
     var aImg = document.querySelectorAll(".carousel--img");
 
     var currentImgIdx = 1;
+    var slideShowIntervalHandle, slideShowTimer = setTimeout(function () {
+      slideShowIntervalHandle = setInterval(() => {
+        updateImg(++currentImgIdx);
+      }, 800);
+    }, 500);
+
+    function logInteraction() {
+      clearInterval(slideShowIntervalHandle);
+      clearTimeout(slideShowTimer);
+      slideShowTimer = setTimeout(function () {
+        slideShowIntervalHandle = setInterval(() => {
+          updateImg(++currentImgIdx);
+        }, 800);
+      }, 500);
+    }
 
     function updateImg(i) {
       currentImgIdx = (IMAGES.length + i) % IMAGES.length;
@@ -185,15 +201,18 @@
     }
 
     listenEvent(prevBtn, "click", function () {
+      logInteraction();
       updateImg(--currentImgIdx);
     });
 
     listenEvent(nextBtn, "click", function () {
+      logInteraction();
       updateImg(++currentImgIdx);
     });
 
     listenEvent(oSlider, "mouseover", function (e) {
       if (e.target.tagName.toLowerCase() === "li") {
+        logInteraction();
         var idx = nodeIndexOf(e.target);
         updateImg(idx);
       }
