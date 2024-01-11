@@ -89,6 +89,40 @@
       user-select: none;
       cursor: pointer;
     }
+
+    button {
+      background-color: unset;
+      border: unset;
+      padding: 0;
+    }
+
+    .banner--btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 60px;
+      height: 60px;
+      border-radius: 100%;
+      font-size: 48px;
+      padding: 8px;
+      background-color: #333;
+      color: #fff;
+      cursor: pointer;
+      /* magic nubmer to vertically center <> signs */
+      line-height: 50px;
+    }
+
+    .banner--btn:hover {
+      background-color: #666;
+    }
+
+    .banner--btn__left {
+      transform: translate(-350px, -50%);
+    }
+
+    .banner--btn__right {
+      transform: translate(290px, -50%);
+    }
   </style>
 </head>
 
@@ -101,6 +135,8 @@
       <li>3</li>
       <li>4</li>
     </ul>
+    <button class="banner--btn banner--btn__left">&lt;</button>
+    <button class="banner--btn banner--btn__right">&gt;</button>
   </section>
   <section class="lanes">
     <ul class="lane">
@@ -149,12 +185,34 @@
     var oSlider = document.querySelector(".banner>ul");
     var aBtns = document.querySelectorAll(".banner>ul>li");
     var oImg = document.querySelector(".banner>img");
+    var prevBtn = document.querySelector(".banner--btn__left");
+    var nextBtn = document.querySelector(".banner--btn__right");
+
+    var currentImgIdx = 1;
+
+    function updateImg(i) {
+      if (i < 0) {
+        i = IMAGES.length - 1;
+      }
+      if (i >= IMAGES.length) {
+        i = 0;
+      }
+      currentImgIdx = i;
+      showImg(i);
+      hightlightBtn(i);
+    }
+
+    prevBtn.onclick = function () {
+      updateImg(--currentImgIdx);
+    };
+
+    nextBtn.onclick = function () {
+      updateImg(++currentImgIdx);
+    };
 
     oSlider.onmouseover = function (e) {
       if (e.target.tagName.toLowerCase() === "li") {
         var idx = nodeIndexOf(e.target);
-        showImg(idx);
-        hightlightBtn(idx);
       }
     };
 
@@ -167,6 +225,8 @@
       aBtns.forEach(btn => btn.classList.remove("btn__active"));
       aBtns[i].classList.add("btn__active");
     }
+
+    updateImg(currentImgIdx);
   </script>
   <script>
     var [leftLane, rightLane] = document.querySelectorAll(".lanes>.lane");
