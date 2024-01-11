@@ -10,16 +10,31 @@
       font-family: sans-serif;
     }
 
+    ul {
+      padding: 0;
+    }
+
     body {
       padding-top: 40px;
     }
 
-    .banner>img {
+    .banner>.carousel {
+      position: relative;
       height: 375px;
       width: 533px;
-      display: block;
-      object-fit: cover;
       margin: 0 auto;
+    }
+
+    .carousel--img {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      display: none;
+      object-fit: cover;
+    }
+
+    .carousel--img.carousel--img__active {
+      display: block;
     }
 
     .banner {
@@ -97,12 +112,9 @@
 
 <body>
   <section class="banner">
-    <img src="img/p1.jpg" alt="banner image" width="500" height="375">
+    <ul class="carousel">
+    </ul>
     <ul class="slider">
-      <li class="btn__active">1</li>
-      <li>2</li>
-      <li>3</li>
-      <li>4</li>
     </ul>
     <button class="banner--btn banner--btn__left">&lt;</button>
     <button class="banner--btn banner--btn__right">&gt;</button>
@@ -132,17 +144,41 @@
     ];
 
     var oSlider = document.querySelector(".banner>.slider");
-    var aBtns = document.querySelectorAll(".banner>.slider>li");
-    var oImg = document.querySelector(".banner>img");
+    var oCarousel = document.querySelector(".banner>.carousel");
     var prevBtn = document.querySelector(".banner--btn__left");
     var nextBtn = document.querySelector(".banner--btn__right");
+
+    function buildBanner(imgs) {
+      var slider = document.createDocumentFragment();
+      imgs.forEach((_, idx) => {
+        var e = document.createElement("li");
+        e.textContent = `${idx + 1}`;
+        slider.appendChild(e);
+      });
+      oSlider.appendChild(slider);
+
+      var carousel = document.createDocumentFragment();
+      imgs.forEach((img, idx) => {
+        var e = document.createElement("img");
+        Object.assign(e, img);
+        e.alt = `carousel image ${idx + 1}`;
+        e.classList.add("carousel--img");
+        carousel.appendChild(e);
+      });
+      oCarousel.appendChild(carousel);
+    }
+
+    buildBanner(IMAGES);
+    var aBtns = document.querySelectorAll(".banner>.slider>li");
+    var aImg = document.querySelectorAll(".carousel--img");
 
     var currentImgIdx = 1;
 
     function updateImg(i) {
       currentImgIdx = (IMAGES.length + i) % IMAGES.length;
       var img = IMAGES[currentImgIdx];
-      Object.assign(oImg, img);
+      aImg.forEach(btn => btn.classList.remove("carousel--img__active"));
+      aImg[currentImgIdx].classList.add("carousel--img__active");
       aBtns.forEach(btn => btn.classList.remove("btn__active"));
       aBtns[currentImgIdx].classList.add("btn__active");
     }
