@@ -170,8 +170,9 @@
   </script>
   <script>
     var [leftLane, rightLane] = document.querySelectorAll(".lanes>.lane");
+    var allCars = document.querySelectorAll(".lane--car");
 
-    function InLaneAnimator(cars) {
+    function Animator(cars) {
       this.cars = Array.isArray(cars) ? cars : [cars];
       this.posBefore = null;
       this.posAfter = null;
@@ -201,27 +202,8 @@
     }
 
     function carChangeLane(car, targetLane) {
-
-      function getFollowingCars(node) {
-        var res = [];
-        while (true) {
-          node = node.nextElementSibling;
-          if (node === null) {
-            break;
-          }
-          res.push(node);
-        }
-        return res;
-      }
-
-      var allFollowingCars = getFollowingCars(car);
-      var allInterruptedCars = Array.from(targetLane.children);
-      var originLaneCarsAnimator = new InLaneAnimator(allFollowingCars);
-      var targetLaneCarsAnimator = new InLaneAnimator(allInterruptedCars);
-      var laneChangingCarAnimator = new InLaneAnimator(car);
-      originLaneCarsAnimator.markPosBeforeLaneChange();
-      targetLaneCarsAnimator.markPosBeforeLaneChange();
-      laneChangingCarAnimator.markPosBeforeLaneChange();
+      var animator = new Animator(Array.from(allCars));
+      animator.markPosBeforeLaneChange();
 
       var laneEmpty = targetLane.children.length === 0;
       if (laneEmpty) {
@@ -230,12 +212,8 @@
         targetLane.insertBefore(car, targetLane.firstChild);
       }
 
-      originLaneCarsAnimator.markPosAfterLaneChange();
-      targetLaneCarsAnimator.markPosAfterLaneChange();
-      laneChangingCarAnimator.markPosAfterLaneChange();
-      originLaneCarsAnimator.startAnimation();
-      targetLaneCarsAnimator.startAnimation();
-      laneChangingCarAnimator.startAnimation();
+      animator.markPosAfterLaneChange();
+      animator.startAnimation();
     }
 
     leftLane.onclick = function (e) {
