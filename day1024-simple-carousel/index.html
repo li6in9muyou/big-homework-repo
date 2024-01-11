@@ -209,6 +209,7 @@
     oSlider.onmouseover = function (e) {
       if (e.target.tagName.toLowerCase() === "li") {
         var idx = nodeIndexOf(e.target);
+        updateImg(idx);
       }
     };
 
