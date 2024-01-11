@@ -175,21 +175,25 @@
     var aImg = document.querySelectorAll(".carousel--img");
 
     var currentImgIdx = 1;
-    var slideShowIntervalHandle, slideShowTimer = setTimeout(function () {
-      slideShowIntervalHandle = setInterval(() => {
-        updateImg(++currentImgIdx);
-      }, 800);
-    }, 500);
 
-    function logInteraction() {
-      clearInterval(slideShowIntervalHandle);
-      clearTimeout(slideShowTimer);
-      slideShowTimer = setTimeout(function () {
-        slideShowIntervalHandle = setInterval(() => {
-          updateImg(++currentImgIdx);
-        }, 800);
-      }, 500);
+    function IdleTask(taskFn, options = {}) {
+      this.options = { idleTimeout: 500, taskInterval: 800, ...options };
+      this.intervalHandle = null;
+      this.idleTimer = null;
+      this.lastTaskFnExecTime = 0;
+      this.wait = function () {
+        clearInterval(this.intervalHandle);
+        clearTimeout(this.idleTimer);
+        this.idleTimer = setTimeout(() => {
+          this.intervalHandle = setInterval(taskFn, this.options.taskInterval);
+        }, this.options.idleTimeout);
+      };
+      this.wait();
     }
+
+    var playSlideShow = new IdleTask(function () {
+      updateImg(++currentImgIdx);
+    });
 
     function updateImg(i) {
       currentImgIdx = (IMAGES.length + i) % IMAGES.length;
@@ -201,18 +205,18 @@
     }
 
     listenEvent(prevBtn, "click", function () {
-      logInteraction();
+      playSlideShow.wait();
       updateImg(--currentImgIdx);
     });
 
     listenEvent(nextBtn, "click", function () {
-      logInteraction();
+      playSlideShow.wait();
       updateImg(++currentImgIdx);
     });
 
     listenEvent(oSlider, "mouseover", function (e) {
       if (e.target.tagName.toLowerCase() === "li") {
-        logInteraction();
+        playSlideShow.wait();
         var idx = nodeIndexOf(e.target);
         updateImg(idx);
       }
