@@ -56,41 +56,6 @@
       color: #fff;
     }
 
-    .lanes {
-      display: flex;
-      justify-content: center;
-    }
-
-    .lanes>.lane {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      background-color: #333;
-      padding: 10px 0;
-      width: 70px;
-      height: calc(120px * 4);
-      justify-content: center;
-    }
-
-    .lanes>.lane:first-of-type {
-      border-right: dashed 10px #fff;
-    }
-
-    .lanes .lane--car {
-      width: 50px;
-      height: 120px;
-      border-radius: 10px;
-      background-color: crimson;
-      list-style: none;
-      margin: 0 auto;
-      font-size: 40px;
-      text-align: center;
-      padding-top: 10px;
-      box-sizing: border-box;
-      user-select: none;
-      cursor: pointer;
-    }
-
     button {
       background-color: unset;
       border: unset;
@@ -154,16 +119,6 @@
     </ul>
     <button class="banner--btn banner--btn__left">&lt;</button>
     <button class="banner--btn banner--btn__right">&gt;</button>
-  </section>
-  <section class="lanes">
-    <ul class="lane">
-      <li class="lane--car">1车</li>
-      <li class="lane--car">2车</li>
-      <li class="lane--car">3车</li>
-      <li class="lane--car">4车</li>
-    </ul>
-    <ul class="lane">
-    </ul>
   </section>
   <script>
     function nodeIndexOf(node) {
@@ -231,70 +186,6 @@
     });
 
     updateImg(currentImgIdx);
-  </script>
-  <script>
-    var [leftLane, rightLane] = document.querySelectorAll(".lanes>.lane");
-    var allCars = document.querySelectorAll(".lane--car");
-
-    function Animator(cars) {
-      this.cars = Array.isArray(cars) ? cars : [cars];
-      this.posBefore = null;
-      this.posAfter = null;
-      this.markPosBeforeLaneChange = function () {
-        this.posBefore = this.cars.map(car => car.getBoundingClientRect());
-      };
-      this.markPosAfterLaneChange = function () {
-        this.posAfter = this.cars.map(car => car.getBoundingClientRect());
-      };
-      this.startAnimation = function () {
-        console.assert(this.posBefore !== null && this.posAfter !== null,
-          "can not start Animation before marking pos");
-
-        for (var i = 0; i < this.cars.length; i++) {
-          var { left: leftBefore, top: topBefore } = this.posBefore[i];
-          var { left: leftAfter, top: topAfter } = this.posAfter[i];
-          var dLeft = leftBefore - leftAfter;
-          var dTop = topBefore - topAfter;
-
-          var animateParam = [
-            { transform: `translate(${dLeft}px, ${dTop}px)` },
-            { transform: "translate(0, 0)" },
-          ];
-          this.cars[i].animate(animateParam, { duration: 400 });
-        }
-      };
-    }
-
-    function carChangeLane(car, targetLane) {
-      var animator = new Animator(Array.from(allCars));
-      animator.markPosBeforeLaneChange();
-
-      var laneEmpty = targetLane.children.length === 0;
-      if (laneEmpty) {
-        targetLane.appendChild(car);
-      } else {
-        targetLane.insertBefore(car, targetLane.firstChild);
-      }
-
-      animator.markPosAfterLaneChange();
-      animator.startAnimation();
-    }
-
-    leftLane.onclick = function (e) {
-      var car = e.target;
-      if (car.tagName !== "LI") {
-        return;
-      }
-      carChangeLane(car, rightLane);
-    };
-
-    rightLane.onclick = function (e) {
-      var car = e.target;
-      if (car.tagName !== "LI") {
-        return;
-      }
-      carChangeLane(car, leftLane);
-    }
   </script>
 </body>
 

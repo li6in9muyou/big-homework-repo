@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>列表元素变换移动</title>
+  <style>
+    * {
+      font-family: sans-serif;
+    }
+
+    body {
+      padding-top: 40px;
+    }
+
+    .lanes {
+      display: flex;
+      justify-content: center;
+    }
+
+    .lanes>.lane {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background-color: #333;
+      padding: 10px 0;
+      width: 70px;
+      height: calc(120px * 4);
+      justify-content: center;
+    }
+
+    .lanes>.lane:first-of-type {
+      border-right: dashed 10px #fff;
+    }
+
+    .lanes .lane--car {
+      width: 50px;
+      height: 120px;
+      border-radius: 10px;
+      background-color: crimson;
+      list-style: none;
+      margin: 0 auto;
+      font-size: 40px;
+      text-align: center;
+      padding-top: 10px;
+      box-sizing: border-box;
+      user-select: none;
+      cursor: pointer;
+    }
+
+    button {
+      background-color: unset;
+      border: unset;
+      padding: 0;
+    }
+
+    .banner--btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 60px;
+      height: 60px;
+      border-radius: 100%;
+      font-size: 48px;
+      padding: 8px;
+      background-color: #333;
+      color: #fff;
+      cursor: pointer;
+      /* magic nubmer to vertically center <> signs */
+      line-height: 50px;
+    }
+
+    .banner--btn:hover {
+      background-color: #666;
+    }
+
+    .banner--btn__left {
+      right: 50%;
+      margin-right: 300px;
+    }
+
+    .banner--btn__right {
+      left: 50%;
+      margin-left: 300px;
+    }
+  </style>
+  <script>
+    function listenEvent(elem, event, callback, ...args) {
+      var unlisten = null;
+      if (elem.addEventListener) {
+        elem.addEventListener(event, callback, ...args);
+        unlisten = function () { elem.removeEventListener(event, callback); };
+      } else {
+        // IE 9
+        elem.attachEvent("on" + event);
+        unlisten = function () { elem.detachEvent("on" + event, callback); };
+      }
+      return unlisten;
+    }
+  </script>
+</head>
+
+<body>
+  <section class="lanes">
+    <ul class="lane">
+      <li class="lane--car">1车</li>
+      <li class="lane--car">2车</li>
+      <li class="lane--car">3车</li>
+      <li class="lane--car">4车</li>
+    </ul>
+    <ul class="lane">
+    </ul>
+  </section>
+  <script>
+    var [leftLane, rightLane] = document.querySelectorAll(".lanes>.lane");
+    var allCars = document.querySelectorAll(".lane--car");
+
+    function Animator(cars) {
+      this.cars = Array.isArray(cars) ? cars : [cars];
+      this.posBefore = null;
+      this.posAfter = null;
+      this.markPosBeforeLaneChange = function () {
+        this.posBefore = this.cars.map(car => car.getBoundingClientRect());
+      };
+      this.markPosAfterLaneChange = function () {
+        this.posAfter = this.cars.map(car => car.getBoundingClientRect());
+      };
+      this.startAnimation = function () {
+        console.assert(this.posBefore !== null && this.posAfter !== null,
+          "can not start Animation before marking pos");
+
+        for (var i = 0; i < this.cars.length; i++) {
+          var { left: leftBefore, top: topBefore } = this.posBefore[i];
+          var { left: leftAfter, top: topAfter } = this.posAfter[i];
+          var dLeft = leftBefore - leftAfter;
+          var dTop = topBefore - topAfter;
+
+          var animateParam = [
+            { transform: `translate(${dLeft}px, ${dTop}px)` },
+            { transform: "translate(0, 0)" },
+          ];
+          this.cars[i].animate(animateParam, { duration: 400 });
+        }
+      };
+    }
+
+    function carChangeLane(car, targetLane) {
+      var animator = new Animator(Array.from(allCars));
+      animator.markPosBeforeLaneChange();
+
+      var laneEmpty = targetLane.children.length === 0;
+      if (laneEmpty) {
+        targetLane.appendChild(car);
+      } else {
+        targetLane.insertBefore(car, targetLane.firstChild);
+      }
+
+      animator.markPosAfterLaneChange();
+      animator.startAnimation();
+    }
+
+    leftLane.onclick = function (e) {
+      var car = e.target;
+      if (car.tagName !== "LI") {
+        return;
+      }
+      carChangeLane(car, rightLane);
+    };
+
+    rightLane.onclick = function (e) {
+      var car = e.target;
+      if (car.tagName !== "LI") {
+        return;
+      }
+      carChangeLane(car, leftLane);
+    }
+  </script>
+</body>
+
+</html>
