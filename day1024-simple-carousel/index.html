@@ -202,7 +202,7 @@
 
     function carChangeLane(car, targetLane) {
 
-      function getFollowingCars(me) {
+      function getFollowingCars(node) {
         var res = [];
         while (true) {
           node = node.nextElementSibling;
