@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>轮播图顺滑版</title>
+  <style>
+    * {
+      font-family: sans-serif;
+    }
+
+    body {
+      padding-top: 40px;
+    }
+
+    .banner>img {
+      height: 375px;
+      width: 533px;
+      display: block;
+      object-fit: cover;
+      margin: 0 auto;
+    }
+
+    .banner {
+      position: relative;
+    }
+
+    .banner>ul {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      font-size: 30px;
+      padding: 0;
+      padding-bottom: 20px;
+      margin: 0 auto;
+      width: 533px;
+    }
+
+    .banner>ul>li {
+      list-style: none;
+      padding: 12px;
+      border: solid 2px #888;
+      user-select: none;
+      cursor: pointer;
+      opacity: 0.5;
+    }
+
+    li.btn__active {
+      background-color: #888;
+      color: #fff;
+    }
+
+    .lanes {
+      display: flex;
+      justify-content: center;
+    }
+
+    .lanes>.lane {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background-color: #333;
+      padding: 10px 0;
+      width: 70px;
+      height: calc(120px * 4);
+      justify-content: center;
+    }
+
+    .lanes>.lane:first-of-type {
+      border-right: dashed 10px #fff;
+    }
+
+    .lanes .lane--car {
+      width: 50px;
+      height: 120px;
+      border-radius: 10px;
+      background-color: crimson;
+      list-style: none;
+      margin: 0 auto;
+      font-size: 40px;
+      text-align: center;
+      padding-top: 10px;
+      box-sizing: border-box;
+      user-select: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <section class="banner">
+    <img src="img/p1.jpg" alt="banner image" width="500" height="375">
+    <ul>
+      <li class="btn__active">1</li>
+      <li>2</li>
+      <li>3</li>
+      <li>4</li>
+    </ul>
+  </section>
+  <section class="lanes">
+    <ul class="lane">
+      <li class="lane--car">1车</li>
+      <li class="lane--car">2车</li>
+      <li class="lane--car">3车</li>
+      <li class="lane--car">4车</li>
+    </ul>
+    <ul class="lane">
+    </ul>
+  </section>
+  <script>
+    function nodeIndexOf(node) {
+      var silibings = node.parentNode.children;
+      for (var i = 0; i < silibings.length; i++) {
+        if (node === silibings[i]) {
+          return i;
+        }
+      }
+      return -1;
+    }
+
+    var IMAGES = [
+      {
+        src: "img/p1.jpg",
+        width: "500",
+        height: "375"
+      },
+      {
+        src: "img/p2.jpg",
+        width: "500",
+        height: "310"
+      },
+      {
+        src: "img/p3.jpg",
+        width: "533",
+        height: "300"
+      },
+      {
+        src: "img/p4.jpg",
+        width: "533",
+        height: "300"
+      },
+    ];
+
+    var oSlider = document.querySelector(".banner>ul");
+    var aBtns = document.querySelectorAll(".banner>ul>li");
+    var oImg = document.querySelector(".banner>img");
+
+    oSlider.onmouseover = function (e) {
+      if (e.target.tagName.toLowerCase() === "li") {
+        var idx = nodeIndexOf(e.target);
+        showImg(idx);
+        hightlightBtn(idx);
+      }
+    };
+
+    function showImg(i) {
+      var img = IMAGES[i];
+      Object.assign(oImg, img);
+    }
+
+    function hightlightBtn(i) {
+      aBtns.forEach(btn => btn.classList.remove("btn__active"));
+      aBtns[i].classList.add("btn__active");
+    }
+  </script>
+  <script>
+    var [leftLane, rightLane] = document.querySelectorAll(".lanes>.lane");
+
+    function carChangeLane(car, targetLane) {
+      var laneEmpty = targetLane.children.length === 0;
+      var allFollowingCars = (function (node) {
+        var res = [];
+        while (true) {
+          node = node.nextElementSibling;
+          if (node === null) {
+            break;
+          }
+          res.push(node);
+        }
+        return res;
+      })(car);
+      var allInterruptedCars = targetLane.children;
+
+      var posBefore = allFollowingCars.map(car => car.getBoundingClientRect());
+      if (laneEmpty) {
+        targetLane.appendChild(car);
+      } else {
+        targetLane.insertBefore(car, targetLane.firstChild);
+      }
+      var posAfter = allFollowingCars.map(car => car.getBoundingClientRect());
+
+      for (var i = 0; i < allFollowingCars.length; i++) {
+        var { left: leftBefore, top: topBefore } = posBefore[i];
+        var { left: leftAfter, top: topAfter } = posAfter[i];
+        var dLeft = leftBefore - leftAfter;
+        var dTop = topBefore - topAfter;
+
+        var animateParam = [
+          { transform: `translate(${dLeft}px, ${dTop}px)` },
+          { transform: "translate(0, 0)" },
+        ];
+        allFollowingCars[i].animate(animateParam, { duration: 400 });
+      }
+    }
+
+    leftLane.onclick = function (e) {
+      var car = e.target;
+      if (car.tagName !== "LI") {
+        return;
+      }
+      carChangeLane(car, rightLane);
+    };
+
+    rightLane.onclick = function (e) {
+      var car = e.target;
+      if (car.tagName !== "LI") {
+        return;
+      }
+      carChangeLane(car, leftLane);
+    }
+  </script>
+</body>
+
+</html>
