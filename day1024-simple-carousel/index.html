@@ -171,9 +171,38 @@
   <script>
     var [leftLane, rightLane] = document.querySelectorAll(".lanes>.lane");
 
+    function InLaneAnimator(cars) {
+      this.cars = Array.from(cars);
+      this.posBefore = null;
+      this.posAfter = null;
+      this.markPosBeforeLaneChange = function () {
+        this.posBefore = this.cars.map(car => car.getBoundingClientRect());
+      };
+      this.markPosAfterLaneChange = function () {
+        this.posAfter = this.cars.map(car => car.getBoundingClientRect());
+      };
+      this.startAnimation = function () {
+        console.assert(this.posBefore !== null && this.posAfter !== null,
+          "can not start Animation before marking pos");
+
+        for (var i = 0; i < this.cars.length; i++) {
+          var { left: leftBefore, top: topBefore } = this.posBefore[i];
+          var { left: leftAfter, top: topAfter } = this.posAfter[i];
+          var dLeft = leftBefore - leftAfter;
+          var dTop = topBefore - topAfter;
+
+          var animateParam = [
+            { transform: `translate(${dLeft}px, ${dTop}px)` },
+            { transform: "translate(0, 0)" },
+          ];
+          this.cars[i].animate(animateParam, { duration: 400 });
+        }
+      };
+    }
+
     function carChangeLane(car, targetLane) {
-      var laneEmpty = targetLane.children.length === 0;
-      var allFollowingCars = (function (node) {
+
+      function getFollowingCars(me) {
         var res = [];
         while (true) {
           node = node.nextElementSibling;
@@ -183,29 +212,26 @@
           res.push(node);
         }
         return res;
-      })(car);
-      var allInterruptedCars = targetLane.children;
+      }
 
-      var posBefore = allFollowingCars.map(car => car.getBoundingClientRect());
+      var allFollowingCars = getFollowingCars(car);
+      var allInterruptedCars = targetLane.children;
+      var originLaneCarsAnimator = new InLaneAnimator(allFollowingCars);
+      var targetLaneCarsAnimator = new InLaneAnimator(allInterruptedCars);
+      originLaneCarsAnimator.markPosBeforeLaneChange();
+      targetLaneCarsAnimator.markPosBeforeLaneChange();
+
+      var laneEmpty = targetLane.children.length === 0;
       if (laneEmpty) {
         targetLane.appendChild(car);
       } else {
         targetLane.insertBefore(car, targetLane.firstChild);
       }
-      var posAfter = allFollowingCars.map(car => car.getBoundingClientRect());
 
-      for (var i = 0; i < allFollowingCars.length; i++) {
-        var { left: leftBefore, top: topBefore } = posBefore[i];
-        var { left: leftAfter, top: topAfter } = posAfter[i];
-        var dLeft = leftBefore - leftAfter;
-        var dTop = topBefore - topAfter;
-
-        var animateParam = [
-          { transform: `translate(${dLeft}px, ${dTop}px)` },
-          { transform: "translate(0, 0)" },
-        ];
-        allFollowingCars[i].animate(animateParam, { duration: 400 });
-      }
+      originLaneCarsAnimator.markPosAfterLaneChange();
+      targetLaneCarsAnimator.markPosAfterLaneChange();
+      originLaneCarsAnimator.startAnimation();
+      targetLaneCarsAnimator.startAnimation();
     }
 
     leftLane.onclick = function (e) {
