@@ -172,7 +172,7 @@
     var [leftLane, rightLane] = document.querySelectorAll(".lanes>.lane");
 
     function InLaneAnimator(cars) {
-      this.cars = Array.from(cars);
+      this.cars = Array.isArray(cars) ? cars : [cars];
       this.posBefore = null;
       this.posAfter = null;
       this.markPosBeforeLaneChange = function () {
@@ -215,11 +215,13 @@
       }
 
       var allFollowingCars = getFollowingCars(car);
-      var allInterruptedCars = targetLane.children;
+      var allInterruptedCars = Array.from(targetLane.children);
       var originLaneCarsAnimator = new InLaneAnimator(allFollowingCars);
       var targetLaneCarsAnimator = new InLaneAnimator(allInterruptedCars);
+      var laneChangingCarAnimator = new InLaneAnimator(car);
       originLaneCarsAnimator.markPosBeforeLaneChange();
       targetLaneCarsAnimator.markPosBeforeLaneChange();
+      laneChangingCarAnimator.markPosBeforeLaneChange();
 
       var laneEmpty = targetLane.children.length === 0;
       if (laneEmpty) {
@@ -230,8 +232,10 @@
 
       originLaneCarsAnimator.markPosAfterLaneChange();
       targetLaneCarsAnimator.markPosAfterLaneChange();
+      laneChangingCarAnimator.markPosAfterLaneChange();
       originLaneCarsAnimator.startAnimation();
       targetLaneCarsAnimator.startAnimation();
+      laneChangingCarAnimator.startAnimation();
     }
 
     leftLane.onclick = function (e) {
