@@ -27,7 +27,7 @@
       min-width: 720px;
     }
 
-    .banner>ul {
+    .banner>.slider {
       position: absolute;
       bottom: 0;
       left: 0;
@@ -42,7 +42,7 @@
       width: 533px;
     }
 
-    .banner>ul>li {
+    .banner>.slider>li {
       list-style: none;
       padding: 12px;
       border: solid 2px #888;
@@ -51,7 +51,7 @@
       opacity: 0.5;
     }
 
-    li.btn__active {
+    .slider>.btn__active {
       background-color: #888;
       color: #fff;
     }
@@ -98,7 +98,7 @@
 <body>
   <section class="banner">
     <img src="img/p1.jpg" alt="banner image" width="500" height="375">
-    <ul>
+    <ul class="slider">
       <li class="btn__active">1</li>
       <li>2</li>
       <li>3</li>
