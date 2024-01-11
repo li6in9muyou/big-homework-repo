@@ -148,27 +148,26 @@
     var prevBtn = document.querySelector(".banner--btn__left");
     var nextBtn = document.querySelector(".banner--btn__right");
 
-    function buildBanner(imgs) {
-      var slider = document.createDocumentFragment();
-      imgs.forEach((_, idx) => {
+    oSlider.appendChild(IMAGES.reduce(
+      (slider, _, idx) => {
         var e = document.createElement("li");
         e.textContent = `${idx + 1}`;
         slider.appendChild(e);
-      });
-      oSlider.appendChild(slider);
+        return slider;
+      },
+      document.createDocumentFragment()));
 
-      var carousel = document.createDocumentFragment();
-      imgs.forEach((img, idx) => {
+    oCarousel.appendChild(IMAGES.reduce(
+      (carousel, img, idx) => {
         var e = document.createElement("img");
         Object.assign(e, img);
         e.alt = `carousel image ${idx + 1}`;
         e.classList.add("carousel--img");
         carousel.appendChild(e);
-      });
-      oCarousel.appendChild(carousel);
-    }
+        return carousel;
+      },
+      document.createDocumentFragment()));
 
-    buildBanner(IMAGES);
     var aBtns = document.querySelectorAll(".banner>.slider>li");
     var aImg = document.querySelectorAll(".carousel--img");
 
