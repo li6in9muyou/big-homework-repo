@@ -92,20 +92,7 @@
       margin-left: 300px;
     }
   </style>
-  <script>
-    function listenEvent(elem, event, callback, ...args) {
-      var unlisten = null;
-      if (elem.addEventListener) {
-        elem.addEventListener(event, callback, ...args);
-        unlisten = function () { elem.removeEventListener(event, callback); };
-      } else {
-        // IE 9
-        elem.attachEvent("on" + event);
-        unlisten = function () { elem.detachEvent("on" + event, callback); };
-      }
-      return unlisten;
-    }
-  </script>
+  <script src="js/common.js"></script>
 </head>
 
 <body>
@@ -121,16 +108,6 @@
     <button class="banner--btn banner--btn__right">&gt;</button>
   </section>
   <script>
-    function nodeIndexOf(node) {
-      var silibings = node.parentNode.children;
-      for (var i = 0; i < silibings.length; i++) {
-        if (node === silibings[i]) {
-          return i;
-        }
-      }
-      return -1;
-    }
-
     var IMAGES = [
       {
         src: "img/p1.jpg",
