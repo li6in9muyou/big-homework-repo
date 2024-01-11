@@ -194,8 +194,10 @@
 
     function updateImg(i) {
       currentImgIdx = (IMAGES.length + i) % IMAGES.length;
-      showImg(currentImgIdx);
-      hightlightBtn(currentImgIdx);
+      var img = IMAGES[currentImgIdx];
+      Object.assign(oImg, img);
+      aBtns.forEach(btn => btn.classList.remove("btn__active"));
+      aBtns[currentImgIdx].classList.add("btn__active");
     }
 
     prevBtn.onclick = function () {
@@ -212,16 +214,6 @@
         updateImg(idx);
       }
     };
-
-    function showImg(i) {
-      var img = IMAGES[i];
-      Object.assign(oImg, img);
-    }
-
-    function hightlightBtn(i) {
-      aBtns.forEach(btn => btn.classList.remove("btn__active"));
-      aBtns[i].classList.add("btn__active");
-    }
 
     updateImg(currentImgIdx);
   </script>
