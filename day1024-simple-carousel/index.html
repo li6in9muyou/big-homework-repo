@@ -191,15 +191,9 @@
     var currentImgIdx = 1;
 
     function updateImg(i) {
-      if (i < 0) {
-        i = IMAGES.length - 1;
-      }
-      if (i >= IMAGES.length) {
-        i = 0;
-      }
-      currentImgIdx = i;
-      showImg(i);
-      hightlightBtn(i);
+      currentImgIdx = (IMAGES.length + i) % IMAGES.length;
+      showImg(currentImgIdx);
+      hightlightBtn(currentImgIdx);
     }
 
     prevBtn.onclick = function () {
