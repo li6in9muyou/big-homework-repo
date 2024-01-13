@@ -19,22 +19,21 @@
     }
 
     .banner > .carousel {
-      position: relative;
+      display: flex;
       height: 375px;
       width: 533px;
       margin: 0 auto;
+      overflow: hidden;
     }
 
     .carousel--img {
-      position: absolute;
+      position: relative;
+      display: block;
       height: 100%;
       width: 100%;
-      display: none;
       object-fit: cover;
-    }
-
-    .carousel--img.carousel--img__active {
-      display: block;
+      flex-shrink: 0;
+      transition: .3s;
     }
 
     .banner {
@@ -191,12 +190,11 @@
 
     const playSlideShow = new IdleTask(function () {
       updateImg(++currentImgIdx);
-    });
+    }, { taskInterval: 1e8 });
 
     function updateImg(i) {
       currentImgIdx = (IMAGES.length + i) % IMAGES.length;
-      aImg.forEach(btn => btn.classList.remove("carousel--img__active"));
-      aImg[currentImgIdx].classList.add("carousel--img__active");
+      aImg.forEach((img) => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`);
       aBtns.forEach(btn => btn.classList.remove("btn__active"));
       aBtns[currentImgIdx].classList.add("btn__active");
     }
