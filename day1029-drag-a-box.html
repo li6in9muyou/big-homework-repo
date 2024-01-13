@@ -177,8 +177,10 @@
         };
       }
 
-      function moveBoxToSlot(box, slotIdx) {
+      function moveBoxToSlot(table, box, slotIdx) {
+        const newTable = [...table];
         newTable[+box.dataset.boxId] = +slotIdx;
+        return newTable;
       }
 
       function getSlotId(box) {
@@ -262,18 +264,28 @@
                   const needRelocate = getSlotId(other);
                   return dragToSlot <= needRelocate && needRelocate < origSlot;
                 })
-                .forEach((relocatingBox) =>
-                  moveBoxToSlot(relocatingBox, getSlotId(relocatingBox) + 1),
-                );
+                .forEach((relocatingBox) => {
+                  boxSlotTable = moveBoxToSlot(
+                    boxSlotTable,
+                    relocatingBox,
+                    getSlotId(relocatingBox) + 1,
+                  );
+                });
             } else {
               others
                 .filter((other) => {
                   const needRelocate = getSlotId(other);
                   return origSlot < needRelocate && needRelocate <= dragToSlot;
                 })
-                .forEach((box) => moveBoxToSlot(box, getSlotId(box) - 1));
+                .forEach((box) => {
+                  boxSlotTable = moveBoxToSlot(
+                    boxSlotTable,
+                    box,
+                    getSlotId(box) - 1,
+                  );
+                });
             }
-            moveBoxToSlot(box, dragToSlot);
+            boxSlotTable = moveBoxToSlot(boxSlotTable, box, dragToSlot);
             reflowBoxes(others);
           }
         };
@@ -301,7 +313,7 @@
       const dMgr = new DraggableManager();
       const relocationThrottle = new Throttler(500);
       const BOX_SLOTS = [];
-      const boxSlotTable = [];
+      let boxSlotTable = [];
 
       aBox.forEach((box) =>
         dMgr.addDraggable(
