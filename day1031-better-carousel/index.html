@@ -23,7 +23,7 @@
       height: 375px;
       width: 533px;
       margin: 0 auto;
-      overflow: hidden;
+      /*overflow: hidden;*/
     }
 
     .carousel--img {
@@ -193,22 +193,38 @@
     }, { taskInterval: 1e8 });
 
     function updateImg(i) {
-      const goOverboard = i < 0 || i >= IMAGES.length;
+      const leftOverboard = i < 0;
+      const rightOverboard = i >= IMAGES.length;
+      const goOverboard = leftOverboard || rightOverboard;
       const imgInBetween = Array.from(aImg).filter((img, idx, arr) => idx !== 0 && idx !== arr.length - 1);
-      const goOverboardOffset = goOverboard ? -1 * imgInBetween.length * aImg[0].offsetWidth : 0;
+      let overboardOffset = 0;
       if (goOverboard) {
-        imgInBetween.forEach(img => img.style.width = "0px");
+        overboardOffset = leftOverboard ? -1 * imgInBetween.length : 1;
+        imgInBetween.forEach(img => img.style.width = "0");
+        if (rightOverboard) {
+          aImg.forEach(img => img.style.transition = "none");
+        }
       }
       currentImgIdx = (IMAGES.length + i) % IMAGES.length;
-      aImg.forEach((img) => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth + goOverboardOffset}px`);
+      aImg.forEach((img) => img.style.left = `-${(currentImgIdx + overboardOffset) * oCarousel.offsetWidth}px`);
       aBtns.forEach(btn => btn.classList.remove("btn__active"));
       aBtns[currentImgIdx].classList.add("btn__active");
-      if (goOverboard) {
+      if (leftOverboard) {
         listenEvent(aImg[0], "transitionend", () => {
-          aImg.forEach(img => img.style.transition = "all 0");
+          aImg.forEach(img => img.style.transition = "none");
           aImg.forEach(img => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`);
           imgInBetween.forEach(img => img.style.width = "");
+          setTimeout(() => aImg.forEach(img => img.style.transition = ""), 0);
         }, { once: true });
+      }
+      if (rightOverboard) {
+        setTimeout(() => {
+          aImg.forEach(img => img.style.transition = "");
+          aImg.forEach(img => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`);
+          listenEvent(aImg[0], "transitionend", () => {
+            imgInBetween.forEach(img => img.style.width = "");
+          }, { once: true });
+        }, 0);
       }
     }
 
