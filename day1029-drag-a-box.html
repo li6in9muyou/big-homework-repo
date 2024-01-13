@@ -209,39 +209,51 @@
         };
       }
 
-      function boxOnDragMove(box) {
-        function findCollidedBox(me, others) {
-          let collidedBox = null,
-            minCenterDistSqr = Number.MAX_SAFE_INTEGER;
-          // find collided boxes
-          // if multiple boxes are found
-          // return the one whose center is closest to the center of the dragging box
-          for (const other of others) {
-            const t1 = me.offsetTop,
-              t2 = other.offsetTop;
-            const l1 = me.offsetLeft,
-              l2 = other.offsetLeft;
-            const r1 = l1 + me.offsetWidth,
-              r2 = l2 + other.offsetWidth;
-            const b1 = t1 + me.offsetHeight,
-              b2 = t2 + other.offsetHeight;
-            const noCollision = t1 > b2 || r1 < l2 || b1 < t2 || l1 > r2;
-            if (!noCollision) {
-              const c1X = (l1 + r1) / 2;
-              const c1Y = (t1 + b1) / 2;
-              const c2X = (l2 + r2) / 2;
-              const c2Y = (t2 + b2) / 2;
-              const centerDistanceSqr =
-                (c1X - c2X) * (c1X - c2X) + (c1Y - c2Y) * (c1Y - c2Y);
-              if (centerDistanceSqr < minCenterDistSqr) {
-                minCenterDistSqr = centerDistanceSqr;
-                collidedBox = other;
-              }
-            }
-          }
-          return collidedBox;
-        }
+      function findCollidedElements(me, others) {
+        return others.filter((other) => {
+          const t1 = me.offsetTop;
+          const t2 = other.offsetTop;
+          const l1 = me.offsetLeft;
+          const l2 = other.offsetLeft;
+          const r1 = l1 + me.offsetWidth;
+          const r2 = l2 + other.offsetWidth;
+          const b1 = t1 + me.offsetHeight;
+          const b2 = t2 + other.offsetHeight;
+          return !(t1 > b2 || r1 < l2 || b1 < t2 || l1 > r2);
+        });
+      }
 
+      function findClosestElement(me, others) {
+        let collidedBox = others[0];
+        let minCenterDistSqr = Number.MAX_SAFE_INTEGER;
+        for (const other of others) {
+          const t1 = me.offsetTop;
+          const t2 = other.offsetTop;
+          const l1 = me.offsetLeft;
+          const l2 = other.offsetLeft;
+          const r1 = l1 + me.offsetWidth;
+          const r2 = l2 + other.offsetWidth;
+          const b1 = t1 + me.offsetHeight;
+          const b2 = t2 + other.offsetHeight;
+          const c1X = (l1 + r1) / 2;
+          const c1Y = (t1 + b1) / 2;
+          const c2X = (l2 + r2) / 2;
+          const c2Y = (t2 + b2) / 2;
+          const centerDistanceSqr =
+            (c1X - c2X) * (c1X - c2X) + (c1Y - c2Y) * (c1Y - c2Y);
+          if (centerDistanceSqr < minCenterDistSqr) {
+            minCenterDistSqr = centerDistanceSqr;
+            collidedBox = other;
+          }
+        }
+        return collidedBox;
+      }
+
+      function findCollidedBox(me, others) {
+        return findClosestElement(me, findCollidedElements(me, others));
+      }
+
+      function boxOnDragMove(box) {
         function markCollidedBox(bb) {
           aBox.forEach((other) => other.classList.remove("box__collided"));
           if (bb === null) {
