@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>轮播图顺滑版</title>
+  <style>
+    * {
+      font-family: sans-serif;
+    }
+
+    ul {
+      padding: 0;
+    }
+
+    body {
+      padding-top: 40px;
+    }
+
+    .banner>.carousel {
+      position: relative;
+      height: 375px;
+      width: 533px;
+      margin: 0 auto;
+    }
+
+    .carousel--img {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      display: none;
+      object-fit: cover;
+    }
+
+    .carousel--img.carousel--img__active {
+      display: block;
+    }
+
+    .banner {
+      position: relative;
+      min-width: 720px;
+    }
+
+    .banner>.slider {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      font-size: 30px;
+      padding: 0;
+      padding-bottom: 20px;
+      margin: 0 auto;
+      width: 533px;
+    }
+
+    .banner>.slider>li {
+      list-style: none;
+      padding: 12px;
+      border: solid 2px #888;
+      user-select: none;
+      cursor: pointer;
+      opacity: 0.5;
+    }
+
+    .slider>.btn__active {
+      background-color: #888;
+      color: #fff;
+    }
+
+    button {
+      background-color: unset;
+      border: unset;
+      padding: 0;
+    }
+
+    .banner--btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 60px;
+      height: 60px;
+      border-radius: 100%;
+      font-size: 48px;
+      padding: 8px;
+      background-color: #333;
+      color: #fff;
+      cursor: pointer;
+      /* magic nubmer to vertically center <> signs */
+      line-height: 50px;
+    }
+
+    .banner--btn:hover {
+      background-color: #666;
+    }
+
+    .banner--btn__left {
+      right: 50%;
+      margin-right: 300px;
+    }
+
+    .banner--btn__right {
+      left: 50%;
+      margin-left: 300px;
+    }
+  </style>
+  <script src="js/common.js"></script>
+</head>
+
+<body>
+  <section class="banner">
+    <ul class="carousel">
+    </ul>
+    <ul class="slider">
+    </ul>
+    <button class="banner--btn banner--btn__left">&lt;</button>
+    <button class="banner--btn banner--btn__right">&gt;</button>
+  </section>
+  <script>
+    var IMAGES = [
+      {
+        src: "img/p1.jpg",
+        width: "500",
+        height: "375"
+      },
+      {
+        src: "img/p2.jpg",
+        width: "500",
+        height: "310"
+      },
+      {
+        src: "img/p3.jpg",
+        width: "533",
+        height: "300"
+      },
+      {
+        src: "img/p4.jpg",
+        width: "533",
+        height: "300"
+      },
+    ];
+
+    var oBanner = document.querySelector(".banner");
+    var oSlider = document.querySelector(".banner>.slider");
+    var oCarousel = document.querySelector(".banner>.carousel");
+    var prevBtn = document.querySelector(".banner--btn__left");
+    var nextBtn = document.querySelector(".banner--btn__right");
+
+    oSlider.appendChild(IMAGES.reduce(
+      (slider, _, idx) => {
+        var e = document.createElement("li");
+        e.textContent = `${idx + 1}`;
+        slider.appendChild(e);
+        return slider;
+      },
+      document.createDocumentFragment()
+    ));
+
+    oCarousel.appendChild(IMAGES.reduce(
+      (carousel, img, idx) => {
+        var e = document.createElement("img");
+        Object.assign(e, img);
+        e.alt = `carousel image ${idx + 1}`;
+        e.classList.add("carousel--img");
+        carousel.appendChild(e);
+        return carousel;
+      },
+      document.createDocumentFragment()
+    ));
+
+    var aBtns = document.querySelectorAll(".banner>.slider>li");
+    var aImg = document.querySelectorAll(".carousel--img");
+
+    var currentImgIdx = 1;
+
+    function IdleTask(taskFn, options = {}) {
+      this.options = { idleTimeout: 500, taskInterval: 800, ...options };
+      this.intervalHandle = null;
+      this.idleTimer = null;
+      this.lastTaskFnExecTime = 0;
+      this.wait = function () {
+        clearInterval(this.intervalHandle);
+        clearTimeout(this.idleTimer);
+        this.idleTimer = setTimeout(() => {
+          this.intervalHandle = setInterval(taskFn, this.options.taskInterval);
+        }, this.options.idleTimeout);
+      };
+      this.wait();
+    }
+
+    var playSlideShow = new IdleTask(function () {
+      updateImg(++currentImgIdx);
+    });
+
+    function updateImg(i) {
+      currentImgIdx = (IMAGES.length + i) % IMAGES.length;
+      var img = IMAGES[currentImgIdx];
+      aImg.forEach(btn => btn.classList.remove("carousel--img__active"));
+      aImg[currentImgIdx].classList.add("carousel--img__active");
+      aBtns.forEach(btn => btn.classList.remove("btn__active"));
+      aBtns[currentImgIdx].classList.add("btn__active");
+    }
+
+    listenEvent(prevBtn, "click", function () {
+      playSlideShow.wait();
+      updateImg(--currentImgIdx);
+    });
+
+    listenEvent(nextBtn, "click", function () {
+      playSlideShow.wait();
+      updateImg(++currentImgIdx);
+    });
+
+    listenEvent(oSlider, "mouseover", function (e) {
+      if (e.target.tagName.toLowerCase() === "li") {
+        playSlideShow.wait();
+        var idx = nodeIndexOf(e.target);
+        updateImg(idx);
+      }
+    });
+
+    updateImg(currentImgIdx);
+  </script>
+</body>
+
+</html>
