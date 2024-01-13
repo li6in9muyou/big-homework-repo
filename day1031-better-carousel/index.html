@@ -33,7 +33,7 @@
       width: 100%;
       object-fit: cover;
       flex-shrink: 0;
-      transition: .3s;
+      transition: left .3s;
     }
 
     .banner {
@@ -193,10 +193,23 @@
     }, { taskInterval: 1e8 });
 
     function updateImg(i) {
+      const goOverboard = i < 0 || i >= IMAGES.length;
+      const imgInBetween = Array.from(aImg).filter((img, idx, arr) => idx !== 0 && idx !== arr.length - 1);
+      const goOverboardOffset = goOverboard ? -1 * imgInBetween.length * aImg[0].offsetWidth : 0;
+      if (goOverboard) {
+        imgInBetween.forEach(img => img.style.width = "0px");
+      }
       currentImgIdx = (IMAGES.length + i) % IMAGES.length;
-      aImg.forEach((img) => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`);
+      aImg.forEach((img) => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth + goOverboardOffset}px`);
       aBtns.forEach(btn => btn.classList.remove("btn__active"));
       aBtns[currentImgIdx].classList.add("btn__active");
+      if (goOverboard) {
+        listenEvent(aImg[0], "transitionend", () => {
+          aImg.forEach(img => img.style.transition = "all 0");
+          aImg.forEach(img => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`);
+          imgInBetween.forEach(img => img.style.width = "");
+        }, { once: true });
+      }
     }
 
     listenEvent(prevBtn, "click", function () {
