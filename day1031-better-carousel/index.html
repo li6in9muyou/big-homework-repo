@@ -18,7 +18,7 @@
       padding-top: 40px;
     }
 
-    .banner>.carousel {
+    .banner > .carousel {
       position: relative;
       height: 375px;
       width: 533px;
@@ -42,7 +42,7 @@
       min-width: 720px;
     }
 
-    .banner>.slider {
+    .banner > .slider {
       position: absolute;
       bottom: 0;
       left: 0;
@@ -51,13 +51,12 @@
       justify-content: center;
       gap: 30px;
       font-size: 30px;
-      padding: 0;
-      padding-bottom: 20px;
+      padding: 0 0 20px;
       margin: 0 auto;
       width: 533px;
     }
 
-    .banner>.slider>li {
+    .banner > .slider > li {
       list-style: none;
       padding: 12px;
       border: solid 2px #888;
@@ -66,7 +65,7 @@
       opacity: 0.5;
     }
 
-    .slider>.btn__active {
+    .slider > .btn__active {
       background-color: #888;
       color: #fff;
     }
@@ -89,7 +88,7 @@
       background-color: #333;
       color: #fff;
       cursor: pointer;
-      /* magic nubmer to vertically center <> signs */
+      /* magic number to vertically center <> signs */
       line-height: 50px;
     }
 
@@ -120,7 +119,7 @@
     <button class="banner--btn banner--btn__right">&gt;</button>
   </section>
   <script>
-    var IMAGES = [
+    const IMAGES = [
       {
         src: "img/p1.jpg",
         width: "500",
@@ -140,18 +139,18 @@
         src: "img/p4.jpg",
         width: "533",
         height: "300"
-      },
+      }
     ];
 
-    var oBanner = document.querySelector(".banner");
-    var oSlider = document.querySelector(".banner>.slider");
-    var oCarousel = document.querySelector(".banner>.carousel");
-    var prevBtn = document.querySelector(".banner--btn__left");
-    var nextBtn = document.querySelector(".banner--btn__right");
+    const oBanner = document.querySelector(".banner");
+    const oSlider = document.querySelector(".banner>.slider");
+    const oCarousel = document.querySelector(".banner>.carousel");
+    const prevBtn = document.querySelector(".banner--btn__left");
+    const nextBtn = document.querySelector(".banner--btn__right");
 
     oSlider.appendChild(IMAGES.reduce(
       (slider, _, idx) => {
-        var e = document.createElement("li");
+        const e = document.createElement("li");
         e.textContent = `${idx + 1}`;
         slider.appendChild(e);
         return slider;
@@ -161,7 +160,7 @@
 
     oCarousel.appendChild(IMAGES.reduce(
       (carousel, img, idx) => {
-        var e = document.createElement("img");
+        const e = document.createElement("img");
         Object.assign(e, img);
         e.alt = `carousel image ${idx + 1}`;
         e.classList.add("carousel--img");
@@ -171,16 +170,15 @@
       document.createDocumentFragment()
     ));
 
-    var aBtns = document.querySelectorAll(".banner>.slider>li");
-    var aImg = document.querySelectorAll(".carousel--img");
+    const aBtns = document.querySelectorAll(".banner>.slider>li");
+    const aImg = document.querySelectorAll(".carousel--img");
 
-    var currentImgIdx = 1;
+    let currentImgIdx = 1;
 
     function IdleTask(taskFn, options = {}) {
       this.options = { idleTimeout: 500, taskInterval: 800, ...options };
       this.intervalHandle = null;
       this.idleTimer = null;
-      this.lastTaskFnExecTime = 0;
       this.wait = function () {
         clearInterval(this.intervalHandle);
         clearTimeout(this.idleTimer);
@@ -191,13 +189,12 @@
       this.wait();
     }
 
-    var playSlideShow = new IdleTask(function () {
+    const playSlideShow = new IdleTask(function () {
       updateImg(++currentImgIdx);
     });
 
     function updateImg(i) {
       currentImgIdx = (IMAGES.length + i) % IMAGES.length;
-      var img = IMAGES[currentImgIdx];
       aImg.forEach(btn => btn.classList.remove("carousel--img__active"));
       aImg[currentImgIdx].classList.add("carousel--img__active");
       aBtns.forEach(btn => btn.classList.remove("btn__active"));
@@ -217,8 +214,7 @@
     listenEvent(oSlider, "mouseover", function (e) {
       if (e.target.tagName.toLowerCase() === "li") {
         playSlideShow.wait();
-        var idx = nodeIndexOf(e.target);
-        updateImg(idx);
+        updateImg(nodeIndexOf(e.target));
       }
     });
 
