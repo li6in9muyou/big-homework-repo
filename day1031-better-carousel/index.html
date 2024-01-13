@@ -170,6 +170,8 @@
     ));
 
     const aBtns = document.querySelectorAll(".banner>.slider>li");
+    const ii = document.querySelectorAll(".carousel--img");
+    ii[ii.length - 1].parentElement.appendChild(ii[0].cloneNode(true));
     const aImg = document.querySelectorAll(".carousel--img");
 
     let currentImgIdx = 1;
@@ -194,6 +196,31 @@
 
     function updateImg(i) {
       currentImgIdx = (IMAGES.length + i) % IMAGES.length;
+      const leftOverboard = i < 0;
+      const rightOverboard = i >= IMAGES.length;
+      if (leftOverboard || rightOverboard) {
+        if (leftOverboard) {
+          aImg.forEach(img => img.style.transition = "none");
+          aImg.forEach((img) => img.style.left = `-${IMAGES.length * oCarousel.offsetWidth}px`);
+          setTimeout(() => {
+            aImg.forEach(img => img.style.transition = "");
+            updateImg(currentImgIdx);
+          }, 0);
+        } else {
+          aImg.forEach((img) => img.style.left = `-${IMAGES.length * oCarousel.offsetWidth}px`);
+          aBtns.forEach(btn => btn.classList.remove("btn__active"));
+          aBtns[currentImgIdx].classList.add("btn__active");
+          listenEvent(aImg[0], "transitionend", () => {
+            aImg.forEach(img => img.style.transition = "none");
+            aImg.forEach((img) => img.style.left = "0");
+            setTimeout(() => {
+              aImg.forEach(img => img.style.transition = "");
+              updateImg(currentImgIdx);
+            }, 0);
+          }, { once: true });
+        }
+        return;
+      }
       aImg.forEach((img) => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`);
       aBtns.forEach(btn => btn.classList.remove("btn__active"));
       aBtns[currentImgIdx].classList.add("btn__active");
