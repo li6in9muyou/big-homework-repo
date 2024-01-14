@@ -319,23 +319,6 @@
       }
       aBtns.forEach(btn => btn.classList.remove("btn__active"));
       aBtns[currentImgIdx].classList.add("btn__active");
-      // if (leftOverboard) {
-      //   listenEvent(aImg[0], "transitionend", () => {
-      //     aImg.forEach(img => img.style.transition = "none");
-      //     aImg.forEach(img => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`);
-      //     imgInBetween.forEach(img => img.style.width = "");
-      //     setTimeout(() => aImg.forEach(img => img.style.transition = ""), 0);
-      //   }, { once: true });
-      // }
-      // if (rightOverboard) {
-      //   setTimeout(() => {
-      //     aImg.forEach(img => img.style.transition = "");
-      //     aImg.forEach(img => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`);
-      //     listenEvent(aImg[0], "transitionend", () => {
-      //       imgInBetween.forEach(img => img.style.width = "");
-      //     }, { once: true });
-      //   }, 0);
-      // }
     }
 
     listenEvent(prevBtn, "click", function () {
