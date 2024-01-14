@@ -236,10 +236,9 @@
     function updateImg(i) {
       const leftOverboard = i < 0;
       const rightOverboard = i >= IMAGES.length;
-      const goOverboard = leftOverboard || rightOverboard;
       const imgInBetween = Array.from(aImg).filter((img, idx, arr) => idx !== 0 && idx !== arr.length - 1);
       currentImgIdx = (IMAGES.length + i) % IMAGES.length;
-      if (goOverboard && leftOverboard) {
+      if (leftOverboard) {
         animate([
           [
             imgInBetween,
@@ -269,7 +268,7 @@
             }
           ]
         ]);
-      } else if (goOverboard && rightOverboard) {
+      } else if (rightOverboard) {
         animate([
           [
             imgInBetween,
