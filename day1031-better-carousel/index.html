@@ -235,6 +235,10 @@
       updateImg(++currentImgIdx);
     }, { taskInterval: 1e8 });
 
+    function setCarouselPos(slotId) {
+      aImg.forEach((img) => img.style.left = `-${slotId * oCarousel.offsetWidth}px`);
+    }
+
     function updateImg(i) {
       currentImgIdx = (IMAGES.length + i) % IMAGES.length;
       const leftOverboard = i < 0;
@@ -243,28 +247,28 @@
         animate([
           [
             aImg,
-            all => all.forEach(img => img.style.left = `-${IMAGES.length * oCarousel.offsetWidth}px`),
+            () => setCarouselPos(IMAGES.length),
             { noTransition: true }
           ],
           [
             aImg,
-            all => all.forEach(img => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`)
+            () => setCarouselPos(currentImgIdx)
           ]
         ]);
       } else if (rightOverboard) {
         animate([
           [
             aImg,
-            all => all.forEach(img => img.style.left = `-${IMAGES.length * oCarousel.offsetWidth}px`)
+            () => setCarouselPos(IMAGES.length)
           ],
           [
             aImg,
-            all => all.forEach(img => img.style.left = "0"),
+            () => setCarouselPos(0),
             { noTransition: true }
           ]
         ]);
       } else {
-        aImg.forEach((img) => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`);
+        setCarouselPos(currentImgIdx);
       }
       aBtns.forEach(btn => btn.classList.remove("btn__active"));
       aBtns[currentImgIdx].classList.add("btn__active");
