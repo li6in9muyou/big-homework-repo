@@ -201,19 +201,31 @@
         lastExec = Date.now();
 
         let hasCalledCancelTrans = false;
+        let doNotWait = false;
         const [elemList, transformer] = animations[i++];
-        transformer(elemList, () => {
-          hasCalledCancelTrans = true;
-          elemList.forEach(elem => elem.style.transition = "none");
-        });
+        transformer(
+          elemList,
+          () => {
+            hasCalledCancelTrans = true;
+            elemList.forEach(elem => elem.style.transition = "none");
+          },
+          () => doNotWait = true
+        );
+        if (hasCalledCancelTrans) {
+          setTimeout(() => elemList.forEach(elem => elem.style.transition = ""), 0);
+        }
+        
         if (i >= animations.length) {
           return;
         }
-        if (hasCalledCancelTrans) {
-          setTimeout(() => elemList.forEach(elem => elem.style.transition = ""), 0);
-          setTimeout(execAnimation, 0);
+        if (doNotWait) {
+          execAnimation();
         } else {
-          listenEvent(elemList[0], "transitionend", execAnimation, { once: true });
+          if (hasCalledCancelTrans) {
+            setTimeout(execAnimation, 0);
+          } else {
+            listenEvent(elemList[0], "transitionend", execAnimation, { once: true });
+          }
         }
       }
 
@@ -230,9 +242,10 @@
         animate([
           [
             imgInBetween,
-            (imgs, cancelTrans) => {
-              console.log("leftOverboard shrink in-between images");
+            (imgs, cancelTrans, doNotWait) => {
               cancelTrans();
+              doNotWait();
+              console.log("leftOverboard shrink in-between images");
               imgs.forEach(img => img.style.width = "0");
             }
           ],
@@ -244,12 +257,19 @@
             }
           ],
           [
+            imgInBetween,
+            (imgs, cancelTrans, doNotWait) => {
+              cancelTrans();
+              doNotWait();
+              console.log("leftOverboard grow in-between images");
+              imgs.forEach(img => img.style.width = "");
+            }
+          ],
+          [
             aImg,
             (all, cancelTrans) => {
               cancelTrans();
-              console.log("leftOverboard grow in-between images");
-              Array.from(all).filter((img, idx, arr) => idx !== 0 && idx !== arr.length - 1)
-                .forEach(img => img.style.width = "");
+              console.log("leftOverboard set left to 4th img");
               all.forEach(img => img.style.left = `-${3 * oCarousel.offsetWidth}px`);
             }
           ]
