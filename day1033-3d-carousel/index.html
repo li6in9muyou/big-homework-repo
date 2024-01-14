@@ -170,6 +170,46 @@
       });
     }
 
+    function interpolate(from, to, cnt) {
+      const step = (to - from) / (cnt + 1);
+      return new Array(cnt).fill(null).map((_, idx) => from + (idx + 1) * step);
+    }
+
+    function cssInterpolate(from, to, cnt) {
+      const result = new Array(cnt).fill(null).map(_ => ({}));
+      for (const attr in from) {
+        const fromAttr = from[attr];
+        const toAttr = to[attr];
+        let fromValue, toValue, buildAttr;
+        switch (attr) {
+          case "right":
+          case "bottom":
+            fromValue = parseFloat(fromAttr);
+            toValue = parseFloat(toAttr);
+            buildAttr = (v) => v.toFixed(3) + "%";
+            break;
+          case "transform":
+            fromValue = parseFloat(fromAttr.match(/\((.*)\)/)[1]);
+            toValue = parseFloat(toAttr.match(/\((.*)\)/)[1]);
+            buildAttr = (v) => fromAttr.replace(/\((.*)\)/, `(${v.toFixed(3)})`);
+            break;
+          case "z-index":
+            fromValue = parseInt(fromAttr);
+            toValue = parseInt(toAttr);
+            buildAttr = (v) => v.toFixed(3);
+            break;
+          default:
+            console.warn("cssInterpolate: unsupported css attribute", attr, from, to);
+        }
+        const interpolatedValues = interpolate(fromValue, toValue, cnt);
+        result.map((css, idx) => {
+          css[attr] = buildAttr(interpolatedValues[idx]);
+          return css;
+        });
+      }
+      return result;
+    }
+
     listenEvent(document.querySelector("[data-rotate-left]"), "click", () => {
       boxSlotTable = shift(boxSlotTable, -1);
       repaint(boxSlotTable);
@@ -179,6 +219,38 @@
       boxSlotTable = shift(boxSlotTable, 1);
       repaint(boxSlotTable);
     });
+
+    console.table(cssInterpolate(
+      {
+        right: 0,
+        bottom: 0,
+        transform: "scale(1)",
+        "z-index": 30
+      },
+      {
+        right: "-35%",
+        bottom: "50%",
+        transform: "scale(.8)",
+        "z-index": 20
+      },
+      1
+    ));
+    
+    console.table(cssInterpolate(
+      {
+        right: 0,
+        bottom: 0,
+        transform: "scale(1)",
+        "z-index": 30
+      },
+      {
+        right: "-35%",
+        bottom: "50%",
+        transform: "scale(.8)",
+        "z-index": 20
+      },
+      2
+    ));
 
   </script>
 </body>
