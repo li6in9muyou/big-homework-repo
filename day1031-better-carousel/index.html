@@ -195,37 +195,34 @@
     function updateImg(i) {
       const leftOverboard = i < 0;
       const rightOverboard = i >= IMAGES.length;
-      const goOverboard = leftOverboard || rightOverboard;
-      const imgInBetween = Array.from(aImg).filter((img, idx, arr) => idx !== 0 && idx !== arr.length - 1);
-      let overboardOffset = 0;
-      if (goOverboard) {
-        overboardOffset = leftOverboard ? -1 * imgInBetween.length : 1;
-        imgInBetween.forEach(img => img.style.width = "0");
-        if (rightOverboard) {
-          aImg.forEach(img => img.style.transition = "none");
-        }
-      }
       currentImgIdx = (IMAGES.length + i) % IMAGES.length;
-      aImg.forEach((img) => img.style.left = `-${(currentImgIdx + overboardOffset) * oCarousel.offsetWidth}px`);
-      aBtns.forEach(btn => btn.classList.remove("btn__active"));
-      aBtns[currentImgIdx].classList.add("btn__active");
+
+      const imgInBetween = Array.from(aImg).filter((img, idx, arr) => idx !== 0 && idx !== arr.length - 1);
       if (leftOverboard) {
+        imgInBetween.forEach(img => img.style.width = "0");
+        aImg.forEach((img) => img.style.left = `-${oCarousel.offsetWidth}px`);
         listenEvent(aImg[0], "transitionend", () => {
           aImg.forEach(img => img.style.transition = "none");
-          aImg.forEach(img => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`);
+          aImg.forEach(img => img.style.left = `-${(aImg.length - 1) * oCarousel.offsetWidth}px`);
           imgInBetween.forEach(img => img.style.width = "");
           setTimeout(() => aImg.forEach(img => img.style.transition = ""), 0);
         }, { once: true });
-      }
-      if (rightOverboard) {
+      } else if (rightOverboard) {
+        imgInBetween.forEach(img => img.style.width = "0");
+        aImg.forEach(img => img.style.transition = "none");
+        aImg.forEach(img => img.style.left = `-${oCarousel.offsetWidth}px`);
         setTimeout(() => {
           aImg.forEach(img => img.style.transition = "");
-          aImg.forEach(img => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`);
+          aImg.forEach(img => img.style.left = "0");
           listenEvent(aImg[0], "transitionend", () => {
             imgInBetween.forEach(img => img.style.width = "");
           }, { once: true });
         }, 0);
+      } else {
+        aImg.forEach((img) => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`);
       }
+      aBtns.forEach(btn => btn.classList.remove("btn__active"));
+      aBtns[currentImgIdx].classList.add("btn__active");
     }
 
     listenEvent(prevBtn, "click", function () {
