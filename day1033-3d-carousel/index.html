@@ -117,6 +117,13 @@
       transform: scale(1);
       z-index: 30;
     }
+
+    .box__notes {
+      font-size: 60px;
+      line-height: unset;
+      text-align: left;
+      padding: 20px;
+    }
   </style>
   <script>
     function listenEvent(elem, event, callback, ...args) {
@@ -141,7 +148,7 @@
 <body>
   <main>
     <ul class="box-wrap">
-      <li class="box box__slot-0">1</li>
+      <li class="box box__slot-0 box__notes">关键是CSS规则里面都用一样的属性名，否则不能自动生成正确的插值动画</li>
       <li class="box box__slot-1">2</li>
       <li class="box box__slot-2">3</li>
       <li class="box box__slot-3">4</li>
