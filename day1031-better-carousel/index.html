@@ -233,7 +233,7 @@
 
     const playSlideShow = new IdleTask(function () {
       updateImg(++currentImgIdx);
-    }, { taskInterval: 1e8 });
+    }, { taskInterval: 800, idleTimeout: 2000 });
 
     function setCarouselPos(slotId) {
       aImg.forEach((img) => img.style.left = `-${slotId * oCarousel.offsetWidth}px`);
