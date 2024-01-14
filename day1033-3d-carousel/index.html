@@ -162,12 +162,14 @@
     let boxSlotTable = aBox.map((_, idx) => idx);
     const SLOT_CLASS_NAMES = new Array(aBox.length).fill(null).map((_, idx) => `box__slot-${idx}`);
 
-    function shift(arr, dist) {
-      if (dist >= 0) {
-        return arr.slice(-dist).concat(arr.slice(0, arr.length - dist));
-      } else {
-        return arr.slice(-dist).concat(arr.slice(0, -dist));
-      }
+    function shiftRight(arr) {
+      arr.unshift(arr.pop());
+      return arr;
+    }
+
+    function shiftLeft(arr) {
+      arr.push(arr.shift());
+      return arr;
     }
 
     function repaint(table) {
@@ -178,12 +180,12 @@
     }
 
     listenEvent(document.querySelector("[data-rotate-left]"), "click", () => {
-      boxSlotTable = shift(boxSlotTable, -1);
+      boxSlotTable = shiftLeft(boxSlotTable);
       repaint(boxSlotTable);
     });
 
     listenEvent(document.querySelector("[data-rotate-right]"), "click", () => {
-      boxSlotTable = shift(boxSlotTable, 1);
+      boxSlotTable = shiftRight(boxSlotTable);
       repaint(boxSlotTable);
     });
 
