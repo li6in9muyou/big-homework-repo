@@ -118,6 +118,48 @@
     <button class="banner--btn banner--btn__right">&gt;</button>
   </section>
   <script>
+    function animate(animations) {
+      let i = 0;
+      let nextTransformerMustCancelTransition = false;
+
+      function execAnimation() {
+        const [elemList, transformer, options] = animations[i++];
+
+        const noTransition = options && options.noTransition;
+        const doNotWait = options && options.doNotWait;
+        if (nextTransformerMustCancelTransition && !noTransition) {
+          console.warn("this transformer cannot have transition due to previous transformer settings",
+            transformer,
+            animations);
+        }
+        nextTransformerMustCancelTransition = noTransition && doNotWait;
+
+        if (noTransition) {
+          elemList.forEach(elem => elem.style.transition = "none");
+          transformer(elemList);
+          setTimeout(() => elemList.forEach(elem => elem.style.transition = ""), 0);
+        } else {
+          transformer(elemList);
+        }
+
+        if (i >= animations.length) {
+          return;
+        }
+        if (options && options.doNotWait) {
+          execAnimation();
+        } else {
+          if (noTransition) {
+            setTimeout(execAnimation, 0);
+          } else {
+            listenEvent(elemList[0], "transitionend", execAnimation, { once: true });
+          }
+        }
+      }
+
+      execAnimation();
+    }
+  </script>
+  <script>
     const IMAGES = [
       {
         src: "img/p1.jpg",
@@ -198,24 +240,29 @@
       const leftOverboard = i < 0;
       const rightOverboard = i >= IMAGES.length;
       if (leftOverboard) {
-        aImg.forEach(img => img.style.transition = "none");
-        aImg.forEach((img) => img.style.left = `-${IMAGES.length * oCarousel.offsetWidth}px`);
-        setTimeout(() => {
-          aImg.forEach(img => img.style.transition = "");
-          updateImg(currentImgIdx);
-        }, 0);
+        animate([
+          [
+            aImg,
+            all => all.forEach(img => img.style.left = `-${IMAGES.length * oCarousel.offsetWidth}px`),
+            { noTransition: true }
+          ],
+          [
+            aImg,
+            all => all.forEach(img => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`)
+          ]
+        ]);
       } else if (rightOverboard) {
-        aImg.forEach((img) => img.style.left = `-${IMAGES.length * oCarousel.offsetWidth}px`);
-        aBtns.forEach(btn => btn.classList.remove("btn__active"));
-        aBtns[currentImgIdx].classList.add("btn__active");
-        listenEvent(aImg[0], "transitionend", () => {
-          aImg.forEach(img => img.style.transition = "none");
-          aImg.forEach((img) => img.style.left = "0");
-          setTimeout(() => {
-            aImg.forEach(img => img.style.transition = "");
-            updateImg(currentImgIdx);
-          }, 0);
-        }, { once: true });
+        animate([
+          [
+            aImg,
+            all => all.forEach(img => img.style.left = `-${IMAGES.length * oCarousel.offsetWidth}px`)
+          ],
+          [
+            aImg,
+            all => all.forEach(img => img.style.left = "0"),
+            { noTransition: true }
+          ]
+        ]);
       } else {
         aImg.forEach((img) => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`);
       }
