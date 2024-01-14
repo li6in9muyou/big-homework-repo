@@ -194,13 +194,9 @@
 
     function animate(animations) {
       let i = 0;
-      let lastExec = Date.now();
       let nextTransformerMustCancelTransition = false;
 
       function execAnimation() {
-        console.log("execAnimation elapsed time since last exec", Date.now() - lastExec);
-        lastExec = Date.now();
-
         const [elemList, transformer, options] = animations[i++];
 
         const noTransition = options && options.noTransition;
@@ -247,10 +243,7 @@
         animate([
           [
             imgInBetween,
-            (imgs) => {
-              console.log("leftOverboard shrink in-between images");
-              imgs.forEach(img => img.style.width = "0");
-            },
+            (imgs) => imgs.forEach(img => img.style.width = "0"),
             {
               noTransition: true,
               doNotWait: true
@@ -258,17 +251,11 @@
           ],
           [
             aImg,
-            (all) => {
-              console.log("leftOverboard set left to 2nd img");
-              all.forEach(img => img.style.left = `-${oCarousel.offsetWidth}px`);
-            }
+            (all) => all.forEach(img => img.style.left = `-${oCarousel.offsetWidth}px`)
           ],
           [
             imgInBetween,
-            (imgs) => {
-              console.log("leftOverboard grow in-between images");
-              imgs.forEach(img => img.style.width = "");
-            },
+            (imgs) => imgs.forEach(img => img.style.width = ""),
             {
               noTransition: true,
               doNotWait: true
@@ -276,10 +263,7 @@
           ],
           [
             aImg,
-            (all) => {
-              console.log("leftOverboard set left to 4th img");
-              all.forEach(img => img.style.left = `-${3 * oCarousel.offsetWidth}px`);
-            },
+            (all) => all.forEach(img => img.style.left = `-${3 * oCarousel.offsetWidth}px`),
             {
               noTransition: true
             }
@@ -289,10 +273,7 @@
         animate([
           [
             imgInBetween,
-            (imgs) => {
-              console.log("rightOverboard shrink in-between images");
-              imgs.forEach(img => img.style.width = "0");
-            },
+            (imgs) => imgs.forEach(img => img.style.width = "0"),
             {
               noTransition: true,
               doNotWait: true
@@ -300,27 +281,18 @@
           ],
           [
             aImg,
-            (all) => {
-              console.log("rightOverboard set left to 2nd img");
-              all.forEach(img => img.style.left = `-${oCarousel.offsetWidth}px`);
-            },
+            (all) => all.forEach(img => img.style.left = `-${oCarousel.offsetWidth}px`),
             {
               noTransition: true
             }
           ],
           [
             aImg,
-            (all) => {
-              console.log("rightOverboard set left to 1nd img");
-              all.forEach(img => img.style.left = "0");
-            }
+            (all) => all.forEach(img => img.style.left = "0")
           ],
           [
             imgInBetween,
-            (imgs) => {
-              console.log("rightOverboard grow in-between images");
-              imgs.forEach(img => img.style.width = "");
-            },
+            (imgs) => imgs.forEach(img => img.style.width = ""),
             {
               noTransition: true
             }
