@@ -244,13 +244,13 @@
             }
           ],
           [
-            imgInBetween,
-            (imgs, cancelTrans) => {
+            aImg,
+            (all, cancelTrans) => {
               cancelTrans();
               console.log("leftOverboard grow in-between images");
-              imgs.forEach(img => img.style.width = "");
-              console.log("leftOverboard set left to 4th img");
-              aImg.forEach(img => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`);
+              Array.from(all).filter((img, idx, arr) => idx !== 0 && idx !== arr.length - 1)
+                .forEach(img => img.style.width = "");
+              all.forEach(img => img.style.left = `-${3 * oCarousel.offsetWidth}px`);
             }
           ]
         ]);
