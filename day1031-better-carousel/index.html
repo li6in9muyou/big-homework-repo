@@ -274,6 +274,41 @@
             }
           ]
         ]);
+      } else if (goOverboard && rightOverboard) {
+        animate([
+          [
+            imgInBetween,
+            (imgs, cancelTrans, doNotWait) => {
+              cancelTrans();
+              doNotWait();
+              console.log("rightOverboard shrink in-between images");
+              imgs.forEach(img => img.style.width = "0");
+            }
+          ],
+          [
+            aImg,
+            (all, cancelTrans) => {
+              cancelTrans();
+              console.log("rightOverboard set left to 2nd img");
+              all.forEach(img => img.style.left = `-${oCarousel.offsetWidth}px`);
+            }
+          ],
+          [
+            aImg,
+            (all) => {
+              console.log("rightOverboard set left to 1nd img");
+              all.forEach(img => img.style.left = "0");
+            }
+          ],
+          [
+            imgInBetween,
+            (imgs, cancelTrans) => {
+              cancelTrans();
+              console.log("rightOverboard grow in-between images");
+              imgs.forEach(img => img.style.width = "");
+            }
+          ]
+        ]);
       } else {
         animate([
           [
