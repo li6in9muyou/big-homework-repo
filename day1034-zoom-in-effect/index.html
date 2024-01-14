@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>放大镜效果</title>
+  <style>
+    body {
+      padding: 100px 20px 20px;
+      background-color: #333;
+    }
+
+    img {
+      display: block;
+    }
+
+    .zoomIn {
+      position: relative;
+      width: fit-content;
+    }
+
+    .zoomIn > .zoomIn--big {
+      position: absolute;
+      width: 120%;
+      height: 120%;
+      top: 0;
+      right: -120%;
+      object-fit: none;
+    }
+
+    .zoomIn > .zoomIn--big__debug {
+      bottom: -120%;
+      left: 0;
+      right: unset;
+      top: unset;
+    }
+
+    .zoomIn > .zoomIn--indicator {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      top: 0;
+      left: 0;
+      z-index: 99;
+      background-color: lightyellow;
+      opacity: .5;
+    }
+  </style>
+</head>
+<body>
+  <div class="zoomIn" data-zoom-in-src="img/m30-big.jpg">
+    <img src="img/m30.jpg" alt="又好又便宜的一台手机" width="450" height="450">
+    <img class="zoomIn--big zoomIn--big__debug" src="img/m30-big.jpg" alt="高清大图" width="800" height="800">
+    <div class="zoomIn--indicator"></div>
+  </div>
+  <script>
+    const aZoomIn = document.querySelectorAll(".zoomIn");
+
+    aZoomIn.forEach(z => {
+      z.addEventListener("mouseenter", zoomInEffect(z));
+      z.addEventListener("mousemove", zoomInEffect(z));
+      z.addEventListener("mouseleave", zoomInEffect(z));
+    });
+
+    function zoomInEffect(z) {
+      const oIndicator = z.querySelector(".zoomIn--indicator");
+      oIndicator.style.left = `${oIndicator.offsetLeft}px`;
+      oIndicator.style.top = `${oIndicator.offsetTop}px`;
+      let lastX = 0;
+      let lastY = 0;
+
+      function handleEvent(e) {
+        switch (e.type) {
+          case "mousemove":
+            const diffX = e.clientX - lastX;
+            const diffY = e.clientY - lastY;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            oIndicator.style.left = `${oIndicator.offsetLeft + diffX}px`;
+            oIndicator.style.top = `${oIndicator.offsetTop + diffY}px`;
+            break;
+          case "mouseenter":
+            lastX = e.clientX;
+            lastY = e.clientY;
+            break;
+          case "mouseleave":
+            break;
+        }
+      }
+
+      return handleEvent;
+    }
+  </script>
+</body>
+</html>
