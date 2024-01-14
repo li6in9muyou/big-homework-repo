@@ -158,6 +158,20 @@
 
       execAnimation();
     }
+
+    function IdleTask(taskFn, options = {}) {
+      this.options = { idleTimeout: 500, taskInterval: 800, ...options };
+      this.intervalHandle = null;
+      this.idleTimer = null;
+      this.wait = function () {
+        clearInterval(this.intervalHandle);
+        clearTimeout(this.idleTimer);
+        this.idleTimer = setTimeout(() => {
+          this.intervalHandle = setInterval(taskFn, this.options.taskInterval);
+        }, this.options.idleTimeout);
+      };
+      this.wait();
+    }
   </script>
   <script>
     const IMAGES = [
@@ -216,20 +230,6 @@
     const aImg = document.querySelectorAll(".carousel--img");
 
     let currentImgIdx = 1;
-
-    function IdleTask(taskFn, options = {}) {
-      this.options = { idleTimeout: 500, taskInterval: 800, ...options };
-      this.intervalHandle = null;
-      this.idleTimer = null;
-      this.wait = function () {
-        clearInterval(this.intervalHandle);
-        clearTimeout(this.idleTimer);
-        this.idleTimer = setTimeout(() => {
-          this.intervalHandle = setInterval(taskFn, this.options.taskInterval);
-        }, this.options.idleTimeout);
-      };
-      this.wait();
-    }
 
     const playSlideShow = new IdleTask(function () {
       updateImg(++currentImgIdx);
