@@ -193,6 +193,10 @@
     }, { taskInterval: 1e8 });
 
     function updateImg(i) {
+      function setCarouselPos(slotId) {
+        aImg.forEach((img) => img.style.left = `-${slotId * oCarousel.offsetWidth}px`);
+      }
+
       const leftOverboard = i < 0;
       const rightOverboard = i >= IMAGES.length;
       currentImgIdx = (IMAGES.length + i) % IMAGES.length;
@@ -200,20 +204,20 @@
       const imgInBetween = Array.from(aImg).filter((img, idx, arr) => idx !== 0 && idx !== arr.length - 1);
       if (leftOverboard) {
         imgInBetween.forEach(img => img.style.width = "0");
-        aImg.forEach((img) => img.style.left = `-${oCarousel.offsetWidth}px`);
+        setCarouselPos(1);
         listenEvent(aImg[0], "transitionend", () => {
           aImg.forEach(img => img.style.transition = "none");
-          aImg.forEach(img => img.style.left = `-${(aImg.length - 1) * oCarousel.offsetWidth}px`);
+          setCarouselPos(aImg.length - 1);
           imgInBetween.forEach(img => img.style.width = "");
           setTimeout(() => aImg.forEach(img => img.style.transition = ""), 0);
         }, { once: true });
       } else if (rightOverboard) {
         imgInBetween.forEach(img => img.style.width = "0");
         aImg.forEach(img => img.style.transition = "none");
-        aImg.forEach(img => img.style.left = `-${oCarousel.offsetWidth}px`);
+        setCarouselPos(1);
         setTimeout(() => {
           aImg.forEach(img => img.style.transition = "");
-          aImg.forEach(img => img.style.left = "0");
+          setCarouselPos(0);
           listenEvent(aImg[0], "transitionend", () => {
             imgInBetween.forEach(img => img.style.width = "");
           }, { once: true });
