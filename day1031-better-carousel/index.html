@@ -23,7 +23,7 @@
       height: 375px;
       width: 533px;
       margin: 0 auto;
-      overflow: hidden;
+      /*overflow: hidden;*/
     }
 
     .carousel--img {
@@ -33,7 +33,7 @@
       width: 100%;
       object-fit: cover;
       flex-shrink: 0;
-      transition: left .3s;
+      transition: left .8s;
     }
 
     .banner {
@@ -192,40 +192,95 @@
       updateImg(++currentImgIdx);
     }, { taskInterval: 1e8 });
 
+    function animate(animations) {
+      let i = 0;
+      let lastExec = Date.now();
+
+      function execAnimation() {
+        console.log("execAnimation elapsed since last exec", Date.now() - lastExec);
+        lastExec = Date.now();
+
+        let hasCalledCancelTrans = false;
+        const [elemList, transformer] = animations[i++];
+        transformer(elemList, () => {
+          hasCalledCancelTrans = true;
+          elemList.forEach(elem => elem.style.transition = "none");
+        });
+        if (i >= animations.length) {
+          return;
+        }
+        if (hasCalledCancelTrans) {
+          setTimeout(() => elemList.forEach(elem => elem.style.transition = ""), 0);
+          setTimeout(execAnimation, 0);
+        } else {
+          listenEvent(elemList[0], "transitionend", execAnimation, { once: true });
+        }
+      }
+
+      execAnimation();
+    }
+
     function updateImg(i) {
       const leftOverboard = i < 0;
       const rightOverboard = i >= IMAGES.length;
       const goOverboard = leftOverboard || rightOverboard;
       const imgInBetween = Array.from(aImg).filter((img, idx, arr) => idx !== 0 && idx !== arr.length - 1);
-      let overboardOffset = 0;
-      if (goOverboard) {
-        overboardOffset = leftOverboard ? -1 * imgInBetween.length : 1;
-        imgInBetween.forEach(img => img.style.width = "0");
-        if (rightOverboard) {
-          aImg.forEach(img => img.style.transition = "none");
-        }
-      }
       currentImgIdx = (IMAGES.length + i) % IMAGES.length;
-      aImg.forEach((img) => img.style.left = `-${(currentImgIdx + overboardOffset) * oCarousel.offsetWidth}px`);
+      if (goOverboard && leftOverboard) {
+        animate([
+          [
+            imgInBetween,
+            (imgs, cancelTrans) => {
+              console.log("leftOverboard shrink in-between images");
+              cancelTrans();
+              imgs.forEach(img => img.style.width = "0");
+            }
+          ],
+          [
+            aImg,
+            (all, _) => {
+              console.log("leftOverboard set left to 2nd img");
+              all.forEach(img => img.style.left = `-${oCarousel.offsetWidth}px`);
+            }
+          ],
+          [
+            imgInBetween,
+            (imgs, cancelTrans) => {
+              cancelTrans();
+              console.log("leftOverboard grow in-between images");
+              imgs.forEach(img => img.style.width = "");
+              console.log("leftOverboard set left to 4th img");
+              aImg.forEach(img => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`);
+            }
+          ]
+        ]);
+      } else {
+        animate([
+          [
+            aImg,
+            imgs => imgs.forEach((img) => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`)
+          ]
+        ]);
+      }
       aBtns.forEach(btn => btn.classList.remove("btn__active"));
       aBtns[currentImgIdx].classList.add("btn__active");
-      if (leftOverboard) {
-        listenEvent(aImg[0], "transitionend", () => {
-          aImg.forEach(img => img.style.transition = "none");
-          aImg.forEach(img => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`);
-          imgInBetween.forEach(img => img.style.width = "");
-          setTimeout(() => aImg.forEach(img => img.style.transition = ""), 0);
-        }, { once: true });
-      }
-      if (rightOverboard) {
-        setTimeout(() => {
-          aImg.forEach(img => img.style.transition = "");
-          aImg.forEach(img => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`);
-          listenEvent(aImg[0], "transitionend", () => {
-            imgInBetween.forEach(img => img.style.width = "");
-          }, { once: true });
-        }, 0);
-      }
+      // if (leftOverboard) {
+      //   listenEvent(aImg[0], "transitionend", () => {
+      //     aImg.forEach(img => img.style.transition = "none");
+      //     aImg.forEach(img => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`);
+      //     imgInBetween.forEach(img => img.style.width = "");
+      //     setTimeout(() => aImg.forEach(img => img.style.transition = ""), 0);
+      //   }, { once: true });
+      // }
+      // if (rightOverboard) {
+      //   setTimeout(() => {
+      //     aImg.forEach(img => img.style.transition = "");
+      //     aImg.forEach(img => img.style.left = `-${currentImgIdx * oCarousel.offsetWidth}px`);
+      //     listenEvent(aImg[0], "transitionend", () => {
+      //       imgInBetween.forEach(img => img.style.width = "");
+      //     }, { once: true });
+      //   }, 0);
+      // }
     }
 
     listenEvent(prevBtn, "click", function () {
