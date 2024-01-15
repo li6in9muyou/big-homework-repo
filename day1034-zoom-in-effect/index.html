@@ -12,6 +12,10 @@
       background-color: #333;
     }
 
+    body > div {
+      margin-bottom: 20px;
+    }
+
     img {
       display: block;
     }
@@ -23,6 +27,7 @@
 
     .zoomIn > .zoomIn--big {
       position: absolute;
+      z-index: 99;
       display: none;
       width: 120%;
       height: 120%;
@@ -49,6 +54,10 @@
   </style>
 </head>
 <body>
+  <div class="zoomIn">
+    <img src="img/bird.png" alt="又好又便宜的一台手机" width="128" height="128">
+    <img class="zoomIn--big zoomIn__active" src="img/m30-big.jpg" alt="高清大图" width="800" height="800">
+  </div>
   <div class="zoomIn">
     <img src="img/m30.jpg" alt="又好又便宜的一台手机" width="450" height="450">
     <img class="zoomIn--big zoomIn__active" src="img/m30-big.jpg" alt="高清大图" width="800" height="800">
