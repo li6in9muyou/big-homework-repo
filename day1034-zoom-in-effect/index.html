@@ -66,6 +66,8 @@
     });
 
     function zoomInEffect(z) {
+      const oIndicator = z.querySelector(".zoomIn--indicator");
+
       function setIndicatorPos(x, y) {
         x = Math.max(0, Math.min(x, indicatorMaxLeft));
         y = Math.max(0, Math.min(y, indicatorMaxTop));
@@ -73,26 +75,20 @@
         oIndicator.style.top = `${y}px`;
       }
 
-      const oIndicator = z.querySelector(".zoomIn--indicator");
+      const centerOffsetX = oIndicator.offsetWidth / 2;
+      const centerOffsetY = oIndicator.offsetHeight / 2;
+      const parentOffsetTop = z.offsetTop;
+      const parentOffsetLeft = z.offsetLeft;
       const indicatorMaxLeft = z.offsetWidth - oIndicator.offsetWidth;
       const indicatorMaxTop = z.offsetHeight - oIndicator.offsetHeight;
       setIndicatorPos(0, 0);
-      let lastX = 0;
-      let lastY = 0;
 
       function handleEvent(e) {
         switch (e.type) {
           case "mousemove":
-            const diffX = e.clientX - lastX;
-            const diffY = e.clientY - lastY;
-            lastX = e.clientX;
-            lastY = e.clientY;
-            setIndicatorPos(oIndicator.offsetLeft + diffX, oIndicator.offsetTop + diffY);
+            setIndicatorPos(e.clientX - parentOffsetLeft - centerOffsetX, e.clientY - parentOffsetTop - centerOffsetY);
             break;
           case "mouseenter":
-            lastX = e.clientX;
-            lastY = e.clientY;
-            setIndicatorPos(e.offsetX - oIndicator.offsetWidth / 2, e.offsetY - oIndicator.offsetHeight / 2);
             break;
           case "mouseleave":
             break;
