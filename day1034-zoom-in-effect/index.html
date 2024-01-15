@@ -23,6 +23,7 @@
 
     .zoomIn > .zoomIn--big {
       position: absolute;
+      display: none;
       width: 120%;
       height: 120%;
       top: 0;
@@ -30,15 +31,9 @@
       object-fit: none;
     }
 
-    .zoomIn > .zoomIn--big__debug {
-      bottom: -120%;
-      left: 0;
-      right: unset;
-      top: unset;
-    }
-
     .zoomIn > .zoomIn--indicator {
       position: absolute;
+      display: none;
       width: 50%;
       height: 50%;
       top: 0;
@@ -47,13 +42,17 @@
       background-color: lightyellow;
       opacity: .5;
     }
+
+    .zoomIn > .zoomIn__active {
+      display: block;
+    }
   </style>
 </head>
 <body>
   <div class="zoomIn" data-zoom-in-src="img/m30-big.jpg">
     <img src="img/m30.jpg" alt="又好又便宜的一台手机" width="450" height="450">
-    <img class="zoomIn--big zoomIn--big__debug" src="img/m30-big.jpg" alt="高清大图" width="800" height="800">
-    <div class="zoomIn--indicator"></div>
+    <img class="zoomIn--big zoomIn__active" src="img/m30-big.jpg" alt="高清大图" width="800" height="800">
+    <div class="zoomIn--indicator zoomIn__active"></div>
   </div>
   <script>
     const aZoomIn = document.querySelectorAll(".zoomIn");
@@ -67,10 +66,12 @@
 
     function zoomInEffect(z) {
       const oIndicator = z.querySelector(".zoomIn--indicator");
+      const oZoomInImg = z.querySelector(".zoomIn--big");
+      const oSmallView = z.querySelector("img");
 
       function setIndicatorPos(x, y) {
-        x = Math.max(0, Math.min(x, indicatorMaxLeft));
-        y = Math.max(0, Math.min(y, indicatorMaxTop));
+        x = Math.max(0, Math.min(x, idcMaxLeft));
+        y = Math.max(0, Math.min(y, idcMaxTop));
         oIndicator.style.left = `${x}px`;
         oIndicator.style.top = `${y}px`;
       }
@@ -79,18 +80,40 @@
       const centerOffsetY = oIndicator.offsetHeight / 2;
       const parentOffsetTop = z.offsetTop;
       const parentOffsetLeft = z.offsetLeft;
-      const indicatorMaxLeft = z.offsetWidth - oIndicator.offsetWidth;
-      const indicatorMaxTop = z.offsetHeight - oIndicator.offsetHeight;
+
+      const zmiActualH = +oZoomInImg.getAttribute("height");
+      const zmiActualW = +oZoomInImg.getAttribute("width");
+      const idcH = oSmallView.offsetHeight * oZoomInImg.offsetHeight / zmiActualH;
+      const idcW = oSmallView.offsetWidth * oZoomInImg.offsetWidth / zmiActualW;
+
+      const idcMaxLeft = z.offsetWidth - idcW;
+      const idcMaxTop = z.offsetHeight - idcH;
+      const zmiMaxLeft = zmiActualW - oZoomInImg.offsetWidth;
+      const zmiMaxTop = zmiActualH - oZoomInImg.offsetHeight;
+      const moveRateLeft = zmiMaxLeft / idcMaxLeft;
+      const moveRateTop = zmiMaxTop / idcMaxTop;
+
+      oIndicator.style.width = idcW + "px";
+      oIndicator.style.height = idcH + "px";
       setIndicatorPos(0, 0);
+
+      oIndicator.classList.remove("zoomIn__active");
+      oZoomInImg.classList.remove("zoomIn__active");
 
       function handleEvent(e) {
         switch (e.type) {
           case "mousemove":
             setIndicatorPos(e.clientX - parentOffsetLeft - centerOffsetX, e.clientY - parentOffsetTop - centerOffsetY);
+            oZoomInImg.style.objectPosition =
+              `-${oIndicator.offsetLeft * moveRateLeft}px -${oIndicator.offsetTop * moveRateTop}px`;
             break;
           case "mouseenter":
+            oZoomInImg.classList.add("zoomIn__active");
+            oIndicator.classList.add("zoomIn__active");
             break;
           case "mouseleave":
+            oZoomInImg.classList.remove("zoomIn__active");
+            oIndicator.classList.remove("zoomIn__active");
             break;
         }
       }
