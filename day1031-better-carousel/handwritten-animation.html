@@ -103,11 +103,18 @@
       left: 50%;
       margin-left: 300px;
     }
+
+    p {
+      font-size: 100px;
+      font-weight: bold;
+      text-align: center;
+    }
   </style>
   <script src="js/common.js"></script>
 </head>
 
 <body>
+  <p>手写运动框架务必关闭CSS的transition，否则表现为很卡。</p>
   <section class="banner">
     <ul class="carousel">
     </ul>
@@ -119,6 +126,7 @@
   <script>
     function animateLinear(elemList, targetCSS, options) {
       options = { durationMilliSec: 300, refreshRate: 60, ...options };
+      elemList.forEach(elem => elem.style.transition = "none");
       const tickCnt = Math.ceil(options.durationMilliSec / (1000 / options.refreshRate));
 
       for (const attr in targetCSS) {
@@ -142,6 +150,7 @@
                 if (elapsed >= tickCnt) {
                   elem.style[attr] = `${tgtVal}px`;
                   clearInterval(h);
+                  setTimeout(() => elemList.forEach(elem => elem.style.transition = ""), 0);
                 }
               });
             }, 1000 / options.refreshRate);
