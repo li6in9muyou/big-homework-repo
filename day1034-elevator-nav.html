@@ -41,16 +41,10 @@
       cursor: pointer;
       font-size: 30px;
     }
-
-    .elevator-nav > .elevator-nav__active {
-      color: #ff7200;
-      font-weight: bold;
-      background-color: #111;
-    }
   </style>
 </head>
 <body>
-  <nav class="elevator-nav"><a class="elevator-nav__active" href="#">1</a><a href="#">2</a><a href="#">3</a><a href="#">4</a><a
+  <nav class="elevator-nav"><a href="#">1</a><a href="#">2</a><a href="#">3</a><a href="#">4</a><a
       href="#">5</a><a
       href="#">6</a><a href="#">7</a><a href="#">8</a><a href="#">9</a><a href="#">10</a></nav>
   <section class="content">1</section>
@@ -108,8 +102,6 @@
 
     oNav.addEventListener("click", (e) => {
       e.preventDefault();
-      Array.from(oNav.children).forEach(a => a.classList.remove("elevator-nav__active"));
-      e.target.classList.add("elevator-nav__active");
       const id = nodeIndexOf(e.target);
       scrollToElement(aContent[id]);
     });
