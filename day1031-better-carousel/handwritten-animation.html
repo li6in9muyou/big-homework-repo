@@ -118,32 +118,34 @@
     <button class="banner--btn banner--btn__right">&gt;</button>
   </section>
   <script>
-    function animateLinear(elem, targetCSS, options) {
+    function animateLinear(elemList, targetCSS, options) {
       options = { durationMilliSec: 300, refreshRate: 60, ...options };
       const tickCnt = Math.ceil(options.durationMilliSec / (1000 / options.refreshRate));
 
-      for (const attr in targetCSS) {
-        const currText = getComputedStyle(elem)[attr];
+      elemList.forEach((elem) => {
+        for (const attr in targetCSS) {
+          const currText = getComputedStyle(elem)[attr];
 
-        switch (attr) {
-          case "left":
-            const tgtVal = parseInt(targetCSS[attr]);
-            const currVal = parseInt(currText);
-            const step = (tgtVal - currVal) / (tickCnt + 1);
-            let elapsed = 0;
-            const h = setInterval(() => {
-              elem.style[attr] = `${currVal + step * ++elapsed}px`;
-              if (elapsed >= tickCnt) {
-                elem.style[attr] = `${tgtVal}px`;
-                clearInterval(h);
-              }
-            }, 1000 / options.refreshRate);
-            break;
-          default:
-            console.error(`animateLinear: unsupported css attribute ${attr}`, targetCSS);
-            break;
+          switch (attr) {
+            case "left":
+              const tgtVal = parseInt(targetCSS[attr]);
+              const currVal = parseInt(currText);
+              const step = (tgtVal - currVal) / (tickCnt + 1);
+              let elapsed = 0;
+              const h = setInterval(() => {
+                elem.style[attr] = `${currVal + step * ++elapsed}px`;
+                if (elapsed >= tickCnt) {
+                  elem.style[attr] = `${tgtVal}px`;
+                  clearInterval(h);
+                }
+              }, 1000 / options.refreshRate);
+              break;
+            default:
+              console.error(`animateLinear: unsupported css attribute ${attr}`, targetCSS);
+              break;
+          }
         }
-      }
+      });
     }
 
     function IdleTask(taskFn, options = {}) {
@@ -223,7 +225,7 @@
     }, { taskInterval: 1e8, idleTimeout: 2000 });
 
     function setCarouselPos(slotId) {
-      aImg.forEach(img => animateLinear(img, { left: `-${slotId * oCarousel.offsetWidth}px` }));
+      animateLinear(aImg, { left: `-${slotId * oCarousel.offsetWidth}px` });
     }
 
     function updateImg(i) {
