@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>楼梯导航</title>
+  <style>
+    body {
+      position: relative;
+    }
+
+    .content {
+      height: 500px;
+      background-color: #333;
+      margin-bottom: 8px;
+      font-size: 400px;
+      color: #ff7200;
+      text-align: center;
+      line-height: 500px;
+    }
+
+    .elevator-nav {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      right: 16px;
+      width: 60px;
+      display: flex;
+      gap: 4px;
+      flex-direction: column;
+    }
+
+    .elevator-nav > a {
+      text-decoration: none;
+      color: #fff;
+      padding: 6px;
+      background-color: #666;
+      text-align: center;
+      cursor: pointer;
+      font-size: 30px;
+    }
+
+    .elevator-nav > .elevator-nav__active {
+      color: #ff7200;
+      font-weight: bold;
+      background-color: #111;
+    }
+  </style>
+</head>
+<body>
+  <nav class="elevator-nav"><a class="elevator-nav__active" href="#">1</a><a href="#">2</a><a href="#">3</a><a href="#">4</a><a
+      href="#">5</a><a
+      href="#">6</a><a href="#">7</a><a href="#">8</a><a href="#">9</a><a href="#">10</a></nav>
+  <section class="content">1</section>
+  <section class="content">2</section>
+  <section class="content">3</section>
+  <section class="content">4</section>
+  <section class="content">5</section>
+  <section class="content">6</section>
+  <section class="content">7</section>
+  <section class="content">8</section>
+  <section class="content">9</section>
+  <section class="content">10</section>
+
+  <script>
+    function nodeIndexOf(node) {
+      const siblings = node.parentNode.children;
+      for (let i = 0; i < siblings.length; i++) {
+        if (node === siblings[i]) {
+          return i;
+        }
+      }
+      return -1;
+    }
+
+    const oDoc = document.documentElement;
+    const oNav = document.querySelector(".elevator-nav");
+    const aContent = document.querySelectorAll(".content");
+
+    let scrollAnimationHandle, scrollTopStops, scrollTopStopsIdx;
+
+    function interpolate(from, to, cnt) {
+      const step = (to - from) / (cnt + 1);
+      return new Array(cnt).fill(null).map((_, idx) => from + (idx + 1) * step);
+    }
+
+    function scrollToElement(elem, durationMilliSec = 300) {
+      clearInterval(scrollAnimationHandle);
+      scrollTopStops = [];
+      scrollTopStopsIdx = 0;
+
+      const currentDocPos = oDoc.scrollTop;
+      const targetPos = elem.offsetTop;
+      const tickCnt = Math.ceil(durationMilliSec / (1000 / 60));
+      scrollTopStops = interpolate(currentDocPos, targetPos, tickCnt);
+      scrollTopStops.push(targetPos);
+      scrollAnimationHandle = setInterval(() => {
+        oDoc.scrollTop = scrollTopStops[scrollTopStopsIdx++];
+        if (scrollTopStopsIdx === scrollTopStops.length) {
+          clearInterval(scrollAnimationHandle);
+          scrollTopStops = [];
+          scrollTopStopsIdx = 0;
+        }
+      }, 1000 / 60);
+    }
+
+    oNav.addEventListener("click", (e) => {
+      e.preventDefault();
+      Array.from(oNav.children).forEach(a => a.classList.remove("elevator-nav__active"));
+      e.target.classList.add("elevator-nav__active");
+      const id = nodeIndexOf(e.target);
+      scrollToElement(aContent[id]);
+    });
+  </script>
+</body>
+</html>
