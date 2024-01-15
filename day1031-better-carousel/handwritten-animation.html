@@ -118,45 +118,32 @@
     <button class="banner--btn banner--btn__right">&gt;</button>
   </section>
   <script>
-    function animate(animations) {
-      let i = 0;
-      let nextTransformerMustCancelTransition = false;
+    function animateLinear(elem, targetCSS, options) {
+      options = { durationMilliSec: 300, refreshRate: 60, ...options };
+      const tickCnt = Math.ceil(options.durationMilliSec / (1000 / options.refreshRate));
 
-      function execAnimation() {
-        const [elemList, transformer, options] = animations[i++];
+      for (const attr in targetCSS) {
+        const currText = getComputedStyle(elem)[attr];
 
-        const noTransition = options && options.noTransition;
-        const doNotWait = options && options.doNotWait;
-        if (nextTransformerMustCancelTransition && !noTransition) {
-          console.warn("this transformer cannot have transition due to previous transformer settings",
-            transformer,
-            animations);
-        }
-        nextTransformerMustCancelTransition = noTransition && doNotWait;
-
-        if (noTransition) {
-          elemList.forEach(elem => elem.style.transition = "none");
-          transformer(elemList);
-          setTimeout(() => elemList.forEach(elem => elem.style.transition = ""), 0);
-        } else {
-          transformer(elemList);
-        }
-
-        if (i >= animations.length) {
-          return;
-        }
-        if (options && options.doNotWait) {
-          execAnimation();
-        } else {
-          if (noTransition) {
-            setTimeout(execAnimation, 0);
-          } else {
-            listenEvent(elemList[0], "transitionend", execAnimation, { once: true });
-          }
+        switch (attr) {
+          case "left":
+            const tgtVal = parseInt(targetCSS[attr]);
+            const currVal = parseInt(currText);
+            const step = (tgtVal - currVal) / (tickCnt + 1);
+            let elapsed = 0;
+            const h = setInterval(() => {
+              elem.style[attr] = `${currVal + step * ++elapsed}px`;
+              if (elapsed >= tickCnt) {
+                elem.style[attr] = `${tgtVal}px`;
+                clearInterval(h);
+              }
+            }, 1000 / options.refreshRate);
+            break;
+          default:
+            console.error(`animateLinear: unsupported css attribute ${attr}`, targetCSS);
+            break;
         }
       }
-
-      execAnimation();
     }
 
     function IdleTask(taskFn, options = {}) {
@@ -233,45 +220,17 @@
 
     const playSlideShow = new IdleTask(function () {
       updateImg(++currentImgIdx);
-    }, { taskInterval: 800, idleTimeout: 2000 });
+    }, { taskInterval: 1e8, idleTimeout: 2000 });
 
     function setCarouselPos(slotId) {
-      aImg.forEach((img) => img.style.left = `-${slotId * oCarousel.offsetWidth}px`);
+      aImg.forEach(img => animateLinear(img, { left: `-${slotId * oCarousel.offsetWidth}px` }));
     }
 
     function updateImg(i) {
       currentImgIdx = (IMAGES.length + i) % IMAGES.length;
-      const leftOverboard = i < 0;
-      const rightOverboard = i >= IMAGES.length;
-      if (leftOverboard) {
-        animate([
-          [
-            aImg,
-            () => setCarouselPos(IMAGES.length),
-            { noTransition: true }
-          ],
-          [
-            aImg,
-            () => setCarouselPos(currentImgIdx)
-          ]
-        ]);
-      } else if (rightOverboard) {
-        animate([
-          [
-            aImg,
-            () => setCarouselPos(IMAGES.length)
-          ],
-          [
-            aImg,
-            () => setCarouselPos(0),
-            { noTransition: true }
-          ]
-        ]);
-      } else {
-        setCarouselPos(currentImgIdx);
-      }
       aBtns.forEach(btn => btn.classList.remove("btn__active"));
       aBtns[currentImgIdx].classList.add("btn__active");
+      setCarouselPos(currentImgIdx);
     }
 
     listenEvent(prevBtn, "click", function () {
