@@ -49,10 +49,9 @@
   </style>
 </head>
 <body>
-  <div class="zoomIn" data-zoom-in-src="img/m30-big.jpg">
+  <div class="zoomIn">
     <img src="img/m30.jpg" alt="又好又便宜的一台手机" width="450" height="450">
     <img class="zoomIn--big zoomIn__active" src="img/m30-big.jpg" alt="高清大图" width="800" height="800">
-    <div class="zoomIn--indicator zoomIn__active"></div>
   </div>
   <script>
     const aZoomIn = document.querySelectorAll(".zoomIn");
@@ -65,7 +64,9 @@
     });
 
     function zoomInEffect(z) {
-      const oIndicator = z.querySelector(".zoomIn--indicator");
+      const oIndicator = document.createElement("div");
+      oIndicator.classList.add("zoomIn--indicator", "zoomIn__active");
+      z.appendChild(oIndicator);
       const oZoomInImg = z.querySelector(".zoomIn--big");
       const oSmallView = z.querySelector("img");
 
