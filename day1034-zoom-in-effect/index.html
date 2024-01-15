@@ -59,15 +59,24 @@
     const aZoomIn = document.querySelectorAll(".zoomIn");
 
     aZoomIn.forEach(z => {
-      z.addEventListener("mouseenter", zoomInEffect(z));
-      z.addEventListener("mousemove", zoomInEffect(z));
-      z.addEventListener("mouseleave", zoomInEffect(z));
+      const h = zoomInEffect(z);
+      z.addEventListener("mouseenter", h);
+      z.addEventListener("mousemove", h);
+      z.addEventListener("mouseleave", h);
     });
 
     function zoomInEffect(z) {
+      function setIndicatorPos(x, y) {
+        x = Math.max(0, Math.min(x, indicatorMaxLeft));
+        y = Math.max(0, Math.min(y, indicatorMaxTop));
+        oIndicator.style.left = `${x}px`;
+        oIndicator.style.top = `${y}px`;
+      }
+
       const oIndicator = z.querySelector(".zoomIn--indicator");
-      oIndicator.style.left = `${oIndicator.offsetLeft}px`;
-      oIndicator.style.top = `${oIndicator.offsetTop}px`;
+      const indicatorMaxLeft = z.offsetWidth - oIndicator.offsetWidth;
+      const indicatorMaxTop = z.offsetHeight - oIndicator.offsetHeight;
+      setIndicatorPos(0, 0);
       let lastX = 0;
       let lastY = 0;
 
@@ -78,12 +87,12 @@
             const diffY = e.clientY - lastY;
             lastX = e.clientX;
             lastY = e.clientY;
-            oIndicator.style.left = `${oIndicator.offsetLeft + diffX}px`;
-            oIndicator.style.top = `${oIndicator.offsetTop + diffY}px`;
+            setIndicatorPos(oIndicator.offsetLeft + diffX, oIndicator.offsetTop + diffY);
             break;
           case "mouseenter":
             lastX = e.clientX;
             lastY = e.clientY;
+            setIndicatorPos(e.offsetX - oIndicator.offsetWidth / 2, e.offsetY - oIndicator.offsetHeight / 2);
             break;
           case "mouseleave":
             break;
