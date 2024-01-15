@@ -86,15 +86,15 @@
         oIndicator.style.top = `${y}px`;
       }
 
-      const centerOffsetX = oIndicator.offsetWidth / 2;
-      const centerOffsetY = oIndicator.offsetHeight / 2;
-      const parentOffsetTop = z.offsetTop;
-      const parentOffsetLeft = z.offsetLeft;
-
       const zmiActualH = +oZoomInImg.getAttribute("height");
       const zmiActualW = +oZoomInImg.getAttribute("width");
       const idcH = oSmallView.offsetHeight * oZoomInImg.offsetHeight / zmiActualH;
       const idcW = oSmallView.offsetWidth * oZoomInImg.offsetWidth / zmiActualW;
+
+      const centerOffsetX = idcW / 2;
+      const centerOffsetY = idcH / 2;
+      const parentOffsetTop = z.offsetTop;
+      const parentOffsetLeft = z.offsetLeft;
 
       const idcMaxLeft = z.offsetWidth - idcW;
       const idcMaxTop = z.offsetHeight - idcH;
