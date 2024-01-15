@@ -122,30 +122,36 @@
       options = { durationMilliSec: 300, refreshRate: 60, ...options };
       const tickCnt = Math.ceil(options.durationMilliSec / (1000 / options.refreshRate));
 
-      elemList.forEach((elem) => {
-        for (const attr in targetCSS) {
-          const currText = getComputedStyle(elem)[attr];
+      for (const attr in targetCSS) {
+        const currText = Array.from(elemList).map(elem => getComputedStyle(elem)[attr]);
 
-          switch (attr) {
-            case "left":
-              const tgtVal = parseInt(targetCSS[attr]);
-              const currVal = parseInt(currText);
-              const step = (tgtVal - currVal) / (tickCnt + 1);
-              let elapsed = 0;
-              const h = setInterval(() => {
-                elem.style[attr] = `${currVal + step * ++elapsed}px`;
+        switch (attr) {
+          case "left":
+            const tgtVal = parseInt(targetCSS[attr]);
+            const currVal = currText.map(ct => parseInt(ct));
+            const step = currVal.map(cv => (tgtVal - cv) / (tickCnt + 1));
+            let elapsed = 0;
+            let actualTick = 0;
+            let lastExec = Date.now();
+            const h = setInterval(() => {
+              const t = Date.now();
+              console.log(`animateLinear left: exec interval ${t - lastExec} actual tick ${++actualTick}`);
+              lastExec = t;
+              elapsed += 1;
+              elemList.forEach((elem, idx) => {
+                elem.style[attr] = `${currVal[idx] + step[idx] * elapsed}px`;
                 if (elapsed >= tickCnt) {
                   elem.style[attr] = `${tgtVal}px`;
                   clearInterval(h);
                 }
-              }, 1000 / options.refreshRate);
-              break;
-            default:
-              console.error(`animateLinear: unsupported css attribute ${attr}`, targetCSS);
-              break;
-          }
+              });
+            }, 1000 / options.refreshRate);
+            break;
+          default:
+            console.error(`animateLinear: unsupported css attribute ${attr}`, targetCSS);
+            break;
         }
-      });
+      }
     }
 
     function IdleTask(taskFn, options = {}) {
