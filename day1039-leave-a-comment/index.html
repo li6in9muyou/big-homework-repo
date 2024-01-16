@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>留下你的评论</title>
+  <link rel="stylesheet" href="css/resets.css">
+  <style>
+    body {
+      background-color: #303436;
+    }
+
+    .comment-container {
+      background-color: #181a1a;
+      display: flex;
+      flex-direction: column;
+      padding: 8px;
+      color: #eee;
+      max-width: 750px;
+      margin: 0 auto;
+    }
+
+    .comment-container > .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+    }
+
+    .comment-container .sort-btn-group {
+      display: flex;
+      font-size: .6em;
+    }
+
+    .sort-btn {
+      padding: 4px;
+      text-decoration: none;
+      color: unset;
+      border: solid lightblue 1px;
+      border-radius: 4px 0 0 4px;
+    }
+
+    .comment-container .sort-btn-group > a:last-of-type {
+      border-radius: 0 4px 4px 0;
+      border-left: none;
+    }
+
+    .comment-container .sort-btn-group > .sort-btn__active {
+      background-color: lightblue;
+      color: #222;
+    }
+
+    .comment-item {
+      display: flex;
+      align-items: flex-start;
+      padding: 6px;
+    }
+
+    .comment-item > .user-avatar {
+      height: 38px;
+      width: 38px;
+      border-radius: 100%;
+      padding-right: 8px;
+      flex-shrink: 0;
+    }
+
+    .comment-item > .user-avatar > img {
+      height: 100%;
+      width: 100%;
+      object-fit: scale-down;
+    }
+
+    .comment-input {
+      text-align: right;
+      flex-grow: 1;
+    }
+
+    .comment-input > textarea {
+      width: 100%;
+      outline-offset: 2px;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+
+    .comment-input > textarea:focus,
+    .comment-input > textarea:active {
+      outline: solid 2px lightblue;
+    }
+
+    .comment-input > button {
+      margin-top: 8px;
+      background-color: #00784b;
+      border: solid 2px #00d284;
+      border-radius: 6px;
+      color: unset;
+      padding: 3px 6px;
+      cursor: pointer;
+    }
+
+    .comment-input > button:active {
+      background-color: #0c5225;
+      border-color: #00784b;
+    }
+
+    .comment-text > p {
+      display: inline;
+      line-height: 1.2em;
+      margin-left: 8px;
+    }
+
+    .comment-text > a {
+      color: #85cdb1;
+    }
+
+    .comment-text > .comment-control {
+      padding-top: 12px;
+      font-size: .8em;
+      color: #888;
+    }
+
+    .comment-control > a {
+      color: unset;
+    }
+  </style>
+</head>
+<body>
+  <section class="comment-container">
+    <div class="header">
+      <strong>0条评论</strong>
+      <div class="sort-btn-group">
+        <a href="#" role="button" class="sort-btn sort-btn__active">最热</a>
+        <a href="#" role="button" class="sort-btn">最新</a>
+      </div>
+    </div>
+    <div class="comment-item">
+      <div class="user-avatar">
+        <img src="img/user-avatar.png" alt="用户的头像" width="128" height="128">
+      </div>
+      <div class="comment-input">
+        <textarea name="comment-text"
+                  id="comment-text"
+                  cols="20"
+                  rows="4"
+                  placeholder="撰写评论"></textarea>
+        <button>提交评论</button>
+      </div>
+    </div>
+    <div class="comment-item">
+      <div class="user-avatar">
+        <img src="img/user-avatar.png" alt="用户的头像" width="128" height="128">
+      </div>
+      <div class="comment-text">
+        <a href="#">li6in9muyou</a>:
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam asperiores aspernatur culpa fugiat fugit
+          id, ipsum, quibusdam quo quod saepe tempore ullam voluptatem! Aliquid corporis fugit iste, mollitia non
+          veniam.</p>
+        <div class="comment-control">
+          <a href="#">点赞<span>(99)</span></a>
+          <a href="#">回复</a>
+          <span>2024-01-16</span>
+        </div>
+      </div>
+    </div>
+    <div class="comment-item">
+      <div class="user-avatar">
+        <img src="img/user-avatar.png" alt="用户的头像" width="128" height="128">
+      </div>
+      <div class="comment-text">
+        <a href="#">li6in9muyou</a>:
+        <p>已测试，chrome77.0.3865.90和safari13.0.2
+          (15608.2.30.1.1)，在声明DTD情况下，支持document.documentElement.scrollTop
+          和window.pageYOffset，未声明DTD情况下，支持document.body.scrollTop</p>
+        <div class="comment-control">
+          <a href="#">点赞<span></span></a>
+          <a href="#">回复</a>
+          <span>2024-01-16</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>
