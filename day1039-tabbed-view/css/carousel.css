@@ -1,0 +1,86 @@
+.carousel-wrap > .carousel {
+  display: flex;
+  height: 375px;
+  width: 533px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.carousel--img {
+  position: relative;
+  display: block;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  flex-shrink: 0;
+  transition: .3s;
+}
+
+.carousel-wrap {
+  position: relative;
+  min-width: 720px;
+}
+
+.carousel-wrap > .slider {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  font-size: 30px;
+  padding: 0 0 20px;
+  margin: 0 auto;
+  width: 533px;
+}
+
+.carousel-wrap > .slider > li {
+  list-style: none;
+  padding: 12px;
+  border: solid 2px #888;
+  user-select: none;
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+.slider > .slider--btn__active {
+  background-color: #888;
+  color: #fff;
+}
+
+button {
+  background-color: unset;
+  border: unset;
+  padding: 0;
+}
+
+.carousel-wrap--btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 100%;
+  font-size: 48px;
+  padding: 8px;
+  background-color: #333;
+  color: #fff;
+  cursor: pointer;
+  /* magic number to vertically center <> signs */
+  line-height: 50px;
+}
+
+.carousel-wrap--btn:hover {
+  background-color: #666;
+}
+
+.carousel-wrap--btn__left {
+  right: 50%;
+  margin-right: 300px;
+}
+
+.carousel-wrap--btn__right {
+  left: 50%;
+  margin-left: 300px;
+}
