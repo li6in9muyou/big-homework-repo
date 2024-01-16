@@ -124,7 +124,7 @@
     <button class="banner--btn banner--btn__right">&gt;</button>
   </section>
   <script>
-    function animateLinear(elemList, targetCSS, options) {
+    function animateLinear(elemList, targetCSS, options, onTransitionEnd) {
       options = { durationMilliSec: 300, refreshRate: 60, ...options };
       elemList.forEach(elem => elem.style.transition = "none");
       const tickCnt = Math.max(Math.ceil(options.durationMilliSec / (1000 / options.refreshRate)), 1);
@@ -137,23 +137,32 @@
             const tgtVal = parseInt(targetCSS[attr]);
             const currVal = currText.map(ct => parseInt(ct));
             const step = currVal.map(cv => (tgtVal - cv) / tickCnt);
-            let elapsed = 0;
-            let actualTick = 0;
-            let lastExec = Date.now();
-            const h = setInterval(() => {
-              const t = Date.now();
-              console.log(`animateLinear left: exec interval ${t - lastExec} actual tick ${++actualTick}`);
-              lastExec = t;
-              elapsed += 1;
-              elemList.forEach((elem, idx) => {
-                elem.style[attr] = `${currVal[idx] + step[idx] * elapsed}px`;
+
+            if (tickCnt > 1) {
+              let elapsed = 0;
+              let actualTick = 0;
+              let lastExec = Date.now();
+              const h = setInterval(() => {
+                const t = Date.now();
+                console.log(`animateLinear left: exec interval ${t - lastExec} actual tick ${++actualTick}`);
+                lastExec = t;
+                elapsed += 1;
+                elemList.forEach((elem, idx) => {
+                  elem.style[attr] = `${currVal[idx] + step[idx] * elapsed}px`;
+                  if (elapsed >= tickCnt) {
+                    elem.style[attr] = `${tgtVal}px`;
+                  }
+                });
                 if (elapsed >= tickCnt) {
-                  elem.style[attr] = `${tgtVal}px`;
                   clearInterval(h);
                   setTimeout(() => elemList.forEach(elem => elem.style.transition = ""), 0);
+                  onTransitionEnd && onTransitionEnd();
                 }
-              });
-            }, 1000 / options.refreshRate);
+              }, 1000 / options.refreshRate);
+            } else {
+              elemList.forEach(elem => elem.style[attr] = `${tgtVal}px`);
+              onTransitionEnd && onTransitionEnd();
+            }
             break;
           default:
             console.error(`animateLinear: unsupported css attribute ${attr}`, targetCSS);
@@ -246,7 +255,21 @@
       currentImgIdx = (IMAGES.length + i) % IMAGES.length;
       aBtns.forEach(btn => btn.classList.remove("btn__active"));
       aBtns[currentImgIdx].classList.add("btn__active");
-      setCarouselPos(currentImgIdx);
+      const leftOverboard = i < 0;
+      const rightOverboard = i >= IMAGES.length;
+      if (leftOverboard) {
+        animateLinear(aImg,
+          { left: `-${IMAGES.length * oCarousel.offsetWidth}px` },
+          { durationMilliSec: 0 },
+          () => animateLinear(aImg, { left: `-${3 * oCarousel.offsetWidth}px` }));
+      } else if (rightOverboard) {
+        animateLinear(aImg,
+          { left: `-${IMAGES.length * oCarousel.offsetWidth}px` },
+          null,
+          () => animateLinear(aImg, { left: "0" }, { durationMilliSec: 0 }));
+      } else {
+        setCarouselPos(currentImgIdx);
+      }
     }
 
     listenEvent(prevBtn, "click", function () {
