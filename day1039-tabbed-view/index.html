@@ -25,7 +25,7 @@
 
 <body>
   <script>
-    const IMAGES = [
+    const POKEMON_IMG = [
       {
         src: "img/p1.jpg",
         width: "500",
@@ -48,9 +48,42 @@
       }
     ];
 
-    document.body.appendChild(createCarousel(IMAGES));
-    document.body.appendChild(createCarousel(IMAGES));
-    document.body.appendChild(createCarousel(IMAGES));
+    const FLOWER_IMG = [
+      {
+        src: "img/flowers/4.jpg",
+        width: "1024",
+        height: "680"
+      },
+      {
+        src: "img/flowers/5.jpg",
+        width: "1200",
+        height: "800"
+      },
+      {
+        src: "img/flowers/6.jpg",
+        width: "580",
+        height: "385"
+      },
+      {
+        src: "img/flowers/7.jpg",
+        width: "500",
+        height: "334"
+      },
+      {
+        src: "img/flowers/8.jpg",
+        width: "1000",
+        height: "666"
+      },
+      {
+        src: "img/flowers/10.jpg",
+        width: "500",
+        height: "333"
+      }
+    ];
+
+    document.body.appendChild(createCarousel(POKEMON_IMG));
+    document.body.appendChild(createCarousel(FLOWER_IMG));
+    document.body.appendChild(createCarousel(POKEMON_IMG));
   </script>
 </body>
 
