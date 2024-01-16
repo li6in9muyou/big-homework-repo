@@ -246,7 +246,7 @@
     const normalAnimate = (e, c, ote) => animateLinear(e, c, { durationMilliSec: 300 }, ote);
     const playSlideShow = new IdleTask(function () {
       updateImg(++currentImgIdx);
-    }, { taskInterval: 1e8, idleTimeout: 2000 });
+    }, { taskInterval: 800, idleTimeout: 2000 });
 
     function updateImg(i) {
       currentImgIdx = (IMAGES.length + i) % IMAGES.length;
