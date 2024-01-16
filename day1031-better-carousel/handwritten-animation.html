@@ -242,13 +242,11 @@
 
     let currentImgIdx = 1;
 
+    const instantAnimate = (e, c, ote) => animateLinear(e, c, { durationMilliSec: 0 }, ote);
+    const normalAnimate = (e, c, ote) => animateLinear(e, c, { durationMilliSec: 300 }, ote);
     const playSlideShow = new IdleTask(function () {
       updateImg(++currentImgIdx);
     }, { taskInterval: 1e8, idleTimeout: 2000 });
-
-    function setCarouselPos(slotId) {
-      animateLinear(aImg, { left: `-${slotId * oCarousel.offsetWidth}px` });
-    }
 
     function updateImg(i) {
       currentImgIdx = (IMAGES.length + i) % IMAGES.length;
@@ -257,17 +255,15 @@
       const leftOverboard = i < 0;
       const rightOverboard = i >= IMAGES.length;
       if (leftOverboard) {
-        animateLinear(aImg,
+        instantAnimate(aImg,
           { left: `-${IMAGES.length * oCarousel.offsetWidth}px` },
-          { durationMilliSec: 0 },
-          () => animateLinear(aImg, { left: `-${3 * oCarousel.offsetWidth}px` }));
+          () => normalAnimate(aImg, { left: `-${3 * oCarousel.offsetWidth}px` }));
       } else if (rightOverboard) {
-        animateLinear(aImg,
+        normalAnimate(aImg,
           { left: `-${IMAGES.length * oCarousel.offsetWidth}px` },
-          null,
-          () => animateLinear(aImg, { left: "0" }, { durationMilliSec: 0 }));
+          () => instantAnimate(aImg, { left: "0" }));
       } else {
-        setCarouselPos(currentImgIdx);
+        normalAnimate(aImg, { left: `-${currentImgIdx * oCarousel.offsetWidth}px` });
       }
     }
 
