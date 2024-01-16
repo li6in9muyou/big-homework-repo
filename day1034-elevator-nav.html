@@ -73,33 +73,40 @@
     const oNav = document.querySelector(".elevator-nav");
     const aContent = document.querySelectorAll(".content");
 
-    let scrollAnimationHandle, scrollTopStops, scrollTopStopsIdx;
+    function smoothScrollEffect(scrollableElem) {
+      let scrollAnimationHandle, scrollTopStops, scrollTopStopsIdx;
+
+      function scrollToElement(elem, durationMilliSec = 300) {
+        clearInterval(scrollAnimationHandle);
+        scrollTopStops = [];
+        scrollTopStopsIdx = 0;
+        const parent = scrollableElem;
+
+        const currentDocPos = parent.scrollTop;
+        const targetPos = elem.offsetTop;
+        const tickCnt = Math.ceil(durationMilliSec / (1000 / 60));
+        scrollTopStops = interpolate(currentDocPos, targetPos, tickCnt);
+        scrollTopStops.push(targetPos);
+        scrollAnimationHandle = setInterval(() => {
+          parent.scrollTop = scrollTopStops[scrollTopStopsIdx++];
+          if (scrollTopStopsIdx === scrollTopStops.length) {
+            clearInterval(scrollAnimationHandle);
+            scrollTopStops = [];
+            scrollTopStopsIdx = 0;
+          }
+        }, 1000 / 60);
+      }
+
+      return scrollToElement;
+    }
+
 
     function interpolate(from, to, cnt) {
       const step = (to - from) / (cnt + 1);
       return new Array(cnt).fill(null).map((_, idx) => from + (idx + 1) * step);
     }
 
-    function scrollToElement(elem, durationMilliSec = 300) {
-      clearInterval(scrollAnimationHandle);
-      scrollTopStops = [];
-      scrollTopStopsIdx = 0;
-
-      const currentDocPos = oDoc.scrollTop;
-      const targetPos = elem.offsetTop;
-      const tickCnt = Math.ceil(durationMilliSec / (1000 / 60));
-      scrollTopStops = interpolate(currentDocPos, targetPos, tickCnt);
-      scrollTopStops.push(targetPos);
-      scrollAnimationHandle = setInterval(() => {
-        oDoc.scrollTop = scrollTopStops[scrollTopStopsIdx++];
-        if (scrollTopStopsIdx === scrollTopStops.length) {
-          clearInterval(scrollAnimationHandle);
-          scrollTopStops = [];
-          scrollTopStopsIdx = 0;
-        }
-      }, 1000 / 60);
-    }
-
+    const scrollToElement = smoothScrollEffect(oDoc);
     oNav.addEventListener("click", (e) => {
       e.preventDefault();
       const id = nodeIndexOf(e.target);
