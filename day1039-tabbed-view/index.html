@@ -16,6 +16,46 @@
 
     body {
       padding-top: 40px;
+      background-color: #333;
+    }
+
+    .banner {
+      height: 500px;
+      max-width: 600px;
+    }
+
+    .tabbed {
+      display: flex;
+    }
+
+    .tabbed > .tabs {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      color: #fff;
+      font-size: 30px;
+      margin: 0;
+    }
+
+    .tabbed > .tabs > .tab {
+      list-style: none;
+      padding: 8px;
+      background-color: #666;
+      border-bottom: solid #666 4px;
+      opacity: .5;
+      transition: .2s;
+      cursor: pointer;
+    }
+
+    .tabbed > .tabs > .tab__active {
+      border-bottom: solid #ff7200 4px;
+      opacity: 1;
+    }
+
+    .tabbed > .tabbed-content {
+      height: 500px;
+      overflow: hidden;
+      position: relative;
     }
   </style>
   <link rel="stylesheet" href="css/carousel.css">
@@ -24,6 +64,52 @@
 </head>
 
 <body>
+  <div class="tabbed">
+    <ul class="tabs">
+      <li class="tab tab__active">pokemon</li>
+      <li class="tab">flowers</li>
+      <li class="tab">pokemon</li>
+    </ul>
+    <div class="tabbed-content">
+      <div class="banner"></div>
+      <div class="banner"></div>
+      <div class="banner"></div>
+    </div>
+  </div>
+  <script>
+    function smoothScrollEffect(scrollableElem) {
+      let scrollAnimationHandle;
+
+      function scrollToElement(elem, durationMilliSec = 300) {
+        clearInterval(scrollAnimationHandle);
+        let scrollTopStops = [];
+        let scrollTopStopsIdx = 0;
+        const parent = scrollableElem;
+
+        const currentDocPos = parent.scrollTop;
+        const targetPos = elem.offsetTop;
+        const tickCnt = Math.ceil(durationMilliSec / (1000 / 60));
+        scrollTopStops = interpolate(currentDocPos, targetPos, tickCnt);
+        scrollTopStops.push(targetPos);
+        scrollAnimationHandle = setInterval(() => {
+          parent.scrollTop = scrollTopStops[scrollTopStopsIdx++];
+          if (scrollTopStopsIdx === scrollTopStops.length) {
+            clearInterval(scrollAnimationHandle);
+            scrollTopStops = [];
+            scrollTopStopsIdx = 0;
+          }
+        }, 1000 / 60);
+      }
+
+      return scrollToElement;
+    }
+
+
+    function interpolate(from, to, cnt) {
+      const step = (to - from) / (cnt + 1);
+      return new Array(cnt).fill(null).map((_, idx) => from + (idx + 1) * step);
+    }
+  </script>
   <script>
     const POKEMON_IMG = [
       {
@@ -81,9 +167,26 @@
       }
     ];
 
-    document.body.appendChild(createCarousel(POKEMON_IMG));
-    document.body.appendChild(createCarousel(FLOWER_IMG));
-    document.body.appendChild(createCarousel(POKEMON_IMG));
+
+    const oTabbed = document.querySelector(".tabbed");
+    const aTabs = oTabbed.querySelectorAll(".tab");
+    const oTabbedContent = document.querySelector(".tabbed-content");
+    const scrollToElement = smoothScrollEffect(oTabbedContent);
+
+    oTabbedContent.children[0].appendChild(createCarousel(POKEMON_IMG));
+    oTabbedContent.children[1].appendChild(createCarousel(FLOWER_IMG));
+    oTabbedContent.children[2].appendChild(createCarousel(POKEMON_IMG));
+
+    listenEvent(oTabbed, "click", (e) => {
+      if (e.target.tagName !== "LI") {
+        return;
+      }
+
+      const idx = nodeIndexOf(e.target);
+      aTabs.forEach(t => t.classList.remove("tab__active"));
+      aTabs[idx].classList.add("tab__active");
+      scrollToElement(oTabbedContent.children[idx]);
+    });
   </script>
 </body>
 
