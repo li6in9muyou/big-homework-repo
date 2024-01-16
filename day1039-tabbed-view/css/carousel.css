@@ -1,7 +1,7 @@
 .carousel-wrap > .carousel {
   display: flex;
-  height: 375px;
-  width: 533px;
+  height: 100%;
+  width: 100%;
   margin: 0 auto;
   overflow: hidden;
 }
@@ -18,7 +18,7 @@
 
 .carousel-wrap {
   position: relative;
-  min-width: 720px;
+  height: 100%;
 }
 
 .carousel-wrap > .slider {
@@ -27,21 +27,27 @@
   left: 0;
   right: 0;
   display: flex;
-  justify-content: center;
-  gap: 30px;
+  align-items: center;
   font-size: 30px;
-  padding: 0 0 20px;
+  padding: 6px 6px;
+  box-sizing: border-box;
   margin: 0 auto;
-  width: 533px;
+  opacity: 0.5;
+  background-color: #aaa;
+  transition: .3s;
+}
+
+.carousel-wrap > .slider:hover {
+  opacity: 1;
 }
 
 .carousel-wrap > .slider > li {
   list-style: none;
-  padding: 12px;
+  margin-right: 6px;
+  padding: 3px 6px;
   border: solid 2px #888;
   user-select: none;
   cursor: pointer;
-  opacity: 0.5;
 }
 
 .slider > .slider--btn__active {
@@ -55,32 +61,27 @@ button {
   padding: 0;
 }
 
-.carousel-wrap--btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 60px;
-  height: 60px;
+.carousel--step-btn-wrap {
+  margin-left: auto;
+}
+
+.carousel--step-btn {
+  width: 40px;
+  height: 40px;
   border-radius: 100%;
-  font-size: 48px;
+  font-size: 38px;
   padding: 8px;
   background-color: #333;
   color: #fff;
   cursor: pointer;
   /* magic number to vertically center <> signs */
-  line-height: 50px;
+  line-height: 25px;
 }
 
-.carousel-wrap--btn:hover {
+.carousel--step-btn:hover {
   background-color: #666;
 }
 
-.carousel-wrap--btn__left {
-  right: 50%;
-  margin-right: 300px;
-}
-
-.carousel-wrap--btn__right {
-  left: 50%;
-  margin-left: 300px;
+.carousel--step-btn__left {
+  margin-right: 30px;
 }

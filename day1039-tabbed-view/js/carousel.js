@@ -1,6 +1,6 @@
 function createSimpleElement(tagName, className, textContent) {
   const elem = document.createElement(tagName);
-  elem.className = className ?? "";
+  className && (elem.className = className);
   elem.textContent = textContent ?? "";
   return elem;
 }
@@ -9,9 +9,11 @@ function createCarousel(images) {
   const oContainer = createSimpleElement("div", "carousel-wrap");
   const oSlider = createSimpleElement("ul", "slider");
   const oCarousel = createSimpleElement("ul", "carousel");
-  const prevBtn = createSimpleElement("button", "carousel-wrap--btn carousel-wrap--btn__left", "<");
-  const nextBtn = createSimpleElement("button", "carousel-wrap--btn carousel-wrap--btn__right", ">");
-  oContainer.append(oCarousel, oSlider, prevBtn, nextBtn);
+  const oBtnWrap = createSimpleElement("div", "carousel--step-btn-wrap");
+  const prevBtn = createSimpleElement("button", "carousel--step-btn carousel--step-btn__left", "<");
+  const nextBtn = createSimpleElement("button", "carousel--step-btn carousel--step-btn__right", ">");
+  oBtnWrap.append(prevBtn, nextBtn);
+  oContainer.append(oCarousel, oSlider);
 
   oSlider.appendChild(images.reduce(
     (slider, _, idx) => {
@@ -22,6 +24,7 @@ function createCarousel(images) {
     },
     document.createDocumentFragment()
   ));
+  oSlider.append(oBtnWrap);
 
   oCarousel.appendChild(images.reduce(
     (carousel, img, idx) => {
