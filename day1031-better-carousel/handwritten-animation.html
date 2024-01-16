@@ -127,7 +127,7 @@
     function animateLinear(elemList, targetCSS, options) {
       options = { durationMilliSec: 300, refreshRate: 60, ...options };
       elemList.forEach(elem => elem.style.transition = "none");
-      const tickCnt = Math.ceil(options.durationMilliSec / (1000 / options.refreshRate));
+      const tickCnt = Math.max(Math.ceil(options.durationMilliSec / (1000 / options.refreshRate)), 1);
 
       for (const attr in targetCSS) {
         const currText = Array.from(elemList).map(elem => getComputedStyle(elem)[attr]);
