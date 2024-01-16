@@ -18,7 +18,7 @@
       padding-top: 40px;
     }
 
-    .banner > .carousel {
+    .carousel-wrap > .carousel {
       display: flex;
       height: 375px;
       width: 533px;
@@ -36,12 +36,12 @@
       transition: .3s;
     }
 
-    .banner {
+    .carousel-wrap {
       position: relative;
       min-width: 720px;
     }
 
-    .banner > .slider {
+    .carousel-wrap > .slider {
       position: absolute;
       bottom: 0;
       left: 0;
@@ -55,7 +55,7 @@
       width: 533px;
     }
 
-    .banner > .slider > li {
+    .carousel-wrap > .slider > li {
       list-style: none;
       padding: 12px;
       border: solid 2px #888;
@@ -64,7 +64,7 @@
       opacity: 0.5;
     }
 
-    .slider > .btn__active {
+    .slider > .slider--btn__active {
       background-color: #888;
       color: #fff;
     }
@@ -75,7 +75,7 @@
       padding: 0;
     }
 
-    .banner--btn {
+    .carousel-wrap--btn {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
@@ -91,16 +91,16 @@
       line-height: 50px;
     }
 
-    .banner--btn:hover {
+    .carousel-wrap--btn:hover {
       background-color: #666;
     }
 
-    .banner--btn__left {
+    .carousel-wrap--btn__left {
       right: 50%;
       margin-right: 300px;
     }
 
-    .banner--btn__right {
+    .carousel-wrap--btn__right {
       left: 50%;
       margin-left: 300px;
     }
@@ -174,11 +174,11 @@
     }
 
     function createCarousel(images) {
-      const oContainer = createSimpleElement("div", "banner");
+      const oContainer = createSimpleElement("div", "carousel-wrap");
       const oSlider = createSimpleElement("ul", "slider");
       const oCarousel = createSimpleElement("ul", "carousel");
-      const prevBtn = createSimpleElement("button", "banner--btn banner--btn__left", "<");
-      const nextBtn = createSimpleElement("button", "banner--btn banner--btn__right", ">");
+      const prevBtn = createSimpleElement("button", "carousel-wrap--btn carousel-wrap--btn__left", "<");
+      const nextBtn = createSimpleElement("button", "carousel-wrap--btn carousel-wrap--btn__right", ">");
       oContainer.append(oCarousel, oSlider, prevBtn, nextBtn);
 
       oSlider.appendChild(images.reduce(
@@ -203,7 +203,7 @@
         document.createDocumentFragment()
       ));
 
-      const aBtns = oContainer.querySelectorAll(".banner>.slider>li");
+      const aBtns = oContainer.querySelectorAll(".carousel-wrap>.slider>li");
       const ii = oCarousel.querySelectorAll(".carousel--img");
       ii[ii.length - 1].parentElement.appendChild(ii[0].cloneNode(true));
       const aImg = oCarousel.querySelectorAll(".carousel--img");
@@ -249,8 +249,8 @@
         } else {
           setCarouselPos(currentImgIdx);
         }
-        aBtns.forEach(btn => btn.classList.remove("btn__active"));
-        aBtns[currentImgIdx].classList.add("btn__active");
+        aBtns.forEach(btn => btn.classList.remove("slider--btn__active"));
+        aBtns[currentImgIdx].classList.add("slider--btn__active");
       }
 
       listenEvent(prevBtn, "click", function () {
