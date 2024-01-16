@@ -159,6 +159,8 @@
   </main>
   <script>
     const aBox = Array.from(document.querySelectorAll(".box"));
+    const oBtnRotateLeft = document.querySelector("[data-rotate-left]");
+    const oBtnRotateRight = document.querySelector("[data-rotate-right]");
     let boxSlotTable = aBox.map((_, idx) => idx);
     const SLOT_CLASS_NAMES = new Array(aBox.length).fill(null).map((_, idx) => `box__slot-${idx}`);
 
@@ -179,12 +181,12 @@
       });
     }
 
-    listenEvent(document.querySelector("[data-rotate-left]"), "click", () => {
+    listenEvent(oBtnRotateLeft, "click", () => {
       boxSlotTable = shiftLeft(boxSlotTable);
       repaint(boxSlotTable);
     });
 
-    listenEvent(document.querySelector("[data-rotate-right]"), "click", () => {
+    listenEvent(oBtnRotateRight, "click", () => {
       boxSlotTable = shiftRight(boxSlotTable);
       repaint(boxSlotTable);
     });
