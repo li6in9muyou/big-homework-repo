@@ -142,6 +142,10 @@
               let elapsed = 0;
               let actualTick = 0;
               let lastExec = Date.now();
+              elapsed += 1;
+              elemList.forEach((elem, idx) => {
+                elem.style[attr] = `${currVal[idx] + step[idx] * elapsed}px`;
+              });
               const h = setInterval(() => {
                 const t = Date.now();
                 console.log(`animateLinear left: exec interval ${t - lastExec} actual tick ${++actualTick}`);
