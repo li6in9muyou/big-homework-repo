@@ -112,21 +112,28 @@
       oIndicator.classList.remove("zoomIn__active");
       oZoomInImg.classList.remove("zoomIn__active");
 
+      const eventHandlers = {
+        "mousemove": (e) => {
+          setIndicatorPos(e.clientX - parentOffsetLeft - centerOffsetX, e.clientY - parentOffsetTop - centerOffsetY);
+          oZoomInImg.style.objectPosition =
+            `-${oIndicator.offsetLeft * moveRateLeft}px -${oIndicator.offsetTop * moveRateTop}px`;
+        },
+        "mouseenter": () => {
+          oZoomInImg.classList.add("zoomIn__active");
+          oIndicator.classList.add("zoomIn__active");
+        },
+        "mouseleave": () => {
+          oZoomInImg.classList.remove("zoomIn__active");
+          oIndicator.classList.remove("zoomIn__active");
+        }
+      };
+
       function handleEvent(e) {
-        switch (e.type) {
-          case "mousemove":
-            setIndicatorPos(e.clientX - parentOffsetLeft - centerOffsetX, e.clientY - parentOffsetTop - centerOffsetY);
-            oZoomInImg.style.objectPosition =
-              `-${oIndicator.offsetLeft * moveRateLeft}px -${oIndicator.offsetTop * moveRateTop}px`;
-            break;
-          case "mouseenter":
-            oZoomInImg.classList.add("zoomIn__active");
-            oIndicator.classList.add("zoomIn__active");
-            break;
-          case "mouseleave":
-            oZoomInImg.classList.remove("zoomIn__active");
-            oIndicator.classList.remove("zoomIn__active");
-            break;
+        const handler = eventHandlers[e.type];
+        if (handler && typeof handler === "function") {
+          handler(e);
+        } else {
+          console.error(`zoomInEffect unexpectedly handles ${e.type} event`, e, eventHandlers);
         }
       }
 
