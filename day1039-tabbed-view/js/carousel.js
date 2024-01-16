@@ -1,7 +1,7 @@
 function createSimpleElement(tagName, className, textContent) {
   const elem = document.createElement(tagName);
-  elem.className = className;
-  elem.textContent = textContent;
+  elem.className = className ?? "";
+  elem.textContent = textContent ?? "";
   return elem;
 }
 
