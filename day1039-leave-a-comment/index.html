@@ -154,42 +154,186 @@
         <button>提交评论</button>
       </div>
     </div>
-    <div class="comment-item">
-      <div class="user-avatar">
-        <img src="img/user-avatar.png" alt="用户的头像" width="128" height="128">
-      </div>
-      <div class="comment-text">
-        <a href="#">li6in9muyou</a>:
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam asperiores aspernatur culpa fugiat fugit
-          id, ipsum, quibusdam quo quod saepe tempore ullam voluptatem! Aliquid corporis fugit iste, mollitia non
-          veniam.</p>
-        <div class="comment-control">
-          <a href="#">点赞<span>(99)</span></a>
-          <div class="divider"></div>
-          <a href="#">回复</a>
-          <div class="divider"></div>
-          <span>2024-01-16</span>
-        </div>
-      </div>
-    </div>
-    <div class="comment-item">
-      <div class="user-avatar">
-        <img src="img/user-avatar.png" alt="用户的头像" width="128" height="128">
-      </div>
-      <div class="comment-text">
-        <a href="#">li6in9muyou</a>:
-        <p>已测试，chrome77.0.3865.90和safari13.0.2
-          (15608.2.30.1.1)，在声明DTD情况下，支持document.documentElement.scrollTop
-          和window.pageYOffset，未声明DTD情况下，支持document.body.scrollTop</p>
-        <div class="comment-control">
-          <a href="#">点赞<span></span></a>
-          <div class="divider"></div>
-          <a href="#">回复</a>
-          <div class="divider"></div>
-          <span>2024-01-16</span>
-        </div>
-      </div>
-    </div>
   </section>
+  <script>
+    const data = {
+      commentCnt: 2,
+      comments: [
+        {
+          userName: "li6in9muyou",
+          userAvatar: "img/user-avatar.png",
+          text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam asperiores aspernatur culpa fugiat fugit" +
+            "id, ipsum, quibusdam quo quod saepe tempore ullam voluptatem! Aliquid corporis fugit iste, mollitia non" +
+            "veniam.",
+          likeCnt: 99,
+          createdAt: "2024-01-16"
+        },
+        {
+          userName: "li6in9muyou",
+          userAvatar: "img/user-avatar.png",
+          text: "试试评论好不好用",
+          likeCnt: 0,
+          createdAt: "2023-01-16"
+        },
+        {
+          userName: "li6in9muyou",
+          userAvatar: "img/user-avatar.png",
+          text: "本条评论由js创建。",
+          likeCnt: 45,
+          createdAt: "2024-01-16"
+        },
+        {
+          userName: "dev",
+          userAvatar: "img/user-avatar.png",
+          text: "本条评论由js创建。",
+          likeCnt: 17,
+          createdAt: "2023-01-16"
+        }
+      ]
+    };
+
+    function buildDom(root) {
+      const rootElem = document.createElement(root.tagName);
+      for (const key in root) {
+        switch (key) {
+          case "tagName":
+            // this case is handled above
+            break;
+          case "contentText":
+            rootElem.textContent = root[key];
+            break;
+          case "alt":
+            rootElem[key] = root[key] || " ";
+            break;
+          default:
+            if (root[key] !== "") {
+              rootElem[key] = root[key];
+            }
+            break;
+        }
+      }
+      rootElem.append(...root.children.map(n => buildDom(n)));
+      return rootElem;
+    }
+
+    function createCommentControl(comment) {
+      return buildDom({
+        tagName: "div",
+        id: "",
+        className: "comment-control",
+        contentText: "",
+        children: [
+          {
+            tagName: "a",
+            id: "",
+            className: "",
+            href: "#",
+            contentText: "点赞",
+            children: [{
+              tagName: "span",
+              contentText: comment.likeCnt > 0 ? `(${comment.likeCnt})` : "",
+              children: []
+            }]
+          },
+          {
+            tagName: "div",
+            id: "",
+            className: "divider",
+            contentText: "",
+            children: []
+          },
+          {
+            tagName: "a",
+            id: "",
+            className: "",
+            href: "#",
+            contentText: "回复",
+            children: []
+          },
+          {
+            tagName: "div",
+            id: "",
+            className: "divider",
+            contentText: "",
+            children: []
+          },
+          {
+            tagName: "span",
+            id: "",
+            className: "",
+            contentText: comment.createdAt,
+            children: []
+          }
+        ]
+      });
+    }
+
+    function createCommentItem(comment) {
+      const item = buildDom({
+        tagName: "div",
+        id: "",
+        className: "comment-item",
+        contentText: "",
+        children: [
+          {
+            tagName: "div",
+            id: "",
+            className: "user-avatar",
+            contentText: "",
+            children: [{
+              tagName: "img",
+              src: comment.userAvatar,
+              alt: "用户的头像",
+              children: []
+            }]
+          },
+          {
+            tagName: "div",
+            id: "",
+            className: "comment-text",
+            contentText: "",
+            children: [
+              {
+                tagName: "a",
+                href: "#",
+                contentText: comment.userName,
+                children: []
+              },
+              {
+                tagName: "p",
+                contentText: comment.text,
+                children: []
+              }
+            ]
+          }
+        ]
+      });
+
+      const oText = item.querySelector(".comment-text");
+      const oUserName = oText.querySelector("a");
+      oUserName.insertAdjacentText("afterend", ":");
+      oText.appendChild(createCommentControl(comment));
+      return item;
+    }
+
+    const oCommentContainer = document.querySelector(".comment-container");
+    const oCommentCnt = oCommentContainer.querySelector(".header>strong");
+
+    oCommentContainer.appendChild(data.comments.reduce((node, cmt) => {
+      node.appendChild(createCommentItem(cmt));
+      return node;
+    }, document.createDocumentFragment()));
+    oCommentContainer.appendChild(new Array(20).fill(null).reduce((node, _, idx) => {
+      node.appendChild(createCommentItem({
+        userName: "垃圾信息机器人",
+        userAvatar: "img/user-avatar.png",
+        text: `本条评论是垃圾信息机器人创建的第${idx + 1}条评论`,
+        likeCnt: Math.floor(Math.random() * 100),
+        createdAt: `2024-01-${Math.ceil(Math.random() * 31).toString().padStart(2, "0")}`
+      }));
+      return node;
+    }, document.createDocumentFragment()));
+    oCommentCnt.textContent = oCommentCnt.textContent.replace(/\d+/, data.commentCnt);
+  </script>
 </body>
 </html>
