@@ -136,7 +136,7 @@
           case "left":
             const tgtVal = parseInt(targetCSS[attr]);
             const currVal = currText.map(ct => parseInt(ct));
-            const step = currVal.map(cv => (tgtVal - cv) / (tickCnt + 1));
+            const step = currVal.map(cv => (tgtVal - cv) / tickCnt);
             let elapsed = 0;
             let actualTick = 0;
             let lastExec = Date.now();
