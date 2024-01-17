@@ -39,7 +39,12 @@
       text-decoration: none;
       color: unset;
       border: solid lightblue 1px;
+      border-left: none;
+    }
+
+    .comment-container .sort-btn-group > a:first-of-type {
       border-radius: 4px 0 0 4px;
+      border-right: none;
     }
 
     .comment-container .sort-btn-group > a:last-of-type {
@@ -55,7 +60,7 @@
     .comment-item {
       display: flex;
       align-items: flex-start;
-      padding: 6px;
+      padding: 6px 6px 18px;
     }
 
     .comment-item > .user-avatar {
@@ -138,6 +143,7 @@
       <strong>0条评论</strong>
       <div class="sort-btn-group">
         <a href="#" role="button" class="sort-btn sort-btn__active">最热</a>
+        <a href="#" role="button" class="sort-btn">最长</a>
         <a href="#" role="button" class="sort-btn">最新</a>
       </div>
     </div>
