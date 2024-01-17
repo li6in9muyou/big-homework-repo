@@ -27,6 +27,7 @@
       justify-content: space-between;
       align-items: center;
       padding-bottom: 16px;
+      order: -999999999;
     }
 
     .comment-container .sort-btn-group {
@@ -39,7 +40,6 @@
       text-decoration: none;
       color: unset;
       border: solid lightblue 1px;
-      border-left: none;
     }
 
     .comment-container .sort-btn-group > a:first-of-type {
@@ -61,6 +61,11 @@
       display: flex;
       align-items: flex-start;
       padding: 6px 6px 18px;
+      order: 0;
+    }
+
+    .comment-item__top {
+      order: -999999999;
     }
 
     .comment-item > .user-avatar {
@@ -142,12 +147,12 @@
     <div class="header">
       <strong>0条评论</strong>
       <div class="sort-btn-group">
-        <a href="#" role="button" class="sort-btn sort-btn__active">最热</a>
-        <a href="#" role="button" class="sort-btn">最长</a>
-        <a href="#" role="button" class="sort-btn">最新</a>
+        <a href="#" role="button" class="sort-btn sort-btn__active" data-sort-by="mostLiked">最热</a>
+        <a href="#" role="button" class="sort-btn" data-sort-by="mostWords">最长</a>
+        <a href="#" role="button" class="sort-btn" data-sort-by="mostRecent">最新</a>
       </div>
     </div>
-    <div class="comment-item">
+    <div class="comment-item comment-item__top">
       <div class="user-avatar">
         <img src="img/user-avatar.png" alt="用户的头像" width="128" height="128">
       </div>
@@ -163,9 +168,10 @@
   </section>
   <script>
     const data = {
-      commentCnt: 2,
+      commentCnt: 4,
       comments: [
         {
+          id: 1000,
           userName: "li6in9muyou",
           userAvatar: "img/user-avatar.png",
           text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam asperiores aspernatur culpa fugiat fugit" +
@@ -175,6 +181,7 @@
           createdAt: "2024-01-16"
         },
         {
+          id: 1001,
           userName: "li6in9muyou",
           userAvatar: "img/user-avatar.png",
           text: "试试评论好不好用",
@@ -182,6 +189,7 @@
           createdAt: "2023-01-16"
         },
         {
+          id: 1002,
           userName: "li6in9muyou",
           userAvatar: "img/user-avatar.png",
           text: "本条评论由js创建。",
@@ -189,6 +197,7 @@
           createdAt: "2024-01-16"
         },
         {
+          id: 1003,
           userName: "dev",
           userAvatar: "img/user-avatar.png",
           text: "本条评论由js创建。",
@@ -319,27 +328,46 @@
       const oUserName = oText.querySelector("a");
       oUserName.insertAdjacentText("afterend", ":");
       oText.appendChild(createCommentControl(comment));
+      item.dataset.cmtId = comment.id;
       return item;
     }
 
     const oCommentContainer = document.querySelector(".comment-container");
     const oCommentCnt = oCommentContainer.querySelector(".header>strong");
+    const oSortingControl = oCommentContainer.querySelector(".sort-btn-group");
+    const aSortingBtn = oCommentContainer.querySelectorAll(".sort-btn");
 
-    oCommentContainer.appendChild(data.comments.reduce((node, cmt) => {
-      node.appendChild(createCommentItem(cmt));
-      return node;
-    }, document.createDocumentFragment()));
-    oCommentContainer.appendChild(new Array(20).fill(null).reduce((node, _, idx) => {
-      node.appendChild(createCommentItem({
+    data.comments = data.comments.concat(new Array(20).fill(null).map((_, idx) => {
+      return {
+        id: 2000 + idx,
         userName: "垃圾信息机器人",
         userAvatar: "img/user-avatar.png",
         text: `本条评论是垃圾信息机器人创建的第${idx + 1}条评论`,
         likeCnt: Math.floor(Math.random() * 100),
         createdAt: `2024-01-${Math.ceil(Math.random() * 31).toString().padStart(2, "0")}`
-      }));
+      };
+    }));
+    data.commentCnt = data.comments.length;
+    oCommentContainer.appendChild(data.comments.reduce((node, cmt) => {
+      node.appendChild(createCommentItem(cmt));
       return node;
     }, document.createDocumentFragment()));
     oCommentCnt.textContent = oCommentCnt.textContent.replace(/\d+/, data.commentCnt);
+    const aComment = oCommentContainer.querySelectorAll(".comment-item:not(.comment-item__top)");
+
+    const keyingFn = {
+      "mostRecent": (c) => -new Date(c.createdAt).getTime() / 1e5,
+      "mostLiked": (c) => -c.likeCnt,
+      "mostWords": (c) => -c.text.length
+    };
+    oSortingControl.addEventListener("click", (e) => {
+      aSortingBtn.forEach(btn => btn.classList.remove("sort-btn__active"));
+      e.target.classList.add("sort-btn__active");
+      aComment.forEach(cmt => {
+        const id = parseInt(cmt.dataset.cmtId);
+        cmt.style.order = keyingFn[e.target.dataset.sortBy](data.comments.filter(c => c.id === id)[0]).toString();
+      });
+    });
   </script>
 </body>
 </html>
