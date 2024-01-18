@@ -342,7 +342,8 @@
         id: 2000 + idx,
         userName: "垃圾信息机器人",
         userAvatar: "img/user-avatar.png",
-        text: `本条评论是垃圾信息机器人创建的第${idx + 1}条评论`,
+        text: `本条评论是垃圾信息机器人创建的第${idx + 1}条评论, ${
+          new Array(1 + Math.floor(Math.random() * 9)).fill("spam").join(" ")}`,
         likeCnt: Math.floor(Math.random() * 100),
         createdAt: `2024-01-${Math.ceil(Math.random() * 31).toString().padStart(2, "0")}`
       };
