@@ -350,34 +350,42 @@
       "mostWords": c => -c.text.length
     };
 
-    function sortUsingFlexOrder(comments, sortBy) {
-      Array.from(comments).forEach(cmt => {
-        const id = parseInt(cmt.dataset.cmtId);
-        const getKey = keyingFn[sortBy];
-        if (getKey !== undefined) {
-          cmt.style.order = getKey(findBy(data.comments, (c) => c.id === id)).toString();
-        } else {
-          console.error(`unsupported sorting method: ${sortBy}`);
+    function makeSorter(fn) {
+      return (comments, sortBy) => {
+        if (comments.length === 0) {
+          return;
         }
+        const getKey = keyingFn[sortBy];
+        if (getKey === undefined) {
+          console.error(`unsupported sorting method: ${sortBy}`);
+          return;
+        }
+
+        fn(Array.from(comments), getKey);
+      };
+    }
+
+    function sortFlexOrder(comments, getKey) {
+      comments.forEach(cmt => {
+        const id = parseInt(cmt.dataset.cmtId);
+        cmt.style.order = getKey(findBy(data.comments, (c) => c.id === id)).toString();
       });
     }
 
-    function sortUsingDomOp(comments, sortBy) {
-      if (comments.length === 0) {
-        return;
-      }
+    function sortDomOp(comments, getKey) {
       const cmtContainer = comments[0].parentElement;
-      Array.from(comments).forEach(cmt => cmtContainer.removeChild(cmt));
-      const getKey = keyingFn[sortBy];
-      const sortedCmt = Array.from(comments);
-      sortedCmt.sort(function (a, b) {
+      comments.forEach(cmt => cmtContainer.removeChild(cmt));
+      comments.sort(function (a, b) {
         const aId = parseInt((a.dataset.cmtId));
         const bId = parseInt((b.dataset.cmtId));
         return getKey(findBy(data.comments, (c) => c.id === aId))
           - getKey(findBy(data.comments, (c) => c.id === bId));
       });
-      cmtContainer.append(...sortedCmt);
+      cmtContainer.append(...comments);
     }
+
+    const sortUsingDomOp = makeSorter(sortDomOp);
+    const sortUsingFlexOrder = makeSorter(sortFlexOrder);
 
     const oCommentContainer = document.querySelector(".comment-container");
     const oCommentCnt = oCommentContainer.querySelector(".header>strong");
