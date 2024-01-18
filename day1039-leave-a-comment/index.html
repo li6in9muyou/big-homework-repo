@@ -387,6 +387,10 @@
     const sortUsingDomOp = makeSorter(sortDomOp);
     const sortUsingFlexOrder = makeSorter(sortFlexOrder);
 
+    function sortComments(sortBy) {
+      sortUsingDomOp(oCommentContainer.querySelectorAll(".comment-item:not(.comment-item__top)"), sortBy);
+    }
+
     const oCommentContainer = document.querySelector(".comment-container");
     const oCommentCnt = oCommentContainer.querySelector(".header>strong");
     const oSortingControl = oCommentContainer.querySelector(".sort-btn-group");
@@ -411,16 +415,14 @@
       return node;
     }, document.createDocumentFragment()));
     oCommentCnt.textContent = oCommentCnt.textContent.replace(/\d+/, data.commentCnt);
-    const aComment = oCommentContainer.querySelectorAll(".comment-item:not(.comment-item__top)");
-    sortUsingDomOp(aComment, currentSortingMethod);
+    sortComments(currentSortingMethod);
 
     oSortingControl.addEventListener("click", (e) => {
       aSortingBtn.forEach(btn => btn.classList.remove("sort-btn__active"));
       const btn = e.target;
       btn.classList.add("sort-btn__active");
-      // sortUsingFlexOrder(aComment, btn.dataset.sortBy);
-      sortUsingDomOp(aComment, btn.dataset.sortBy);
       currentSortingMethod = btn.dataset.sortBy;
+      sortComments(currentSortingMethod);
     });
 
     oCommentTextarea.addEventListener("input", e => {
@@ -453,7 +455,7 @@
       data.comments.push(cmt);
       oCommentTextarea.value = "";
       oCommentContainer.appendChild(createCommentItem(cmt));
-      sortUsingDomOp(oCommentContainer.querySelectorAll(".comment-item:not(.comment-item__top)"), currentSortingMethod);
+      sortComments(currentSortingMethod);
     });
   </script>
 </body>
