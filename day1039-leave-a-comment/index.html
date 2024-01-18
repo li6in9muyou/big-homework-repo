@@ -302,48 +302,20 @@
     function findBy(arr, predicate) {
       return arr.filter(predicate)[0];
     }
+
+    function formatDateTime(dateTime, pattern) {
+      pattern = pattern.replace(/y+/, match => dateTime.getFullYear().toString().slice(-1 * match.length));
+      pattern = pattern.replace(/M+/, match => (dateTime.getMonth() + 1).toString().padStart(match.length, "0"));
+      pattern = pattern.replace(/d+/, match => dateTime.getDate().toString().padStart(match.length, "0"));
+      return pattern;
+    }
   </script>
   <script>
-    const data = {
-      commentCnt: 4,
-      comments: [
-        {
-          id: 1000,
-          userName: "li6in9muyou",
-          userAvatar: "img/user-avatar.png",
-          text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam asperiores aspernatur culpa fugiat fugit" +
-            "id, ipsum, quibusdam quo quod saepe tempore ullam voluptatem! Aliquid corporis fugit iste, mollitia non" +
-            "veniam.",
-          likeCnt: 99,
-          createdAt: "2024-01-16"
-        },
-        {
-          id: 1001,
-          userName: "li6in9muyou",
-          userAvatar: "img/user-avatar.png",
-          text: "试试评论好不好用",
-          likeCnt: 0,
-          createdAt: "2023-01-16"
-        },
-        {
-          id: 1002,
-          userName: "li6in9muyou",
-          userAvatar: "img/user-avatar.png",
-          text: "本条评论由js创建。",
-          likeCnt: 45,
-          createdAt: "2024-01-16"
-        },
-        {
-          id: 1003,
-          userName: "dev",
-          userAvatar: "img/user-avatar.png",
-          text: "本条评论由js创建。",
-          likeCnt: 17,
-          createdAt: "2023-01-16"
-        }
-      ]
+    const STATE = {
+      commentCnt: 0,
+      comments: []
     };
-    let currentSortingMethod = "mostRecent";
+    let currentSortingMethod = "mostLiked";
     const keyingFn = {
       "mostRecent": c => -new Date(c.createdAt).getTime() / 1e5,
       "mostLiked": c => -c.likeCnt,
@@ -368,7 +340,7 @@
     function sortFlexOrder(comments, getKey) {
       comments.forEach(cmt => {
         const id = parseInt(cmt.dataset.cmtId);
-        cmt.style.order = getKey(findBy(data.comments, (c) => c.id === id)).toString();
+        cmt.style.order = getKey(findBy(STATE.comments, (c) => c.id === id)).toString();
       });
     }
 
@@ -378,8 +350,8 @@
       comments.sort(function (a, b) {
         const aId = parseInt((a.dataset.cmtId));
         const bId = parseInt((b.dataset.cmtId));
-        return getKey(findBy(data.comments, (c) => c.id === aId))
-          - getKey(findBy(data.comments, (c) => c.id === bId));
+        return getKey(findBy(STATE.comments, (c) => c.id === aId))
+          - getKey(findBy(STATE.comments, (c) => c.id === bId));
       });
       cmtContainer.append(...comments);
     }
@@ -391,6 +363,18 @@
       sortUsingDomOp(oCommentContainer.querySelectorAll(".comment-item:not(.comment-item__top)"), sortBy);
     }
 
+    function addComment(cmts) {
+      cmts.forEach((cmt, idx) => cmt.id = 1000 + STATE.comments.length + idx);
+      STATE.comments = STATE.comments.concat(cmts);
+      STATE.commentCnt = STATE.comments.length;
+      oCommentCnt.textContent = oCommentCnt.textContent.replace(/\d+/, STATE.commentCnt);
+      oCommentContainer.appendChild(cmts.reduce((node, cmt) => {
+        node.appendChild(createCommentItem(cmt));
+        return node;
+      }, document.createDocumentFragment()));
+      setTimeout(() => sortComments(currentSortingMethod), 0);
+    }
+
     const oCommentContainer = document.querySelector(".comment-container");
     const oCommentCnt = oCommentContainer.querySelector(".header>strong");
     const oSortingControl = oCommentContainer.querySelector(".sort-btn-group");
@@ -398,9 +382,8 @@
     const oCommentTextarea = oCommentContainer.querySelector(".comment-input>textarea");
     const oSubmitCommentBtn = oCommentContainer.querySelector(".comment-input>button");
 
-    data.comments = data.comments.concat(new Array(20).fill(null).map((_, idx) => {
+    addComment(new Array(20).fill(null).map((_, idx) => {
       return {
-        id: 2000 + idx,
         userName: "垃圾信息机器人",
         userAvatar: "img/user-avatar.png",
         text: `本条评论是垃圾信息机器人创建的第${idx + 1}条评论, ${
@@ -409,13 +392,38 @@
         createdAt: `2024-01-${Math.ceil(Math.random() * 31).toString().padStart(2, "0")}`
       };
     }));
-    data.commentCnt = data.comments.length;
-    oCommentContainer.appendChild(data.comments.reduce((node, cmt) => {
-      node.appendChild(createCommentItem(cmt));
-      return node;
-    }, document.createDocumentFragment()));
-    oCommentCnt.textContent = oCommentCnt.textContent.replace(/\d+/, data.commentCnt);
-    sortComments(currentSortingMethod);
+    addComment([
+      {
+        userName: "li6in9muyou",
+        userAvatar: "img/user-avatar.png",
+        text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam asperiores aspernatur culpa fugiat fugit" +
+          "id, ipsum, quibusdam quo quod saepe tempore ullam voluptatem! Aliquid corporis fugit iste, mollitia non" +
+          "veniam.",
+        likeCnt: 99,
+        createdAt: "2024-01-16"
+      },
+      {
+        userName: "li6in9muyou",
+        userAvatar: "img/user-avatar.png",
+        text: "试试评论好不好用",
+        likeCnt: 0,
+        createdAt: "2023-01-16"
+      },
+      {
+        userName: "li6in9muyou",
+        userAvatar: "img/user-avatar.png",
+        text: "本条评论由js创建。",
+        likeCnt: 45,
+        createdAt: "2024-01-16"
+      },
+      {
+        userName: "dev",
+        userAvatar: "img/user-avatar.png",
+        text: "本条评论由js创建。",
+        likeCnt: 17,
+        createdAt: "2023-01-16"
+      }
+    ]);
 
     oSortingControl.addEventListener("click", (e) => {
       aSortingBtn.forEach(btn => btn.classList.remove("sort-btn__active"));
@@ -431,31 +439,20 @@
       ta.style.height = `${ta.scrollHeight}px`;
     });
 
-    function formatDateTime(dateTime, pattern) {
-      pattern = pattern.replace(/y+/, match => dateTime.getFullYear().toString().slice(-1 * match.length));
-      pattern = pattern.replace(/M+/, match => (dateTime.getMonth() + 1).toString().padStart(match.length, "0"));
-      pattern = pattern.replace(/d+/, match => dateTime.getDate().toString().padStart(match.length, "0"));
-      return pattern;
-    }
-
-    oSubmitCommentBtn.addEventListener("click", e => {
+    oSubmitCommentBtn.addEventListener("click", _ => {
       const cmtText = oCommentTextarea.value.trimEnd();
       if (cmtText === "") {
         return;
       }
 
-      const cmt = {
-        id: 1000 + data.comments.length,
+      addComment([{
         userName: "游客",
         userAvatar: "img/user-avatar.png",
         text: cmtText,
         likeCnt: 0,
         createdAt: formatDateTime(new Date(), "yyyy-MM-dd")
-      };
-      data.comments.push(cmt);
+      }]);
       oCommentTextarea.value = "";
-      oCommentContainer.appendChild(createCommentItem(cmt));
-      sortComments(currentSortingMethod);
     });
   </script>
 </body>
