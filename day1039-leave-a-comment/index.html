@@ -360,13 +360,46 @@
       "mostLiked": (c) => -c.likeCnt,
       "mostWords": (c) => -c.text.length
     };
+
+    function sortUsingFlexOrder(comments, sortBy) {
+      comments.forEach(cmt => {
+        const id = parseInt(cmt.dataset.cmtId);
+        const getKey = keyingFn[sortBy];
+        if (getKey !== undefined) {
+          cmt.style.order = getKey(findBy(data.comments, (c) => c.id === id)).toString();
+        } else {
+          console.error(`unsupported sorting method: ${sortBy}`);
+        }
+      });
+    }
+
+    function findBy(arr, predicate) {
+      return arr.filter(predicate)[0];
+    }
+
+    function sortUsingDomOp(comments, sortBy) {
+      if (comments.length === 0) {
+        return;
+      }
+      const cmtContainer = comments[0].parentElement;
+      comments.forEach(cmt => cmtContainer.removeChild(cmt));
+      const getKey = keyingFn[sortBy];
+      const sortedCmt = Array.from(comments);
+      sortedCmt.sort(function (a, b) {
+        const aId = parseInt((a.dataset.cmtId));
+        const bId = parseInt((b.dataset.cmtId));
+        return getKey(findBy(data.comments, (c) => c.id === aId))
+          - getKey(findBy(data.comments, (c) => c.id === bId));
+      });
+      cmtContainer.append(...sortedCmt);
+    }
+
     oSortingControl.addEventListener("click", (e) => {
       aSortingBtn.forEach(btn => btn.classList.remove("sort-btn__active"));
-      e.target.classList.add("sort-btn__active");
-      aComment.forEach(cmt => {
-        const id = parseInt(cmt.dataset.cmtId);
-        cmt.style.order = keyingFn[e.target.dataset.sortBy](data.comments.filter(c => c.id === id)[0]).toString();
-      });
+      const btn = e.target;
+      btn.classList.add("sort-btn__active");
+      // sortUsingFlexOrder(aComment, btn.dataset.sortBy);
+      sortUsingDomOp(aComment, btn.dataset.sortBy);
     });
   </script>
 </body>
