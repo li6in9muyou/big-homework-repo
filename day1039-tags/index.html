@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>标签墙</title>
+</head>
+<style>
+  body {
+    background-color: #333;
+    color: #eee;
+  }
+
+  a {
+    color: unset;
+    text-decoration: none;
+  }
+
+  ul {
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    list-style: none;
+  }
+
+  main {
+    display: flex;
+    gap: 10px;
+    width: 500px;
+    margin: 20px auto;
+  }
+
+  .tags-wrap {
+    width: 50%;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    background-color: #555;
+    padding: 10px;
+    align-items: flex-start;
+  }
+
+  .tags li {
+    background-color: #7e7e7e;
+    padding: 6px;
+  }
+
+  .tags__selected a {
+    cursor: default;
+  }
+
+  .tags__selected li::after {
+    content: "x";
+    display: inline-block;
+    border-left: solid #00c97e 2px;
+    padding-left: 4px;
+    margin-left: 4px;
+    cursor: pointer;
+  }
+</style>
+<body>
+  <main>
+    <div class="tags-wrap">
+      <h2>所有的标签</h2>
+      <ul class="tags tags__all">
+      </ul>
+    </div>
+    <div class="tags-wrap">
+      <h2>选中的标签</h2>
+      <ul class="tags tags__selected">
+        没有选中标签
+      </ul>
+    </div>
+  </main>
+  <script>
+    function nodeIndexOf(node) {
+      const siblings = node.parentNode.children;
+      for (let i = 0; i < siblings.length; i++) {
+        if (node === siblings[i]) {
+          return i;
+        }
+      }
+      return -1;
+    }
+  </script>
+  <script>
+    const ALL_TAGS = new Array(10).fill("标签").map((tag, idx) => tag + (idx + 1).toString().padStart(2, "0"));
+    const oTagsList = document.querySelector(".tags__all");
+    const oTagsSelected = document.querySelector(".tags__selected");
+    oTagsList.innerHTML = ALL_TAGS.map(tag => `<li><a href="#">${tag}</a></li>`).join("\n");
+    const selectedTags = new Set();
+
+    function selectTag(idx) {
+      if (selectedTags.has(idx)) {
+        return;
+      }
+      const t = oTagsList.children[idx].cloneNode(true);
+      t.dataset.idx = idx;
+      if (selectedTags.size === 0) {
+        oTagsSelected.innerHTML = "";
+      }
+      oTagsSelected.appendChild(t);
+      selectedTags.add(idx);
+    }
+
+    function removeTag(idx) {
+      selectedTags.delete(idx);
+      document.querySelector(`[data-idx="${idx}"]`).remove();
+      if (selectedTags.size === 0) {
+        oTagsSelected.innerHTML = "没有选中标签";
+      }
+    }
+
+    oTagsList.addEventListener("click", e => {
+      if (e.target.tagName === "LI") {
+        selectTag(nodeIndexOf(e.target));
+      } else if (e.target.tagName === "A") {
+        selectTag(nodeIndexOf(e.target.parentElement));
+      }
+    });
+
+    oTagsSelected.addEventListener("click", e => {
+      if (e.target.tagName === "LI") {
+        removeTag(parseInt(e.target.dataset.idx));
+      }
+    });
+  </script>
+</body>
+</html>
