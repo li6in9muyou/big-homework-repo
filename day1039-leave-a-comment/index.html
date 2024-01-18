@@ -174,52 +174,6 @@
     </div>
   </section>
   <script>
-    const data = {
-      commentCnt: 4,
-      comments: [
-        {
-          id: 1000,
-          userName: "li6in9muyou",
-          userAvatar: "img/user-avatar.png",
-          text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam asperiores aspernatur culpa fugiat fugit" +
-            "id, ipsum, quibusdam quo quod saepe tempore ullam voluptatem! Aliquid corporis fugit iste, mollitia non" +
-            "veniam.",
-          likeCnt: 99,
-          createdAt: "2024-01-16"
-        },
-        {
-          id: 1001,
-          userName: "li6in9muyou",
-          userAvatar: "img/user-avatar.png",
-          text: "试试评论好不好用",
-          likeCnt: 0,
-          createdAt: "2023-01-16"
-        },
-        {
-          id: 1002,
-          userName: "li6in9muyou",
-          userAvatar: "img/user-avatar.png",
-          text: "本条评论由js创建。",
-          likeCnt: 45,
-          createdAt: "2024-01-16"
-        },
-        {
-          id: 1003,
-          userName: "dev",
-          userAvatar: "img/user-avatar.png",
-          text: "本条评论由js创建。",
-          likeCnt: 17,
-          createdAt: "2023-01-16"
-        }
-      ]
-    };
-    let currentSortingMethod = "mostRecent";
-    const keyingFn = {
-      "mostRecent": c => -new Date(c.createdAt).getTime() / 1e5,
-      "mostLiked": c => -c.likeCnt,
-      "mostWords": c => -c.text.length
-    };
-
     function buildDom(root) {
       const rootElem = document.createElement(root.tagName);
       for (const key in root) {
@@ -345,6 +299,86 @@
       return item;
     }
 
+    function findBy(arr, predicate) {
+      return arr.filter(predicate)[0];
+    }
+  </script>
+  <script>
+    const data = {
+      commentCnt: 4,
+      comments: [
+        {
+          id: 1000,
+          userName: "li6in9muyou",
+          userAvatar: "img/user-avatar.png",
+          text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam asperiores aspernatur culpa fugiat fugit" +
+            "id, ipsum, quibusdam quo quod saepe tempore ullam voluptatem! Aliquid corporis fugit iste, mollitia non" +
+            "veniam.",
+          likeCnt: 99,
+          createdAt: "2024-01-16"
+        },
+        {
+          id: 1001,
+          userName: "li6in9muyou",
+          userAvatar: "img/user-avatar.png",
+          text: "试试评论好不好用",
+          likeCnt: 0,
+          createdAt: "2023-01-16"
+        },
+        {
+          id: 1002,
+          userName: "li6in9muyou",
+          userAvatar: "img/user-avatar.png",
+          text: "本条评论由js创建。",
+          likeCnt: 45,
+          createdAt: "2024-01-16"
+        },
+        {
+          id: 1003,
+          userName: "dev",
+          userAvatar: "img/user-avatar.png",
+          text: "本条评论由js创建。",
+          likeCnt: 17,
+          createdAt: "2023-01-16"
+        }
+      ]
+    };
+    let currentSortingMethod = "mostRecent";
+    const keyingFn = {
+      "mostRecent": c => -new Date(c.createdAt).getTime() / 1e5,
+      "mostLiked": c => -c.likeCnt,
+      "mostWords": c => -c.text.length
+    };
+
+    function sortUsingFlexOrder(comments, sortBy) {
+      Array.from(comments).forEach(cmt => {
+        const id = parseInt(cmt.dataset.cmtId);
+        const getKey = keyingFn[sortBy];
+        if (getKey !== undefined) {
+          cmt.style.order = getKey(findBy(data.comments, (c) => c.id === id)).toString();
+        } else {
+          console.error(`unsupported sorting method: ${sortBy}`);
+        }
+      });
+    }
+
+    function sortUsingDomOp(comments, sortBy) {
+      if (comments.length === 0) {
+        return;
+      }
+      const cmtContainer = comments[0].parentElement;
+      Array.from(comments).forEach(cmt => cmtContainer.removeChild(cmt));
+      const getKey = keyingFn[sortBy];
+      const sortedCmt = Array.from(comments);
+      sortedCmt.sort(function (a, b) {
+        const aId = parseInt((a.dataset.cmtId));
+        const bId = parseInt((b.dataset.cmtId));
+        return getKey(findBy(data.comments, (c) => c.id === aId))
+          - getKey(findBy(data.comments, (c) => c.id === bId));
+      });
+      cmtContainer.append(...sortedCmt);
+    }
+
     const oCommentContainer = document.querySelector(".comment-container");
     const oCommentCnt = oCommentContainer.querySelector(".header>strong");
     const oSortingControl = oCommentContainer.querySelector(".sort-btn-group");
@@ -372,39 +406,6 @@
     const aComment = oCommentContainer.querySelectorAll(".comment-item:not(.comment-item__top)");
     sortUsingDomOp(aComment, currentSortingMethod);
 
-    function sortUsingFlexOrder(comments, sortBy) {
-      comments.forEach(cmt => {
-        const id = parseInt(cmt.dataset.cmtId);
-        const getKey = keyingFn[sortBy];
-        if (getKey !== undefined) {
-          cmt.style.order = getKey(findBy(data.comments, (c) => c.id === id)).toString();
-        } else {
-          console.error(`unsupported sorting method: ${sortBy}`);
-        }
-      });
-    }
-
-    function findBy(arr, predicate) {
-      return arr.filter(predicate)[0];
-    }
-
-    function sortUsingDomOp(comments, sortBy) {
-      if (comments.length === 0) {
-        return;
-      }
-      const cmtContainer = comments[0].parentElement;
-      Array.from(comments).forEach(cmt => cmtContainer.removeChild(cmt));
-      const getKey = keyingFn[sortBy];
-      const sortedCmt = Array.from(comments);
-      sortedCmt.sort(function (a, b) {
-        const aId = parseInt((a.dataset.cmtId));
-        const bId = parseInt((b.dataset.cmtId));
-        return getKey(findBy(data.comments, (c) => c.id === aId))
-          - getKey(findBy(data.comments, (c) => c.id === bId));
-      });
-      cmtContainer.append(...sortedCmt);
-    }
-
     oSortingControl.addEventListener("click", (e) => {
       aSortingBtn.forEach(btn => btn.classList.remove("sort-btn__active"));
       const btn = e.target;
@@ -415,7 +416,6 @@
     });
 
     oCommentTextarea.addEventListener("input", e => {
-      console.log("oCommentTextarea", e.type);
       const ta = e.target;
       ta.style.height = "auto";
       ta.style.height = `${ta.scrollHeight}px`;
