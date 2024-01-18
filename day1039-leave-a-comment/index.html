@@ -356,9 +356,9 @@
     const aComment = oCommentContainer.querySelectorAll(".comment-item:not(.comment-item__top)");
 
     const keyingFn = {
-      "mostRecent": (c) => -new Date(c.createdAt).getTime() / 1e5,
-      "mostLiked": (c) => -c.likeCnt,
-      "mostWords": (c) => -c.text.length
+      "mostRecent": c => -new Date(c.createdAt).getTime() / 1e5,
+      "mostLiked": c => -c.likeCnt,
+      "mostWords": c => -c.text.length
     };
 
     function sortUsingFlexOrder(comments, sortBy) {
