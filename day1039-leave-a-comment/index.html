@@ -91,12 +91,19 @@
       width: 100%;
       outline-offset: 2px;
       box-sizing: border-box;
-      resize: vertical;
+      overflow: hidden;
+      resize: none;
+      transition: .3s;
+      max-height: 600px;
+      border-radius: 4px;
+      padding: 4px;
     }
 
     .comment-input > textarea:focus,
     .comment-input > textarea:active {
-      outline: solid 2px lightblue;
+      border-color: #00c97e;
+      outline: 0;
+      box-shadow: 0 0 0 0.25rem rgba(0, 150, 94, .6);
     }
 
     .comment-input > button {
@@ -205,6 +212,12 @@
           createdAt: "2023-01-16"
         }
       ]
+    };
+    let currentSortingMethod = "mostRecent";
+    const keyingFn = {
+      "mostRecent": c => -new Date(c.createdAt).getTime() / 1e5,
+      "mostLiked": c => -c.likeCnt,
+      "mostWords": c => -c.text.length
     };
 
     function buildDom(root) {
@@ -336,6 +349,8 @@
     const oCommentCnt = oCommentContainer.querySelector(".header>strong");
     const oSortingControl = oCommentContainer.querySelector(".sort-btn-group");
     const aSortingBtn = oCommentContainer.querySelectorAll(".sort-btn");
+    const oCommentTextarea = oCommentContainer.querySelector(".comment-input>textarea");
+    const oSubmitCommentBtn = oCommentContainer.querySelector(".comment-input>button");
 
     data.comments = data.comments.concat(new Array(20).fill(null).map((_, idx) => {
       return {
@@ -355,12 +370,7 @@
     }, document.createDocumentFragment()));
     oCommentCnt.textContent = oCommentCnt.textContent.replace(/\d+/, data.commentCnt);
     const aComment = oCommentContainer.querySelectorAll(".comment-item:not(.comment-item__top)");
-
-    const keyingFn = {
-      "mostRecent": c => -new Date(c.createdAt).getTime() / 1e5,
-      "mostLiked": c => -c.likeCnt,
-      "mostWords": c => -c.text.length
-    };
+    sortUsingDomOp(aComment, currentSortingMethod);
 
     function sortUsingFlexOrder(comments, sortBy) {
       comments.forEach(cmt => {
@@ -383,7 +393,7 @@
         return;
       }
       const cmtContainer = comments[0].parentElement;
-      comments.forEach(cmt => cmtContainer.removeChild(cmt));
+      Array.from(comments).forEach(cmt => cmtContainer.removeChild(cmt));
       const getKey = keyingFn[sortBy];
       const sortedCmt = Array.from(comments);
       sortedCmt.sort(function (a, b) {
@@ -401,6 +411,41 @@
       btn.classList.add("sort-btn__active");
       // sortUsingFlexOrder(aComment, btn.dataset.sortBy);
       sortUsingDomOp(aComment, btn.dataset.sortBy);
+      currentSortingMethod = btn.dataset.sortBy;
+    });
+
+    oCommentTextarea.addEventListener("input", e => {
+      console.log("oCommentTextarea", e.type);
+      const ta = e.target;
+      ta.style.height = "auto";
+      ta.style.height = `${ta.scrollHeight}px`;
+    });
+
+    function formatDateTime(dateTime, pattern) {
+      pattern = pattern.replace(/y+/, match => dateTime.getFullYear().toString().slice(-1 * match.length));
+      pattern = pattern.replace(/M+/, match => (dateTime.getMonth() + 1).toString().padStart(match.length, "0"));
+      pattern = pattern.replace(/d+/, match => dateTime.getDate().toString().padStart(match.length, "0"));
+      return pattern;
+    }
+
+    oSubmitCommentBtn.addEventListener("click", e => {
+      const cmtText = oCommentTextarea.value.trimEnd();
+      if (cmtText === "") {
+        return;
+      }
+
+      const cmt = {
+        id: 1000 + data.comments.length,
+        userName: "游客",
+        userAvatar: "img/user-avatar.png",
+        text: cmtText,
+        likeCnt: 0,
+        createdAt: formatDateTime(new Date(), "yyyy-MM-dd")
+      };
+      data.comments.push(cmt);
+      oCommentTextarea.value = "";
+      oCommentContainer.appendChild(createCommentItem(cmt));
+      sortUsingDomOp(oCommentContainer.querySelectorAll(".comment-item:not(.comment-item__top)"), currentSortingMethod);
     });
   </script>
 </body>
