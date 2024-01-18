@@ -76,7 +76,7 @@
       flex-shrink: 0;
     }
 
-    .comment-item > .user-avatar > img {
+    .comment-item > .user-avatar img {
       height: 100%;
       width: 100%;
       object-fit: scale-down;
@@ -210,12 +210,8 @@
             id: "",
             className: "",
             href: "#",
-            contentText: "点赞",
-            children: [{
-              tagName: "span",
-              contentText: comment.likeCnt > 0 ? `(${comment.likeCnt})` : "",
-              children: []
-            }]
+            contentText: `点赞${comment.likeCnt > 0 ? "(" + comment.likeCnt + ")" : ""}`,
+            children: []
           },
           {
             tagName: "div",
@@ -263,10 +259,16 @@
             className: "user-avatar",
             contentText: "",
             children: [{
-              tagName: "img",
-              src: comment.userAvatar,
-              alt: "用户的头像",
-              children: []
+              tagName: "a",
+              href: "#",
+              children: [
+                {
+                  tagName: "img",
+                  src: comment.userAvatar,
+                  alt: "用户的头像",
+                  children: []
+                }
+              ]
             }]
           },
           {
@@ -363,13 +365,26 @@
       sortUsingDomOp(oCommentContainer.querySelectorAll(".comment-item:not(.comment-item__top)"), sortBy);
     }
 
+    function likeComment(id, btn) {
+      const stateCmt = findBy(STATE.comments, c => c.id === id);
+      stateCmt.likeCnt += 1;
+      btn.textContent = "已经" + btn.textContent.replace(/\d+/, stateCmt.likeCnt);
+      btn.style.cursor = "not-allowed";
+    }
+
     function addComment(cmts) {
       cmts.forEach((cmt, idx) => cmt.id = 1000 + STATE.comments.length + idx);
       STATE.comments = STATE.comments.concat(cmts);
       STATE.commentCnt = STATE.comments.length;
       oCommentCnt.textContent = oCommentCnt.textContent.replace(/\d+/, STATE.commentCnt);
       oCommentContainer.appendChild(cmts.reduce((node, cmt) => {
-        node.appendChild(createCommentItem(cmt));
+        const cmtItem = createCommentItem(cmt);
+        node.appendChild(cmtItem);
+        const likeBtn = cmtItem.querySelector(".comment-control>a:first-of-type");
+        likeBtn.addEventListener("click", e => {
+          e.preventDefault();
+          likeComment(cmt.id, likeBtn);
+        }, { once: true });
         return node;
       }, document.createDocumentFragment()));
       setTimeout(() => sortComments(currentSortingMethod), 0);
