@@ -47,9 +47,14 @@
     align-items: flex-start;
   }
 
-  .tags li {
-    background-color: #7e7e7e;
+  .tags a {
     padding: 6px;
+    display: flex;
+  }
+
+  .tags li {
+    display: flex;
+    background-color: #7e7e7e;
   }
 
   .tags__selected a {
@@ -58,11 +63,12 @@
 
   .tags__selected li::after {
     content: "x";
-    display: inline-block;
     border-left: solid #00c97e 2px;
-    padding-left: 4px;
+    padding: 0 4px;
     margin-left: 4px;
     cursor: pointer;
+    /* magic number to vertically center the x */
+    line-height: 32px;
   }
 </style>
 <body>
@@ -119,9 +125,7 @@
     }
 
     oTagsList.addEventListener("click", e => {
-      if (e.target.tagName === "LI") {
-        selectTag(nodeIndexOf(e.target));
-      } else if (e.target.tagName === "A") {
+      if (e.target.tagName === "A") {
         selectTag(nodeIndexOf(e.target.parentElement));
       }
     });
