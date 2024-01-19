@@ -441,10 +441,13 @@
     ]);
 
     oSortingControl.addEventListener("click", (e) => {
-      aSortingBtn.forEach(btn => btn.classList.remove("sort-btn__active"));
       const btn = e.target;
-      btn.classList.add("sort-btn__active");
+      if (btn.dataset.sortBy === currentSortingMethod) {
+        return;
+      }
       currentSortingMethod = btn.dataset.sortBy;
+      aSortingBtn.forEach(btn => btn.classList.remove("sort-btn__active"));
+      btn.classList.add("sort-btn__active");
       sortComments(currentSortingMethod);
     });
 
