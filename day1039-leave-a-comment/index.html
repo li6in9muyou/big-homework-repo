@@ -106,7 +106,7 @@
       box-shadow: 0 0 0 0.25rem rgba(0, 150, 94, .6);
     }
 
-    .comment-input > button {
+    .comment-input > .btn {
       margin-top: 8px;
       background-color: #00784b;
       border: solid 2px #00d284;
@@ -116,7 +116,12 @@
       cursor: pointer;
     }
 
-    .comment-input > button:active {
+    .comment-input > .btn__disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    .comment-input > .btn:active {
       background-color: #0c5225;
       border-color: #00784b;
     }
@@ -169,7 +174,7 @@
                   cols="20"
                   rows="4"
                   placeholder="撰写评论"></textarea>
-        <button>提交评论</button>
+        <button class="btn btn__disabled">提交评论</button>
       </div>
     </div>
   </section>
@@ -395,7 +400,7 @@
     const oSortingControl = oCommentContainer.querySelector(".sort-btn-group");
     const aSortingBtn = oCommentContainer.querySelectorAll(".sort-btn");
     const oCommentTextarea = oCommentContainer.querySelector(".comment-input>textarea");
-    const oSubmitCommentBtn = oCommentContainer.querySelector(".comment-input>button");
+    const oSubmitCommentBtn = oCommentContainer.querySelector(".comment-input>.btn");
 
     addComment(new Array(20).fill(null).map((_, idx) => {
       return {
@@ -455,6 +460,11 @@
       const ta = e.target;
       ta.style.height = "auto";
       ta.style.height = `${ta.scrollHeight}px`;
+      if (ta.value.trimEnd() === "") {
+        oSubmitCommentBtn.classList.add("btn__disabled");
+      } else {
+        oSubmitCommentBtn.classList.remove("btn__disabled");
+      }
     });
 
     oSubmitCommentBtn.addEventListener("click", _ => {
