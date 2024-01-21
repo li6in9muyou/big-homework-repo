@@ -13,16 +13,18 @@
 
     body {
       background-color: #333;
+      color: #fff;
+      font-size: 20px;
     }
 
     .balls-container {
       width: 400px;
       height: 600px;
-      outline: solid 4px orangered;
+      border: solid 4px orangered;
       position: relative;
     }
 
-    .balls-container > .ball {
+    .balls-container > .hex {
       position: absolute;
       display: block;
       width: var(--piece-width);
@@ -32,27 +34,84 @@
       background-color: lightyellow;
       text-align: center;
     }
+
+    .ball {
+      width: 40px;
+      height: 40px;
+      border-radius: 100%;
+      background-color: lightyellow;
+      box-shadow: -2px -2px 12px rgba(100, 100, 100, .7) inset;
+    }
+
+    .turret {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background-color: black;
+      border-radius: 100%;
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+      top: -4px;
+      z-index: 10;
+    }
+
+    .turret--barrel {
+      position: absolute;
+      height: 50px;
+      width: 20px;
+      background-color: brown;
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+      top: -50px;
+      z-index: 10;
+    }
+
+    footer {
+      position: relative;
+      width: 408px;
+      box-sizing: border-box;
+      padding: 12px;
+      border: solid 4px orangered;
+      border-top: none;
+    }
+
+    .coming-balls {
+      position: absolute;
+      display: flex;
+      gap: 30px;
+      left: calc(50% - 20px);
+      top: calc(50% - 20px);
+      z-index: 20;
+    }
   </style>
   <script src="js/build-dom.js"></script>
 </head>
 <body>
   <section class="balls-container">
   </section>
+  <footer>
+    <span>当前分数：0</span>
+    <div class="turret">
+      <div class="turret--barrel"></div>
+    </div>
+    <div class="coming-balls">
+      <div class="ball"></div>
+      <div class="ball"></div>
+      <div class="ball"></div>
+    </div>
+  </footer>
   <script>
     const oBallsContainer = document.querySelector(".balls-container");
-    oBallsContainer.append(...buildDom(new Array(162).fill(null).map((_, idx) => ({
-      tagName: "div",
-      textContent: idx + 1,
-      className: "ball"
-    }))));
-    const aBalls = document.querySelectorAll(".ball");
   </script>
   <script>
+    // A 400x600 area can fit 162 hexagon slots which are 40px wide.
     const CTAR_W = oBallsContainer.offsetWidth;
     const CTAR_H = oBallsContainer.offsetHeight;
-    const SLOT_W = aBalls[0].offsetWidth;
+    const SLOT_W = 40;
     const SLOT_CENTER_OFFSET_W = -SLOT_W / 2;
-    const SLOT_H = aBalls[0].offsetHeight;
+    const SLOT_H = 2 / Math.sqrt(3) * SLOT_W;
     const SLOT_CENTER_OFFSET_H = -SLOT_H / 2;
     const H_STEP = SLOT_W;
     const V_STEP = Math.sqrt(3) / 2 * SLOT_W;
@@ -65,7 +124,7 @@
     let y = V_INIT;
     let cntPerRow = N_SLOTS_PER_ROW;
     let alternateRow = false;
-    let totalCnt = aBalls.length;
+    let totalCnt = 162;
     while (totalCnt--) {
       SLOTS.push([x, y]);
       x += H_STEP;
