@@ -104,6 +104,19 @@
   </footer>
   <script>
     const oBallsContainer = document.querySelector(".balls-container");
+    const oFooter = document.querySelector("footer");
+    const oTurret = document.querySelector(".turret");
+    const turretCenterTop = oFooter.offsetTop + oFooter.offsetHeight / 2;
+    const turretCenterLeft = oFooter.offsetLeft + oFooter.offsetWidth / 2;
+    oBallsContainer.addEventListener("mousemove", (e) => {
+      const dTop = e.clientY - turretCenterTop;
+      const dLeft = e.clientX - turretCenterLeft;
+      const tan = -1 * dLeft / dTop;
+      const rad = Math.atan(tan);
+      const deg = rad * (360 / (2 * Math.PI));
+      const clamped = Math.max(-60, Math.min(deg, 60));
+      oTurret.style.transform = `rotateZ(${clamped}deg)`;
+    }, { passive: true });
   </script>
   <script>
     // A 400x600 area can fit 162 hexagon slots which are 40px wide.
