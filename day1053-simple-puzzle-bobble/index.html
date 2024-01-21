@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>简单泡泡龙</title>
+  <style>
+    :root {
+      --piece-width: 40px;
+    }
+
+    body {
+      background-color: #333;
+    }
+
+    .balls-container {
+      width: 400px;
+      height: 600px;
+      outline: solid 4px orangered;
+      position: relative;
+    }
+
+    .balls-container > .ball {
+      position: absolute;
+      display: block;
+      width: var(--piece-width);
+      height: calc(var(--piece-width) * 1.1547);
+      line-height: calc(var(--piece-width) * 1.1547);
+      clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
+      background-color: lightyellow;
+      text-align: center;
+    }
+  </style>
+  <script src="js/build-dom.js"></script>
+</head>
+<body>
+  <section class="balls-container">
+  </section>
+  <script>
+    const oBallsContainer = document.querySelector(".balls-container");
+    oBallsContainer.append(...buildDom(new Array(162).fill(null).map((_, idx) => ({
+      tagName: "div",
+      textContent: idx + 1,
+      className: "ball"
+    }))));
+    const aBalls = document.querySelectorAll(".ball");
+  </script>
+  <script>
+    const CTAR_W = oBallsContainer.offsetWidth;
+    const CTAR_H = oBallsContainer.offsetHeight;
+    const SLOT_W = aBalls[0].offsetWidth;
+    const SLOT_CENTER_OFFSET_W = -SLOT_W / 2;
+    const SLOT_H = aBalls[0].offsetHeight;
+    const SLOT_CENTER_OFFSET_H = -SLOT_H / 2;
+    const H_STEP = SLOT_W;
+    const V_STEP = Math.sqrt(3) / 2 * SLOT_W;
+    const H_INIT = SLOT_W / 2;
+    const V_INIT = 2 / Math.sqrt(3) * SLOT_W / 2;
+    const N_SLOTS_PER_ROW = Math.floor(CTAR_W / SLOT_W);
+    const SLOTS = [];
+
+    let x = H_INIT;
+    let y = V_INIT;
+    let cntPerRow = N_SLOTS_PER_ROW;
+    let alternateRow = false;
+    let totalCnt = aBalls.length;
+    while (totalCnt--) {
+      SLOTS.push([x, y]);
+      x += H_STEP;
+      cntPerRow--;
+      if (cntPerRow === 0) {
+        alternateRow = !alternateRow;
+        cntPerRow = alternateRow ? N_SLOTS_PER_ROW - 1 : N_SLOTS_PER_ROW;
+        y += V_STEP;
+        x = alternateRow ? 2 * H_INIT : H_INIT;
+      }
+    }
+  </script>
+</body>
+</html>
