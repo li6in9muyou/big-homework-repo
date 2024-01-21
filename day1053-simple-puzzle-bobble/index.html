@@ -15,6 +15,9 @@
       background-color: #333;
       color: #fff;
       font-size: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .balls-container {
@@ -28,19 +31,24 @@
       position: absolute;
       display: block;
       width: var(--piece-width);
+      /* 2 / Math.sqrt(3) = 1.1547... */
       height: calc(var(--piece-width) * 1.1547);
       line-height: calc(var(--piece-width) * 1.1547);
       clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
       background-color: lightyellow;
+      color: #222;
+      user-select: none;
       text-align: center;
     }
 
     .ball {
+      position: absolute;
       width: 40px;
       height: 40px;
       border-radius: 100%;
-      background-color: lightyellow;
+      background-color: yellow;
       box-shadow: -2px -2px 12px rgba(100, 100, 100, .7) inset;
+      z-index: 100;
     }
 
     .turret {
@@ -86,6 +94,10 @@
       top: calc(50% - 20px);
       z-index: 20;
     }
+
+    .coming-balls > .ball {
+      position: relative;
+    }
   </style>
   <script src="js/build-dom.js"></script>
 </head>
@@ -104,20 +116,116 @@
     </div>
   </footer>
   <script>
+    function BouncingBall(elem, direction, balls) {
+      this.R = 20;
+      this.elem = elem;
+      this.balls = balls;
+      this.arena = elem.parentElement;
+      this.MAX_X = this.arena.offsetWidth - 2 * this.R;
+      this.posX = this.arena.offsetWidth / 2 - this.R - 4;
+      this.posY = this.arena.offsetHeight + 2;
+      this.direction = direction;
+      this.speed_x = 10;
+      this.speed_y = -10;
+      this.shouldStop = false;
+      this.updatePos();
+    }
+
+    BouncingBall.prototype.updatePos = function () {
+      this.elem.style.top = this.posY + "px";
+      this.elem.style.left = this.posX + "px";
+    };
+
+    BouncingBall.prototype.run = function () {
+      this.posY += this.speed_y * Math.cos(this.direction);
+      this.posX += this.speed_x * Math.sin(this.direction);
+
+      if (this.posX >= this.MAX_X || this.posX <= 0) {
+        this.speed_x *= -1;
+      }
+
+      let minDist = Infinity, bestBall = 0;
+      for (let i = 0; i < balls.length; i++) {
+        const ball = balls[i];
+        const dist = (this.posX - ball.posX) ** 2 + (this.posY - ball.posY) ** 2;
+        if (1e-4 < dist && dist < (this.R * 2) ** 2 && dist < minDist) {
+          minDist = dist;
+          bestBall = i;
+        }
+      }
+      if (minDist < Infinity) {
+        const cX = this.posX + this.R;
+        const cY = this.posY + this.R;
+        let minDist = Infinity;
+        let bestSlot = 0;
+        for (let i = 0; i < SLOTS.length; i++) {
+          const [sX, sY] = SLOTS[i];
+          const slotCenterX = (sX + SLOT_W / 2);
+          const slotCenterY = (sY + SLOT_H / 2);
+          const dist = (cX - slotCenterX) ** 2 + (cY - slotCenterY) ** 2;
+          if (dist < minDist) {
+            minDist = dist;
+            bestSlot = i;
+          }
+        }
+        [this.posX, this.posY] = SLOTS[bestSlot];
+        this.posY += 3;
+        this.shouldStop = true;
+      }
+
+      if (this.posY <= SLOT_H / 2) {
+        this.posY = 3;
+        const cX = this.posX + this.R;
+
+        let minDist = Infinity;
+        let bestSlot = 0;
+        for (let i = 0; i < 10; i++) {
+          const [sX, _] = SLOTS[i];
+          const slotCenterX = (sX + SLOT_W / 2);
+          const dist = Math.abs(cX - slotCenterX);
+          if (dist < minDist) {
+            minDist = dist;
+            bestSlot = i;
+          }
+        }
+        [this.posX, _] = SLOTS[bestSlot];
+        this.shouldStop = true;
+        this.elem.dataset.row = "0";
+      }
+
+      this.updatePos();
+      if (!this.shouldStop) {
+        requestAnimationFrame(this.run.bind(this));
+      }
+    };
+
     const oBallsContainer = document.querySelector(".balls-container");
     const oFooter = document.querySelector("footer");
     const oTurret = document.querySelector(".turret");
     const turretCenterTop = oFooter.offsetTop + oFooter.offsetHeight / 2;
     const turretCenterLeft = oFooter.offsetLeft + oFooter.offsetWidth / 2;
+    let state = {
+      shootingDirection: 0
+    };
+
     oBallsContainer.addEventListener("mousemove", (e) => {
       const dTop = e.clientY - turretCenterTop;
       const dLeft = e.clientX - turretCenterLeft;
       const tan = -1 * dLeft / dTop;
-      const rad = Math.atan(tan);
-      const deg = rad * (360 / (2 * Math.PI));
-      const clamped = Math.max(-60, Math.min(deg, 60));
-      oTurret.style.transform = `rotateZ(${clamped}deg)`;
+      const dir = Math.atan(tan);
+      state = { ...state, shootingDirection: dir };
+      const clamped = Math.max(-Math.PI / 3, Math.min(dir, Math.PI / 3));
+      oTurret.style.transform = `rotateZ(${clamped}rad)`;
     }, { passive: true });
+
+    const balls = [];
+    oBallsContainer.addEventListener("click", () => {
+      const b = document.createElement("div");
+      b.classList.add("ball");
+      oBallsContainer.appendChild(b);
+      balls.push(new BouncingBall(b, state.shootingDirection, balls));
+      balls[balls.length - 1].run();
+    });
   </script>
   <script>
     // A 400x600 area can fit 162 hexagon slots which are 40px wide.
@@ -134,13 +242,20 @@
     const N_SLOTS_PER_ROW = Math.floor(CTAR_W / SLOT_W);
     const SLOTS = [];
 
-    let x = H_INIT;
-    let y = V_INIT;
+    let x = H_INIT + SLOT_CENTER_OFFSET_W;
+    let y = V_INIT + SLOT_CENTER_OFFSET_H;
     let cntPerRow = N_SLOTS_PER_ROW;
     let alternateRow = false;
     let totalCnt = 162;
+    const ff = document.createDocumentFragment();
     while (totalCnt--) {
       SLOTS.push([x, y]);
+      const h = document.createElement("div");
+      h.classList.add("hex");
+      h.textContent = (161 - totalCnt).toString();
+      h.style.top = y + "px";
+      h.style.left = x + "px";
+      ff.appendChild(h);
       x += H_STEP;
       cntPerRow--;
       if (cntPerRow === 0) {
@@ -148,8 +263,10 @@
         cntPerRow = alternateRow ? N_SLOTS_PER_ROW - 1 : N_SLOTS_PER_ROW;
         y += V_STEP;
         x = alternateRow ? 2 * H_INIT : H_INIT;
+        x += SLOT_CENTER_OFFSET_W;
       }
     }
+    oBallsContainer.appendChild(ff);
   </script>
 </body>
 </html>
