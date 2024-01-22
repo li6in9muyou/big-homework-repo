@@ -306,10 +306,6 @@
       return item;
     }
 
-    function findBy(arr, predicate) {
-      return arr.filter(predicate)[0];
-    }
-
     function formatDateTime(dateTime, pattern) {
       pattern = pattern.replace(/y+/, match => dateTime.getFullYear().toString().slice(-1 * match.length));
       pattern = pattern.replace(/M+/, match => (dateTime.getMonth() + 1).toString().padStart(match.length, "0"));
@@ -347,7 +343,7 @@
     function sortFlexOrder(comments, getKey) {
       comments.forEach(cmt => {
         const id = parseInt(cmt.dataset.cmtId);
-        cmt.style.order = getKey(findBy(STATE.comments, (c) => c.id === id)).toString();
+        cmt.style.order = getKey(STATE.comments.find(c => c.id === id)).toString();
       });
     }
 
@@ -357,8 +353,8 @@
       comments.sort(function (a, b) {
         const aId = parseInt((a.dataset.cmtId));
         const bId = parseInt((b.dataset.cmtId));
-        return getKey(findBy(STATE.comments, (c) => c.id === aId))
-          - getKey(findBy(STATE.comments, (c) => c.id === bId));
+        return getKey(STATE.comments.find(c => c.id === aId))
+          - getKey(STATE.comments.find(c => c.id === bId));
       });
       cmtContainer.append(...comments);
     }
@@ -371,7 +367,7 @@
     }
 
     function likeComment(id, btn) {
-      const stateCmt = findBy(STATE.comments, c => c.id === id);
+      const stateCmt = STATE.comments.find(c => c.id === id);
       stateCmt.likeCnt += 1;
       btn.textContent = "已经" + btn.textContent.replace(/\d+/, stateCmt.likeCnt);
       btn.style.cursor = "not-allowed";
