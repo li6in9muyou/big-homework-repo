@@ -369,7 +369,12 @@
     function likeComment(id, btn) {
       const stateCmt = STATE.comments.find(c => c.id === id);
       stateCmt.likeCnt += 1;
-      btn.textContent = "已经" + btn.textContent.replace(/\d+/, stateCmt.likeCnt);
+      if (stateCmt.likeCnt === 1) {
+        btn.textContent += "(1)";
+      } else {
+        btn.textContent.replace(/\d+/, stateCmt.likeCnt);
+      }
+      btn.textContent = "已经" + btn.textContent;
       btn.style.cursor = "not-allowed";
     }
 
