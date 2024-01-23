@@ -199,13 +199,16 @@
       }
     };
 
+    const BALL_COLORS = ["lightyellow", "crimson", "skyblue", "limegreen", "indigo"];
     const oBallsContainer = document.querySelector(".balls-container");
     const oFooter = document.querySelector("footer");
+    const aComingBalls = oFooter.querySelectorAll("footer>.coming-balls>.ball");
     const oTurret = document.querySelector(".turret");
     const turretCenterTop = oFooter.offsetTop + oFooter.offsetHeight / 2;
     const turretCenterLeft = oFooter.offsetLeft + oFooter.offsetWidth / 2;
     let state = {
-      shootingDirection: 0
+      shootingDirection: 0,
+      comingBallsColor: [BALL_COLORS[0], BALL_COLORS[1], BALL_COLORS[2]]
     };
 
     oBallsContainer.addEventListener("mousemove", (e) => {
@@ -218,14 +221,33 @@
       oTurret.style.transform = `rotateZ(${clamped}rad)`;
     }, { passive: true });
 
+    function sample(arr, n = 1) {
+      return new Array(n).fill(null).map(() => arr[Math.floor(Math.random() * arr.length)]);
+    }
+
+    function handlePlayerShootBall(_) {
+      function shootNewBall(color) {
+        const b = document.createElement("div");
+        b.classList.add("ball");
+        oBallsContainer.appendChild(b);
+        b.style.backgroundColor = color;
+        balls.push(new BouncingBall(b, state.shootingDirection, balls));
+        balls[balls.length - 1].run();
+      }
+
+      function updateComingBall() {
+        state.comingBallsColor = [...state.comingBallsColor.slice(1), sample(BALL_COLORS)];
+        aComingBalls.forEach((b, idx) => b.style.backgroundColor = state.comingBallsColor[idx]);
+      }
+
+      shootNewBall(state.comingBallsColor[0]);
+      updateComingBall();
+    }
+
     const balls = [];
-    oBallsContainer.addEventListener("click", () => {
-      const b = document.createElement("div");
-      b.classList.add("ball");
-      oBallsContainer.appendChild(b);
-      balls.push(new BouncingBall(b, state.shootingDirection, balls));
-      balls[balls.length - 1].run();
-    });
+    oBallsContainer.addEventListener("click", handlePlayerShootBall);
+    aComingBalls.forEach((b, idx) => b.style.backgroundColor = state.comingBallsColor[idx]);
+
   </script>
   <script>
     // A 400x600 area can fit 162 hexagon slots which are 40px wide.
