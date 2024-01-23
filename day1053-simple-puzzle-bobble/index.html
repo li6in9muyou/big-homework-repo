@@ -147,7 +147,7 @@
       let minDist = Infinity, bestBall = 0;
       for (let i = 0; i < balls.length; i++) {
         const ball = balls[i];
-        if (!ball.stop) {
+        if (!ball.shouldStop) {
           continue;
         }
         const dist = (this.posX - ball.posX) ** 2 + (this.posY - ball.posY) ** 2;
