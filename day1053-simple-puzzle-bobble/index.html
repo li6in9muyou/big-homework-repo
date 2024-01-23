@@ -199,6 +199,7 @@
       }
     };
 
+    const MAX_SHOOTING_ANGLE = 1.3;
     const BALL_COLORS = ["lightyellow", "crimson", "skyblue", "limegreen", "indigo"];
     const oBallsContainer = document.querySelector(".balls-container");
     const oFooter = document.querySelector("footer");
@@ -216,8 +217,8 @@
       const dLeft = e.clientX - turretCenterLeft;
       const tan = -1 * dLeft / dTop;
       const dir = Math.atan(tan);
-      state = { ...state, shootingDirection: dir };
-      const clamped = Math.max(-Math.PI / 3, Math.min(dir, Math.PI / 3));
+      const clamped = Math.max(-MAX_SHOOTING_ANGLE, Math.min(dir, MAX_SHOOTING_ANGLE));
+      state = { ...state, shootingDirection: clamped };
       oTurret.style.transform = `rotateZ(${clamped}rad)`;
     }, { passive: true });
 
