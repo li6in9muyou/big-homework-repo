@@ -140,7 +140,7 @@
       this.posY += this.speed_y * Math.cos(this.direction);
       this.posX += this.speed_x * Math.sin(this.direction);
 
-      if (this.posX >= this.MAX_X || this.posX <= 0) {
+      if (this.posX >= this.MAX_X - this.speed_x || this.posX <= 0) {
         this.speed_x *= -1;
       }
 
