@@ -252,7 +252,7 @@
         const b = document.createElement("div");
         b.classList.add("ball");
         oBallsContainer.appendChild(b);
-        new BouncingBall(b, state.shootingDirection, balls, color).run();
+        new BouncingBall(b, state.shootingDirection, color).run();
       }
 
       function updateComingBall() {
