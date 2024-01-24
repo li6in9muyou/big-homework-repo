@@ -87,6 +87,12 @@
       border-top: none;
     }
 
+    footer > span {
+      transition: .3s;
+      transform-origin: left;
+      display: block;
+    }
+
     .coming-balls {
       position: absolute;
       display: flex;
@@ -158,6 +164,8 @@
 
     function BouncingBall(elem, direction, color) {
       this.R = 20;
+      this.destroyed = false;
+      this.dropped = false;
       this.slot = NaN;
       this.color = color;
       this.elem = elem;
@@ -181,8 +189,13 @@
     };
 
     BouncingBall.prototype.destroy = function () {
+      if (this.destroyed) {
+        return;
+      }
+      this.destroyed = true;
       this.elem.style.opacity = ".5";
       this.elem.style.transform = "scale(1.4)";
+      addScore();
       this.elem.addEventListener("transitionend", () => {
           this.elem.remove();
           balls.delete(this.slot);
@@ -191,8 +204,13 @@
     };
 
     BouncingBall.prototype.drop = function () {
+      if (this.dropped) {
+        return;
+      }
+      this.dropped = true;
       this.elem.style.opacity = ".5";
       this.elem.style.transform = "translateY(80px)";
+      addScore();
       this.elem.addEventListener("transitionend", () => {
           this.elem.remove();
           balls.delete(this.slot);
@@ -288,9 +306,11 @@
     const oFooter = document.querySelector("footer");
     const aComingBalls = oFooter.querySelectorAll("footer>.coming-balls>.ball");
     const oTurret = document.querySelector(".turret");
+    const oScore = oFooter.querySelector("span");
     const turretCenterTop = oFooter.offsetTop + oFooter.offsetHeight / 2;
     const turretCenterLeft = oFooter.offsetLeft + oFooter.offsetWidth / 2;
     let state = {
+      score: 0,
       shootingDirection: 0,
       comingBallsColor: [BALL_COLORS[1], BALL_COLORS[0], BALL_COLORS[0], BALL_COLORS[0], BALL_COLORS[0], BALL_COLORS[2], BALL_COLORS[2], BALL_COLORS[2]]
     };
@@ -336,6 +356,13 @@
       requestAnimationFrame(dropBallsWithoutSupport);
     };
     requestAnimationFrame(dropBallsWithoutSupport);
+
+    function addScore() {
+      state = { ...state, score: state.score + 10 };
+      oScore.textContent = oScore.textContent.replace(/\d+/, state.score.toString());
+      oScore.style.transform = "scale(1.1)";
+      setTimeout(() => oScore.style.transform = "", 500);
+    }
 
 
     // A 400x600 area can fit 162 hexagon slots which are 40px wide.
