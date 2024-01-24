@@ -12,6 +12,7 @@
     }
 
     body {
+      position: relative;
       background-color: #333;
       color: #fff;
       font-size: 20px;
@@ -105,12 +106,32 @@
     .coming-balls > .ball {
       position: relative;
     }
+
+    .game-over {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      background-color: #222;
+      color: #fff;
+      font-size: 80px;
+      padding: 20px;
+      z-index: 999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .game-over__hidden {
+      visibility: hidden;
+    }
   </style>
   <script src="js/build-dom.js"></script>
 </head>
 <body>
   <section class="balls-container">
   </section>
+  <div class="game-over game-over__hidden">游戏结束</div>
   <footer>
     <span>当前分数：0</span>
     <div class="turret">
@@ -309,9 +330,11 @@
     const aComingBalls = oFooter.querySelectorAll("footer>.coming-balls>.ball");
     const oTurret = document.querySelector(".turret");
     const oScore = oFooter.querySelector("span");
+    const oGameOver = document.querySelector(".game-over");
     const turretCenterTop = oFooter.offsetTop + oFooter.offsetHeight / 2;
     const turretCenterLeft = oFooter.offsetLeft + oFooter.offsetWidth / 2;
     let state = {
+      gameOver: false,
       score: 0,
       shootingDirection: 0,
       comingBallsColor: [BALL_COLORS[1], BALL_COLORS[0], BALL_COLORS[0], BALL_COLORS[0], BALL_COLORS[0], BALL_COLORS[2], BALL_COLORS[2], BALL_COLORS[2]]
@@ -358,6 +381,20 @@
       requestAnimationFrame(dropBallsWithoutSupport);
     };
     requestAnimationFrame(dropBallsWithoutSupport);
+    const gameOverIfBallReachBottomSlots = () => {
+      for (const ball of balls.values()) {
+        if (SLOTS[ball.slot][1] === SLOTS[SLOTS.length - 1][1]) {
+          oGameOver.classList.remove("game-over__hidden");
+          oGameOver.textContent += "，";
+          oGameOver.textContent += oScore.textContent;
+          state = { ...state, gameOver: true };
+        }
+      }
+      if (!state.gameOver) {
+        requestAnimationFrame(gameOverIfBallReachBottomSlots);
+      }
+    };
+    requestAnimationFrame(gameOverIfBallReachBottomSlots);
 
     function addScore() {
       state = { ...state, score: state.score + 10 };
