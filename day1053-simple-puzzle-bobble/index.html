@@ -49,6 +49,7 @@
       background-color: yellow;
       box-shadow: -2px -2px 12px rgba(100, 100, 100, .7) inset;
       z-index: 100;
+      transition: opacity .6s, transform .3s;
     }
 
     .turret {
@@ -116,10 +117,12 @@
     </div>
   </footer>
   <script>
-    function BouncingBall(elem, direction, balls) {
+    function BouncingBall(elem, direction, color) {
       this.R = 20;
+      this.slot = NaN;
+      this.color = color;
       this.elem = elem;
-      this.balls = balls;
+      this.elem.style.backgroundColor = this.color;
       this.arena = elem.parentElement;
       this.MAX_X = this.arena.offsetWidth - 2 * this.R;
       this.posX = this.arena.offsetWidth / 2 - this.R - 4;
@@ -127,13 +130,25 @@
       this.direction = direction;
       this.speed_x = 10;
       this.speed_y = -10;
-      this.shouldStop = false;
+      this.inSlot = false;
       this.updatePos();
     }
+
+    BouncingBall.connectedBalls = new Map();
 
     BouncingBall.prototype.updatePos = function () {
       this.elem.style.top = this.posY + "px";
       this.elem.style.left = this.posX + "px";
+    };
+
+    BouncingBall.prototype.destroy = function () {
+      this.elem.style.opacity = ".5";
+      this.elem.style.transform = "scale(1.4)";
+      this.elem.addEventListener("transitionend", () => {
+          this.elem.remove();
+          balls.delete(this.slot);
+        }, { once: true }
+      );
     };
 
     BouncingBall.prototype.run = function () {
@@ -144,16 +159,15 @@
         this.speed_x *= -1;
       }
 
-      let minDist = Infinity, bestBall = 0;
-      for (let i = 0; i < balls.length; i++) {
-        const ball = this.balls[i];
-        if (!ball.shouldStop) {
+      let minDist = Infinity, collidedBall = 0;
+      for (const ball of balls.values()) {
+        if (!ball.inSlot) {
           continue;
         }
         const dist = (this.posX - ball.posX) ** 2 + (this.posY - ball.posY) ** 2;
         if (1e-4 < dist && dist < (this.R * 2) ** 2 && dist < minDist) {
           minDist = dist;
-          bestBall = i;
+          collidedBall = ball;
         }
       }
       if (minDist < Infinity) {
@@ -173,7 +187,9 @@
         }
         [this.posX, this.posY] = SLOTS[bestSlot];
         this.posY += 3;
-        this.shouldStop = true;
+        this.inSlot = true;
+        this.slot = bestSlot;
+        balls.set(this.slot, this);
       }
 
       if (this.posY <= SLOT_H / 6) {
@@ -192,12 +208,14 @@
           }
         }
         [this.posX, _] = SLOTS[bestSlot];
-        this.shouldStop = true;
-        this.elem.dataset.row = "0";
+
+        this.inSlot = true;
+        this.slot = bestSlot;
+        balls.set(this.slot, this);
       }
 
       this.updatePos();
-      if (!this.shouldStop) {
+      if (!this.inSlot) {
         requestAnimationFrame(this.run.bind(this));
       }
     };
@@ -212,7 +230,7 @@
     const turretCenterLeft = oFooter.offsetLeft + oFooter.offsetWidth / 2;
     let state = {
       shootingDirection: 0,
-      comingBallsColor: [BALL_COLORS[0], BALL_COLORS[1], BALL_COLORS[2]]
+      comingBallsColor: [BALL_COLORS[1], BALL_COLORS[0], BALL_COLORS[0], BALL_COLORS[0], BALL_COLORS[0], BALL_COLORS[2], BALL_COLORS[2], BALL_COLORS[2]]
     };
 
     oBallsContainer.addEventListener("mousemove", (e) => {
@@ -234,13 +252,11 @@
         const b = document.createElement("div");
         b.classList.add("ball");
         oBallsContainer.appendChild(b);
-        b.style.backgroundColor = color;
-        balls.push(new BouncingBall(b, state.shootingDirection, balls));
-        balls[balls.length - 1].run();
+        new BouncingBall(b, state.shootingDirection, balls, color).run();
       }
 
       function updateComingBall() {
-        state.comingBallsColor = [...state.comingBallsColor.slice(1), sample(BALL_COLORS)];
+        state.comingBallsColor = [...state.comingBallsColor.slice(1), ...sample(BALL_COLORS)];
         aComingBalls.forEach((b, idx) => b.style.backgroundColor = state.comingBallsColor[idx]);
       }
 
@@ -248,7 +264,7 @@
       updateComingBall();
     }
 
-    const balls = [];
+    let balls = new Map();
     oBallsContainer.addEventListener("click", handlePlayerShootBall);
     aComingBalls.forEach((b, idx) => b.style.backgroundColor = state.comingBallsColor[idx]);
 
