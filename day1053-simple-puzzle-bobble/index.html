@@ -193,6 +193,7 @@
         return;
       }
       this.destroyed = true;
+      this.inSlot = false;
       this.elem.style.opacity = ".5";
       this.elem.style.transform = "scale(1.4)";
       addScore();
@@ -208,6 +209,7 @@
         return;
       }
       this.dropped = true;
+      this.inSlot = false;
       this.elem.style.opacity = ".5";
       this.elem.style.transform = "translateY(80px)";
       addScore();
