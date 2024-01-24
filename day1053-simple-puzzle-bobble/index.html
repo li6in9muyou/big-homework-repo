@@ -117,6 +117,45 @@
     </div>
   </footer>
   <script>
+    function getDistSq(x1, y1, x2, y2) {
+      return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
+    }
+
+    function getAdjacentSlot(slot) {
+      function isOneRadiusApart(sa, sb) {
+        return Math.abs(getDistSq(...SLOTS[sa], ...SLOTS[sb]) - SLOT_W * SLOT_W) < 1e-5;
+      }
+
+      return [slot - 10, slot - 9, slot - 1, slot + 1, slot + 9, slot + 10]
+        .filter(s => SLOTS[s] !== undefined)
+        .filter(s => isOneRadiusApart(s, slot));
+    }
+
+    function findConnectedSlots(slot, predicate = s => true) {
+      let q = [slot];
+      const seen = new Set();
+      const ans = [];
+      while (true) {
+        const slot = q.pop();
+        const more = getAdjacentSlot(slot)
+          .filter(s => balls.has(s))
+          .filter(predicate)
+          .filter(s => !seen.has(s));
+        q = [...more, ...q];
+        ans.push(...more);
+        more.forEach(s => seen.add(s));
+
+        if (q.length === 0) {
+          break;
+        }
+      }
+      return ans;
+    }
+
+    function findConnectedSameColorSlots(slot) {
+      return findConnectedSlots(slot, s => balls.get(s).color === balls.get(slot).color);
+    }
+
     function BouncingBall(elem, direction, color) {
       this.R = 20;
       this.slot = NaN;
@@ -149,6 +188,24 @@
           balls.delete(this.slot);
         }, { once: true }
       );
+    };
+
+    BouncingBall.prototype.drop = function () {
+      this.elem.style.opacity = ".5";
+      this.elem.style.transform = "translateY(80px)";
+      this.elem.addEventListener("transitionend", () => {
+          this.elem.remove();
+          balls.delete(this.slot);
+        }, { once: true }
+      );
+    };
+
+    BouncingBall.prototype.attemptToDrop = function () {
+      const connected = findConnectedSlots(this.slot);
+      if (connected.find(s => SLOTS[s][1] === SLOTS[0][1]) === undefined
+        && SLOTS[this.slot][1] !== SLOTS[0][1]) {
+        this.drop();
+      }
     };
 
     BouncingBall.prototype.run = function () {
@@ -217,6 +274,11 @@
       this.updatePos();
       if (!this.inSlot) {
         requestAnimationFrame(this.run.bind(this));
+      } else {
+        const sameColorSlots = findConnectedSameColorSlots(this.slot);
+        if (sameColorSlots.length >= 3) {
+          sameColorSlots.forEach(s => balls.get(s).destroy());
+        }
       }
     };
 
@@ -267,9 +329,15 @@
     let balls = new Map();
     oBallsContainer.addEventListener("click", handlePlayerShootBall);
     aComingBalls.forEach((b, idx) => b.style.backgroundColor = state.comingBallsColor[idx]);
+    const dropBallsWithoutSupport = () => {
+      for (const ball of balls.values()) {
+        ball.attemptToDrop();
+      }
+      requestAnimationFrame(dropBallsWithoutSupport);
+    };
+    requestAnimationFrame(dropBallsWithoutSupport);
 
-  </script>
-  <script>
+
     // A 400x600 area can fit 162 hexagon slots which are 40px wide.
     const CTAR_W = oBallsContainer.offsetWidth;
     const CTAR_H = oBallsContainer.offsetHeight;
