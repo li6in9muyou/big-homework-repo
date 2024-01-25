@@ -180,7 +180,7 @@
     }
 
     function findConnectedSameColorSlots(slot) {
-      return findConnectedSlots(slot, s => balls.get(s).color === balls.get(slot).color);
+      return findConnectedSlots(slot, s => balls.get(s)?.color === balls.get(slot)?.color);
     }
 
     function BouncingBall(elem, direction, color) {
@@ -201,8 +201,6 @@
       this.inSlot = false;
       this.updatePos();
     }
-
-    BouncingBall.connectedBalls = new Map();
 
     BouncingBall.prototype.updatePos = function () {
       this.elem.style.top = this.posY + "px";
@@ -313,14 +311,20 @@
       }
 
       this.updatePos();
-      if (!this.inSlot) {
-        requestAnimationFrame(this.run.bind(this));
+      if (this.inSlot) {
+        requestAnimationFrame(this.inSlotUpdate.bind(this));
       } else {
-        const sameColorSlots = findConnectedSameColorSlots(this.slot);
-        if (sameColorSlots.length >= 3) {
-          sameColorSlots.forEach(s => balls.get(s).destroy());
-        }
+        requestAnimationFrame(this.run.bind(this));
       }
+    };
+
+    BouncingBall.prototype.inSlotUpdate = function () {
+      const sameColorSlots = findConnectedSameColorSlots(this.slot);
+      if (sameColorSlots.length >= 3) {
+        sameColorSlots.forEach(s => balls.get(s).destroy());
+      }
+      this.attemptToDrop();
+      requestAnimationFrame(this.inSlotUpdate.bind(this));
     };
 
     const MAX_SHOOTING_ANGLE = 1.3;
@@ -374,13 +378,6 @@
     let balls = new Map();
     oBallsContainer.addEventListener("click", handlePlayerShootBall);
     aComingBalls.forEach((b, idx) => b.style.backgroundColor = state.comingBallsColor[idx]);
-    const dropBallsWithoutSupport = () => {
-      for (const ball of balls.values()) {
-        ball.attemptToDrop();
-      }
-      requestAnimationFrame(dropBallsWithoutSupport);
-    };
-    requestAnimationFrame(dropBallsWithoutSupport);
     const gameOverIfBallReachBottomSlots = () => {
       for (const ball of balls.values()) {
         if (!state.gameOver && SLOTS[ball.slot][1] === SLOTS[SLOTS.length - 1][1]) {
