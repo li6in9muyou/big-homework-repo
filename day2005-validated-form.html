@@ -51,14 +51,14 @@
       padding-bottom: 8px;
     }
 
-    .form--item > .form--feedback {
+    .form--feedback {
       font-size: .8em;
       color: red;
       min-height: 1.3em;
       transition: .3s;
     }
 
-    .form--item > .form--feedback.form--feedback__hidden {
+    .form--feedback.form--feedback__hidden {
       opacity: 0;
     }
 
@@ -84,6 +84,40 @@
     .form > .form--controls > button:first-of-type {
       background-color: #ff7200;
       color: black;
+    }
+
+    .image-upload {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      border-radius: 6px;
+      background-color: #444;
+      margin-bottom: 12px;
+      font-size: 24px;
+      border: dashed #666 4px;
+      user-select: none;
+      cursor: pointer;
+    }
+
+    .image-upload > p {
+      margin-bottom: 0;
+    }
+
+    .image-preview {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      padding-top: 6px;
+    }
+
+    .image-preview > img {
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+      object-fit: contain;
     }
   </style>
 </head>
@@ -146,7 +180,19 @@
                placeholder="此处填写您的个人主页网址">
         <span class="form--feedback"></span>
       </div>
-      <h2>上传附件</h2>
+      <h2>上传照片</h2>
+      <section class="image-upload">
+        <p>点击上传照片或者拖拽照片到此处</p>
+        <span class="form--feedback form--feedback__hidden">不要添加同样的照片</span>
+        <div class="image-preview">
+        </div>
+        <input type="file"
+               name="images"
+               id="images"
+               hidden
+               multiple
+               accept="image/jpeg,image/png,image/webp">
+      </section>
       <div class="form--controls">
         <button type="submit">提交</button>
         <button type="reset">重置</button>
@@ -160,6 +206,13 @@
     const oInputTelephone = document.querySelector("#telephone");
     const oInputEmail = document.querySelector("#email");
     const oInputLink = document.querySelector("#link");
+    const oImageUpload = document.querySelector(".image-upload");
+    const oImagePreview = document.querySelector(".image-preview");
+    const oImageInput = document.querySelector("#images");
+    const oImageUploadFeedback = oImageUpload.querySelector(".form--feedback");
+    const state = {
+      addedImages: new Set()
+    };
 
     attachValidator(oInputAccount,
       [text => /^[a-zA-Z0-9-_]*$/.test(text),
@@ -207,6 +260,30 @@
         }
       });
     }
+
+    function addImagePreview(fileList) {
+      const newImages = Array.from(fileList).reduce((images, file) => {
+        if (!state.addedImages.has(file.name)) {
+          state.addedImages.add(file.name);
+          const img = document.createElement("img");
+          img.src = URL.createObjectURL(file);
+          images.appendChild(img);
+        } else {
+          oImageUploadFeedback.classList.remove("form--feedback__hidden");
+          setTimeout(() => oImageUploadFeedback.classList.add("form--feedback__hidden"), 4000);
+        }
+        return images;
+      }, document.createDocumentFragment());
+      oImagePreview.insertBefore(newImages, oImagePreview.firstElementChild);
+    }
+
+    oImageUpload.addEventListener("click", () => oImageInput.click());
+    oImageUpload.addEventListener("drop", e => {
+      e.preventDefault();
+      addImagePreview(e.dataTransfer.files);
+    });
+    oImageUpload.addEventListener("dragover", e => e.preventDefault());
+    oImageInput.addEventListener("change", e => addImagePreview(e.target.files));
   </script>
 </body>
 </html>
