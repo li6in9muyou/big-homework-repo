@@ -261,7 +261,7 @@
       });
     }
 
-    function addImagePreview(fileList) {
+    function addImagePreview(fileList, onDuplicate) {
       const newImages = Array.from(fileList).reduce((images, file) => {
         if (!state.addedImages.has(file.name)) {
           state.addedImages.add(file.name);
@@ -269,21 +269,25 @@
           img.src = URL.createObjectURL(file);
           images.appendChild(img);
         } else {
-          oImageUploadFeedback.classList.remove("form--feedback__hidden");
-          setTimeout(() => oImageUploadFeedback.classList.add("form--feedback__hidden"), 4000);
+          onDuplicate && onDuplicate();
         }
         return images;
       }, document.createDocumentFragment());
       oImagePreview.insertBefore(newImages, oImagePreview.firstElementChild);
     }
 
+    function showImageDuplicateFeedback() {
+      oImageUploadFeedback.classList.remove("form--feedback__hidden");
+      setTimeout(() => oImageUploadFeedback.classList.add("form--feedback__hidden"), 4000);
+    }
+
     oImageUpload.addEventListener("click", () => oImageInput.click());
     oImageUpload.addEventListener("drop", e => {
       e.preventDefault();
-      addImagePreview(e.dataTransfer.files);
+      addImagePreview(e.dataTransfer.files, showImageDuplicateFeedback);
     });
     oImageUpload.addEventListener("dragover", e => e.preventDefault());
-    oImageInput.addEventListener("change", e => addImagePreview(e.target.files));
+    oImageInput.addEventListener("change", e => addImagePreview(e.target.files, showImageDuplicateFeedback));
   </script>
 </body>
 </html>
