@@ -346,32 +346,32 @@
       seeking: false,
     };
 
-    oBtnPlay.addEventListener("click", () => {
+    listenEvent(oBtnPlay, "click", () => {
       oVideo.play();
       state = { ...state, playing: true };
       oBtnPlay.classList.add("btn__inactive");
       oBtnPause.classList.remove("btn__inactive");
     });
-    oBtnPause.addEventListener("click", () => {
+    listenEvent(oBtnPause, "click", () => {
       oVideo.pause();
       state = { ...state, playing: false };
       oBtnPlay.classList.remove("btn__inactive");
       oBtnPause.classList.add("btn__inactive");
     });
-    oVideo.addEventListener("durationchange", (e) => {
+    listenEvent(oVideo, "durationchange", (e) => {
       state = { ...state, totalTime: oVideo.duration };
       setTotalTime(state.totalTime);
       updateProgressBar(state);
     });
-    oVideo.addEventListener("timeupdate", () => {
+    listenEvent(oVideo, "timeupdate", () => {
       state = { ...state, currentTime: oVideo.currentTime };
       setCurrentTime(state.currentTime);
       if (!state.seeking) {
         updateProgressBar(state);
       }
     });
-    oVideo.addEventListener("seeking", () => state = { ...state, seeking: true });
-    oVideo.addEventListener("seeked", () => state = { ...state, seeking: false });
+    listenEvent(oVideo, "seeking", () => state = { ...state, seeking: true });
+    listenEvent(oVideo, "seeked", () => state = { ...state, seeking: false });
 
     function moveOnlyX(oldPos, newPos) {
       return { x: newPos.x, y: oldPos.y };
