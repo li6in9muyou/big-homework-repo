@@ -288,7 +288,7 @@
         this.elem.dataset.dgDragging = this.dragging;
         this.lastMousePos.x = e.clientX;
         this.lastMousePos.y = e.clientY;
-        this.cbDragStart && this.cbDragStart();
+        this.cbDragStart && this.cbDragStart(e);
       };
       this.onDragMove = function (e) {
         if (!this.dragging) {
@@ -312,7 +312,7 @@
         newPos.y += posDiff.y;
 
         if (this.cbDragMove) {
-          newPos = this.cbDragMove(oldPos, newPos) ?? newPos;
+          newPos = this.cbDragMove(oldPos, newPos, e) ?? newPos;
         }
 
         this.elem.style.top = newPos.y + "px";
@@ -328,7 +328,7 @@
         this.dragKey = NaN;
         this.dragging = false;
         this.elem.dataset.dgDragging = this.dragging;
-        this.cbDragEnd && this.cbDragEnd();
+        this.cbDragEnd && this.cbDragEnd(e);
       };
 
       listenEvent(elem, "mousedown", this.onDragStart.bind(this));
