@@ -64,6 +64,10 @@
       background-color: rgba(255, 255, 255, .5);
     }
 
+    .scrubber-container:hover > .scrubber {
+      opacity: 1;
+    }
+
     .scrubber-container > .scrubber {
       position: absolute;
       background-color: rgb(204, 0, 0);
@@ -71,6 +75,9 @@
       height: 16px;
       width: 16px;
       top: -5px;
+      transition: opacity .3s;
+      opacity: 0;
+      cursor: pointer;
     }
 
     .scrubber-container > .progress {
@@ -107,6 +114,12 @@
       font-family: monospace;
       letter-spacing: .15em;
     }
+
+    .notes {
+      font-size: 2em;
+      font-family: monospace;
+      text-indent: 2em;
+    }
   </style>
 </head>
 <body>
@@ -117,7 +130,7 @@
     <section class="controls-container">
       <section class="scrubber-container">
         <div class="progress"></div>
-        <div class="scrubber" style="left: 25%"></div>
+        <div class="scrubber"></div>
       </section>
       <div class="controls">
         <div class="controls--main">
@@ -175,12 +188,122 @@
       </div>
     </section>
   </div>
+  <p class="notes">
+    用js修改元素样式时，千万注意CSS有没有设置transition，若设置了会表现为js修改不生效。
+  </p>
+  <p class="notes">
+    避免使用包括所有样式的transition。
+  </p>
 
+  <script>
+    function listenEvent(elem, event, callback, ...args) {
+      let unlisten;
+      if (elem.addEventListener) {
+        elem.addEventListener(event, callback, ...args);
+        unlisten = function () {
+          elem.removeEventListener(event, callback);
+        };
+      } else {
+        // IE 9
+        elem.attachEvent("on" + event);
+        unlisten = function () {
+          elem.detachEvent("on" + event, callback);
+        };
+      }
+      return unlisten;
+    }
+
+    Draggable.pipeMultipleCallbacks = function (cb) {
+      if (Array.isArray(cb)) {
+        return (oldPos, newPos) => cb.reduce(
+          (updatedNewPos, fn) => fn(oldPos, updatedNewPos) ?? updatedNewPos, newPos,
+        );
+      } else {
+        return cb;
+      }
+    };
+
+    function Draggable(elem, cbDragStart, cbDragEnd, cbDragMove) {
+      this.elem = elem;
+      this.cbDragStart = Draggable.pipeMultipleCallbacks(cbDragStart);
+      this.cbDragEnd = Draggable.pipeMultipleCallbacks(cbDragEnd);
+      this.cbDragMove = Draggable.pipeMultipleCallbacks(cbDragMove);
+      this.dragging = false;
+      this.lastMousePos = { x: 0, y: 0 };
+      this.dragKey = NaN;
+      this.onDragStart = function (e) {
+        if (!isNaN(this.dragKey) && e.button !== this.dragKey) {
+          return;
+        }
+        if (this.dragging) {
+          return;
+        }
+
+        this.dragKey = e.button;
+        this.dragging = true;
+        this.elem.dataset.dgDragging = this.dragging;
+        this.lastMousePos.x = e.clientX;
+        this.lastMousePos.y = e.clientY;
+        this.cbDragStart && this.cbDragStart();
+      };
+      this.onDragMove = function (e) {
+        if (!this.dragging) {
+          return;
+        }
+        console.log("Draggable::onDragMove tagName clientXY", e.target.tagName, e.clientX, e.clientY);
+
+        const posDiff = {
+          x: e.clientX - this.lastMousePos.x,
+          y: e.clientY - this.lastMousePos.y,
+        };
+        console.log("Draggable::onDragMove posDiff", posDiff);
+        this.lastMousePos.x = e.clientX;
+        this.lastMousePos.y = e.clientY;
+        const oldPos = {
+          x: this.elem.offsetLeft,
+          y: this.elem.offsetTop,
+        };
+        let newPos = { ...oldPos };
+        newPos.x += posDiff.x;
+        newPos.y += posDiff.y;
+
+        if (this.cbDragMove) {
+          newPos = this.cbDragMove(oldPos, newPos) ?? newPos;
+        }
+
+        this.elem.style.top = newPos.y + "px";
+        this.elem.style.left = newPos.x + "px";
+      };
+      this.onDragEnd = function (e) {
+        if (!isNaN(this.dragKey) && e.button !== this.dragKey) {
+          return;
+        }
+        if (!this.dragging) {
+          return;
+        }
+        this.dragKey = NaN;
+        this.dragging = false;
+        this.elem.dataset.dgDragging = this.dragging;
+        this.cbDragEnd && this.cbDragEnd();
+      };
+
+      listenEvent(elem, "mousedown", this.onDragStart.bind(this));
+      listenEvent(document, "mousemove", this.onDragMove.bind(this), { passive: true });
+      listenEvent(document, "mouseup", this.onDragEnd.bind(this));
+    }
+
+    function clamp(v, min, max) {
+      return Math.max(min, Math.min(max, v));
+    }
+  </script>
   <script>
     const oPlayer = document.querySelector(".player");
     const oVideo = oPlayer.querySelector("video");
     const [oBtnPlay, oBtnPause] = oPlayer.querySelectorAll(".controls--main > .btn");
     const oTimestamp = oPlayer.querySelector(".controls--timestamp");
+    const oProgressBar = oPlayer.querySelector(".progress");
+    const oScrubber = oPlayer.querySelector(".scrubber");
+    const oScrubberContainer = oPlayer.querySelector(".scrubber-container");
 
     function padTimestamp(x) {
       return x.toString().padStart(2, "0");
@@ -210,7 +333,18 @@
       oTimestamp.textContent = `${text}/${s}`;
     }
 
-    let state = { playing: true };
+    function updateProgressBar(s) {
+      const percentage = Math.round(100 * s.currentTime / (s.totalTime + 1e-6));
+      oProgressBar.style.width = `${percentage}%`;
+      oScrubber.style.left = `${percentage}%`;
+    }
+
+    let state = {
+      playing: true,
+      totalTime: 0,
+      currentTime: 0,
+      seeking: false,
+    };
 
     oBtnPlay.addEventListener("click", () => {
       oVideo.play();
@@ -225,13 +359,46 @@
       oBtnPause.classList.add("btn__inactive");
     });
     oVideo.addEventListener("durationchange", (e) => {
-      setTotalTime(oVideo.duration);
+      state = { ...state, totalTime: oVideo.duration };
+      setTotalTime(state.totalTime);
+      updateProgressBar(state);
     });
     oVideo.addEventListener("timeupdate", () => {
-      setCurrentTime(oVideo.currentTime);
+      state = { ...state, currentTime: oVideo.currentTime };
+      setCurrentTime(state.currentTime);
+      if (!state.seeking) {
+        updateProgressBar(state);
+      }
     });
+    oVideo.addEventListener("seeking", () => state = { ...state, seeking: true });
+    oVideo.addEventListener("seeked", () => state = { ...state, seeking: false });
 
-    setCurrentTime(0);
+    function moveOnlyX(oldPos, newPos) {
+      return { x: newPos.x, y: oldPos.y };
+    }
+
+    function boundedX(oldPos, newPos) {
+      return { x: clamp(newPos.x, 0, oScrubberContainer.offsetWidth - oScrubber.offsetWidth), y: newPos.y };
+    }
+
+    function syncVideoCurrentTime(_, newPos) {
+      const ratio = newPos.x / (oScrubberContainer.offsetWidth - oScrubber.offsetWidth);
+      state = { ...state, currentTime: state.totalTime * ratio };
+      oVideo.currentTime = state.currentTime;
+    }
+
+    const d = new Draggable(oScrubber,
+      null,
+      null,
+      [moveOnlyX, boundedX, syncVideoCurrentTime, () => updateProgressBar(state)]);
+    listenEvent(oScrubberContainer, "drag", e => e.preventDefault());
+    listenEvent(oScrubberContainer, "dragstart", e => e.preventDefault());
+    listenEvent(oScrubber, "drag", e => e.preventDefault());
+    listenEvent(oScrubber, "dragstart", e => e.preventDefault());
+
+    setCurrentTime(state.currentTime);
+    setTotalTime(state.totalTime);
+    updateProgressBar(state);
   </script>
 </body>
 </html>
