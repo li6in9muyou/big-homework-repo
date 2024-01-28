@@ -253,6 +253,27 @@
         <li>拖拽结束后，视频往后播放</li>
       </ul>
     </li>
+    <li>不论喇叭图标，只要拖拽音量调节圆点
+      <ul>
+        <li>视频音量相应改变</li>
+        <li>如果音量为0，用静音图标</li>
+        <li>如果音量低于0.5，用小音量图标</li>
+        <li>如果音量高于0.5，用大音量图标</li>
+      </ul>
+    </li>
+    <li>不论直接拖拽小圆点静音或者点击两个音量图标静音，只要点击静音图标
+      <ul>
+        <li>视频音量设置为静音前的值</li>
+        <li>如果音量低于0.5，用小音量图标</li>
+        <li>如果音量高于0.5，用大音量图标</li>
+      </ul>
+    </li>
+    <li>点击小音量图标或大音量图标
+      <ul>
+        <li>视频音量设置为0</li>
+        <li>用静音图标</li>
+      </ul>
+    </li>
   </ol>
   <ul class="notes">
     拖动条控件的API：
@@ -435,6 +456,7 @@
       });
 
       let state = {
+        lastEmittedValue: NaN,
         value: 0.25,
         listeners: [],
       };
@@ -453,7 +475,11 @@
       }
 
       function callOnChangeListeners(s) {
-        s.listeners.forEach(cb => requestIdleCallback(() => cb(state.value), { timeout: 30 }));
+        if (s.value === state.lastEmittedValue) {
+          return;
+        }
+        state = { ...state, lastEmittedValue: s.value };
+        s.listeners.forEach(cb => requestIdleCallback(() => cb(s.value), { timeout: 30 }));
       }
 
       const d = new Draggable(thumb,
@@ -539,6 +565,7 @@
       totalTime: 0,
       currentTime: 0,
       seeking: false,
+      volumeBeforeMute: NaN,
     };
 
     listenEvent(oBtnPlay, "click", () => {
@@ -609,7 +636,6 @@
       thumbSize: "10px",
     });
     oVolumeInput.appendChild(volumeInput);
-    onVolumeChange(value => oVideo.volume = value);
     onVolumeChange(value => {
       oVolumeIconHigh.classList.add("btn__inactive");
       oVolumeIconLow.classList.add("btn__inactive");
@@ -621,9 +647,20 @@
       } else {
         oVolumeIconHigh.classList.remove("btn__inactive");
       }
+      oVideo.volume = value;
     });
-    setVolume(0.5);
 
+    const muteVideo = () => {
+      state = { ...state, volumeBeforeMute: oVideo.volume };
+      setVolume(0);
+    };
+    listenEvent(oVolumeIconLow, "click", muteVideo);
+    listenEvent(oVolumeIconHigh, "click", muteVideo);
+    listenEvent(oVolumeIconMuted, "click", () => {
+      setVolume(state.volumeBeforeMute);
+    });
+
+    setVolume(0.5);
     setCurrentTime(state.currentTime);
     setTotalTime(state.totalTime);
     updateProgressBar(state);
