@@ -122,12 +122,24 @@
       letter-spacing: .15em;
     }
 
+    .controls--volume {
+      display: flex;
+      align-items: center;
+      padding-right: 10px;
+    }
+
+    .controls--volume--input {
+      width: 100px;
+    }
+
     .notes {
       font-size: 2em;
       font-family: monospace;
       text-indent: 2em;
     }
 
+    ol.notes,
+    ul.notes,
     .notes li {
       text-indent: 0;
     }
@@ -155,26 +167,27 @@
               <path d="M 12,26 16,26 16,10 12,10 z M 21,26 25,26 25,10 21,10 z"></path>
             </svg>
           </div>
-          <div class="controls--volume" data-tip="静音">
-            <div class="btn btn__active" data-volume-low>
+          <div class="controls--volume">
+            <div class="btn btn__active" data-volume-low data-tip="静音">
               <svg class="fill-white" height="100%" viewBox="0 0 36 36" width="100%">
                 <path
                     d="M8,21 L12,21 L17,26 L17,10 L12,15 L8,15 L8,21 Z M19,14 L19,22 C20.48,21.32 21.5,19.77 21.5,18 C21.5,16.26 20.48,14.74 19,14 Z"></path>
               </svg>
             </div>
-            <div class="btn btn__inactive" data-volume-muted>
+            <div class="btn btn__inactive" data-volume-high data-tip="静音">
               <svg class="fill-white" height="100%" viewBox="0 0 36 36" width="100%">
                 <path
                     d="M8,21 L12,21 L17,26 L17,10 L12,15 L8,15 L8,21 Z M19,14 L19,22 C20.48,21.32 21.5,19.77 21.5,18 C21.5,16.26 20.48,14.74 19,14 ZM19,11.29 C21.89,12.15 24,14.83 24,18 C24,21.17 21.89,23.85 19,24.71 L19,26.77 C23.01,25.86 26,22.28 26,18 C26,13.72 23.01,10.14 19,9.23 L19,11.29 Z"></path>
               </svg>
             </div>
-            <div class="btn btn__inactive" data-volume-high>
+            <div class="btn btn__inactive" data-volume-muted data-tip="取消静音">
               <svg class="fill-white" height="100%" viewBox="0 0 36 36" width="100%">
                 <path
                     d="M8,21 L12,21 L17,26 L17,10 L12,15 L8,15 L8,21 Z M19,14 L19,22 C20.48,21.32 21.5,19.77 21.5,18 C21.5,16.26 20.48,14.74 19,14 Z"></path>
                 <path d="M 9.25,9 7.98,10.27 24.71,27 l 1.27,-1.27 Z"></path>
               </svg>
             </div>
+            <div class="controls--volume--input"></div>
           </div>
           <div class="controls--timestamp">
             1:00/21:31
@@ -232,6 +245,18 @@
       </ul>
     </li>
   </ol>
+  <ul class="notes">
+    拖动条控件的API：
+    <li>onchange event，事件中带有当前值，在0到1区间。</li>
+    <li>setValue(value)，value是在0到1区间</li>
+  </ul>
+  <ul class="notes">
+    拖动条的UI自定义：
+    <li>长短条的高度</li>
+    <li>长条颜色</li>
+    <li>短条颜色</li>
+    <li>拖动摁钮大小</li>
+  </ul>
   <p class="notes">
     用js修改元素样式时，千万注意CSS有没有设置transition，若设置了会表现为js修改不生效。
   </p>
@@ -343,6 +368,115 @@
     }
   </script>
   <script>
+    function setCssStyle(elem, css) {
+      for (const [k, v] of Object.entries(css)) {
+        elem.style[k] = v;
+      }
+      return elem;
+    }
+
+    function createRangeInput(options) {
+      options = {
+        size: "5px",
+        bgColor: "#222",
+        thumbColor: "#fff",
+        thumbSize: "16px",
+        alwaysShowThumb: true,
+        ...options,
+      };
+      const container = document.createElement("div");
+      setCssStyle(container, {
+        "position": "relative",
+        "height": options.size,
+        "width": "100%",
+        "box-sizing": "border-box",
+        "margin-top": `${options.thumbSize + 4}px`,
+        "background-color": options.bgColor,
+        "cursor": "pointer",
+      });
+      const indicator = document.createElement("div");
+      setCssStyle(indicator, {
+        "height": "100%",
+        "width": "25%",
+        "background-color": options.thumbColor,
+        "cursor": "pointer",
+      });
+      const thumb = document.createElement("div");
+      setCssStyle(thumb, {
+        "position": "absolute",
+        "background-color": options.thumbColor,
+        "border-radius": "100%",
+        "height": options.thumbSize,
+        "width": options.thumbSize,
+        "left": `calc(25% - ${options.thumbSize} / 2)`,
+        "top": `-${Math.floor((parseInt(options.thumbSize) - parseInt(options.size)) / 2)}px`,
+        "transition": "opacity .3s",
+        "cursor": "pointer",
+      });
+      container.append(indicator, thumb);
+      container.addEventListener("drag", e => e.preventDefault());
+      container.addEventListener("dragstart", e => e.preventDefault());
+      container.addEventListener("click", e => {
+        if (e.target === thumb) {
+          return;
+        }
+        state = { ...state, value: clamp(e.offsetX / (container.offsetWidth - thumb.offsetWidth), 0, 1) };
+        updateIndicatorAndThumb(state);
+        callOnChangeListeners(state);
+      });
+
+      let state = {
+        value: 0.25,
+        listeners: [],
+      };
+
+      function moveOnlyX(oldPos, newPos) {
+        return { x: newPos.x, y: oldPos.y };
+      }
+
+      function boundedX(oldPos, newPos) {
+        return { x: clamp(newPos.x, 0, container.offsetWidth - thumb.offsetWidth), y: newPos.y };
+      }
+
+      function updateIndicatorAndThumb(s) {
+        thumb.style.left = `${s.value * (container.offsetWidth - thumb.offsetWidth)}px`;
+        indicator.style.width = `${thumb.offsetLeft + thumb.offsetWidth / 2}px`;
+      }
+
+      function callOnChangeListeners(s) {
+        s.listeners.forEach(cb => requestIdleCallback(() => cb(state.value), { timeout: 30 }));
+      }
+
+      const d = new Draggable(thumb,
+        null,
+        null,
+        [
+          moveOnlyX,
+          boundedX,
+          (_, newPos) => state = { ...state, value: newPos.x / (container.offsetWidth - thumb.offsetWidth) },
+          () => updateIndicatorAndThumb(state),
+          () => callOnChangeListeners(state),
+        ],
+      );
+
+      function setValue(value) {
+        state = { ...state, value };
+        updateIndicatorAndThumb(state);
+        callOnChangeListeners(state);
+      }
+
+      function onValueChange(cb) {
+        state = { ...state, listeners: [...state.listeners, cb] };
+      }
+
+      return [
+        container,
+        setValue,
+        onValueChange,
+      ];
+    }
+  </script>
+  <script>
     const oPlayer = document.querySelector(".player");
     const oVideo = oPlayer.querySelector("video");
     const [oBtnPlay, oBtnPause] = oPlayer.querySelectorAll(".controls--main > .btn");
@@ -352,6 +486,10 @@
     const oScrubberW = oScrubber.offsetWidth;
     const oScrubberContainer = oPlayer.querySelector(".scrubber-container");
     const oProgressBarW = oScrubberContainer.offsetWidth;
+    const oVolumeInput = oPlayer.querySelector(".controls--volume--input");
+    const oVolumeIconHigh = oPlayer.querySelector("[data-volume-high]");
+    const oVolumeIconLow = oPlayer.querySelector("[data-volume-low]");
+    const oVolumeIconMuted = oPlayer.querySelector("[data-volume-muted]");
 
     function padTimestamp(x) {
       return x.toString().padStart(2, "0");
@@ -455,6 +593,27 @@
       updateProgressBar(state);
       setCurrentTime(state.currentTime);
     });
+
+    const [volumeInput, setVolume, onVolumeChange] = createRangeInput({
+      bgColor: "#444",
+      size: "4px",
+      thumbSize: "10px",
+    });
+    oVolumeInput.appendChild(volumeInput);
+    onVolumeChange(value => oVideo.volume = value);
+    onVolumeChange(value => {
+      oVolumeIconHigh.classList.add("btn__inactive");
+      oVolumeIconLow.classList.add("btn__inactive");
+      oVolumeIconMuted.classList.add("btn__inactive");
+      if (value === 0) {
+        oVolumeIconMuted.classList.remove("btn__inactive");
+      } else if (value < .5) {
+        oVolumeIconLow.classList.remove("btn__inactive");
+      } else {
+        oVolumeIconHigh.classList.remove("btn__inactive");
+      }
+    });
+    setVolume(0.5);
 
     setCurrentTime(state.currentTime);
     setTotalTime(state.totalTime);
