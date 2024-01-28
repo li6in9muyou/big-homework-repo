@@ -124,13 +124,13 @@
 
           const posDiff = {
             x: e.clientX - this.lastMousePos.x,
-            y: e.clientY - this.lastMousePos.y
+            y: e.clientY - this.lastMousePos.y,
           };
           this.lastMousePos.x = e.clientX;
           this.lastMousePos.y = e.clientY;
           const oldPos = {
             x: this.elem.offsetLeft,
-            y: this.elem.offsetTop
+            y: this.elem.offsetTop,
           };
           let newPos = { ...oldPos };
           newPos.x += posDiff.x;
