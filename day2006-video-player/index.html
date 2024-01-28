@@ -347,7 +347,9 @@
     const oTimestamp = oPlayer.querySelector(".controls--timestamp");
     const oProgressBar = oPlayer.querySelector(".progress");
     const oScrubber = oPlayer.querySelector(".scrubber");
+    const oScrubberW = oScrubber.offsetWidth;
     const oScrubberContainer = oPlayer.querySelector(".scrubber-container");
+    const oProgressBarW = oScrubberContainer.offsetWidth;
 
     function padTimestamp(x) {
       return x.toString().padStart(2, "0");
@@ -422,11 +424,11 @@
     }
 
     function boundedX(oldPos, newPos) {
-      return { x: clamp(newPos.x, 0, oScrubberContainer.offsetWidth - oScrubber.offsetWidth), y: newPos.y };
+      return { x: clamp(newPos.x, 0, oProgressBarW - oScrubberW), y: newPos.y };
     }
 
     function syncVideoCurrentTime(_, newPos) {
-      const ratio = newPos.x / (oScrubberContainer.offsetWidth - oScrubber.offsetWidth);
+      const ratio = newPos.x / (oProgressBarW - oScrubberW);
       state = { ...state, currentTime: state.totalTime * ratio };
       oVideo.currentTime = state.currentTime;
     }
