@@ -275,66 +275,68 @@
       this.dragging = false;
       this.lastMousePos = { x: 0, y: 0 };
       this.dragKey = NaN;
-      this.onDragStart = function (e) {
-        if (!isNaN(this.dragKey) && e.button !== this.dragKey) {
-          return;
-        }
-        if (this.dragging) {
-          return;
-        }
-
-        this.dragKey = e.button;
-        this.dragging = true;
-        this.elem.dataset.dgDragging = this.dragging;
-        this.lastMousePos.x = e.clientX;
-        this.lastMousePos.y = e.clientY;
-        this.cbDragStart && this.cbDragStart(e);
-      };
-      this.onDragMove = function (e) {
-        if (!this.dragging) {
-          return;
-        }
-        console.log("Draggable::onDragMove tagName clientXY", e.target.tagName, e.clientX, e.clientY);
-
-        const posDiff = {
-          x: e.clientX - this.lastMousePos.x,
-          y: e.clientY - this.lastMousePos.y,
-        };
-        console.log("Draggable::onDragMove posDiff", posDiff);
-        this.lastMousePos.x = e.clientX;
-        this.lastMousePos.y = e.clientY;
-        const oldPos = {
-          x: this.elem.offsetLeft,
-          y: this.elem.offsetTop,
-        };
-        let newPos = { ...oldPos };
-        newPos.x += posDiff.x;
-        newPos.y += posDiff.y;
-
-        if (this.cbDragMove) {
-          newPos = this.cbDragMove(oldPos, newPos, e) ?? newPos;
-        }
-
-        this.elem.style.top = newPos.y + "px";
-        this.elem.style.left = newPos.x + "px";
-      };
-      this.onDragEnd = function (e) {
-        if (!isNaN(this.dragKey) && e.button !== this.dragKey) {
-          return;
-        }
-        if (!this.dragging) {
-          return;
-        }
-        this.dragKey = NaN;
-        this.dragging = false;
-        this.elem.dataset.dgDragging = this.dragging;
-        this.cbDragEnd && this.cbDragEnd(e);
-      };
-
       listenEvent(elem, "mousedown", this.onDragStart.bind(this));
       listenEvent(document, "mousemove", this.onDragMove.bind(this), { passive: true });
       listenEvent(document, "mouseup", this.onDragEnd.bind(this));
     }
+
+    Draggable.prototype.onDragStart = function (e) {
+      if (!isNaN(this.dragKey) && e.button !== this.dragKey) {
+        return;
+      }
+      if (this.dragging) {
+        return;
+      }
+
+      this.dragKey = e.button;
+      this.dragging = true;
+      this.elem.dataset.dgDragging = this.dragging;
+      this.lastMousePos.x = e.clientX;
+      this.lastMousePos.y = e.clientY;
+      this.cbDragStart && this.cbDragStart(e);
+    };
+
+    Draggable.prototype.onDragMove = function (e) {
+      if (!this.dragging) {
+        return;
+      }
+      console.log("Draggable::onDragMove tagName clientXY", e.target.tagName, e.clientX, e.clientY);
+
+      const posDiff = {
+        x: e.clientX - this.lastMousePos.x,
+        y: e.clientY - this.lastMousePos.y,
+      };
+      console.log("Draggable::onDragMove posDiff", posDiff);
+      this.lastMousePos.x = e.clientX;
+      this.lastMousePos.y = e.clientY;
+      const oldPos = {
+        x: this.elem.offsetLeft,
+        y: this.elem.offsetTop,
+      };
+      let newPos = { ...oldPos };
+      newPos.x += posDiff.x;
+      newPos.y += posDiff.y;
+
+      if (this.cbDragMove) {
+        newPos = this.cbDragMove(oldPos, newPos, e) ?? newPos;
+      }
+
+      this.elem.style.top = newPos.y + "px";
+      this.elem.style.left = newPos.x + "px";
+    };
+
+    Draggable.prototype.onDragEnd = function (e) {
+      if (!isNaN(this.dragKey) && e.button !== this.dragKey) {
+        return;
+      }
+      if (!this.dragging) {
+        return;
+      }
+      this.dragKey = NaN;
+      this.dragging = false;
+      this.elem.dataset.dgDragging = this.dragging;
+      this.cbDragEnd && this.cbDragEnd(e);
+    };
 
     function clamp(v, min, max) {
       return Math.max(min, Math.min(max, v));
