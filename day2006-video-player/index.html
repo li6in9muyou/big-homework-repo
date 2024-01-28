@@ -139,8 +139,8 @@
       <video src="video/video.webm"></video>
     </section>
     <section class="controls-container">
-      <section class="scrubber-container">
-        <div class="progress"></div>
+      <section class="scrubber-container" data-click-to-seek>
+        <div class="progress" data-click-to-seek></div>
         <div class="scrubber"></div>
       </section>
       <div class="controls">
@@ -439,6 +439,18 @@
     listenEvent(oScrubberContainer, "dragstart", e => e.preventDefault());
     listenEvent(oScrubber, "drag", e => e.preventDefault());
     listenEvent(oScrubber, "dragstart", e => e.preventDefault());
+    listenEvent(oScrubberContainer, "click", e => {
+      if (!e.target.dataset.hasOwnProperty("clickToSeek")) {
+        return;
+      }
+      state = {
+        ...state,
+        currentTime: state.totalTime * (e.offsetX - oScrubberW / 2) / oProgressBarW,
+      };
+      oVideo.currentTime = state.currentTime;
+      updateProgressBar(state);
+      setCurrentTime(state.currentTime);
+    });
 
     setCurrentTime(state.currentTime);
     setTotalTime(state.totalTime);
