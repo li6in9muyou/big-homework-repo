@@ -24,6 +24,13 @@
       background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAzMiAzMiIgdmVyc2lvbj0iMS4xIj48cGF0aCBkPSJtIDEyLjU5LDIwLjM0IDQuNTgsLTQuNTkgLTQuNTgsLTQuNTkgMS40MSwtMS40MSA2LDYgLTYsNiB6IiBmaWxsPSIjZmZmIiAvPjwvc3ZnPg==)
     }
 
+    .player {
+      position: sticky;
+      top: 0;
+      background-color: #000;
+      padding: 4px;
+    }
+
     .screen {
       font-size: 0;
     }
@@ -120,6 +127,10 @@
       font-family: monospace;
       text-indent: 2em;
     }
+
+    .notes li {
+      text-indent: 0;
+    }
   </style>
 </head>
 <body>
@@ -188,6 +199,39 @@
       </div>
     </section>
   </div>
+  <ol class="notes">
+    <li>点击进度条灰色部分和红色部分
+      <ul>
+        <li>时间戳更新</li>
+        <li>进度条、进度条圆点位置更新</li>
+        <li>视频画面更新</li>
+        <li>视频不播放</li>
+      </ul>
+    </li>
+    <li>点击播放和暂停按钮
+      <ul>
+        <li>时间戳更新</li>
+        <li>进度条、进度条圆点位置更新</li>
+        <li>视频播放</li>
+      </ul>
+    </li>
+    <li>暂停时，拖拽进度条的圆点
+      <ul>
+        <li>时间戳更新</li>
+        <li>进度条、进度条圆点位置更新</li>
+        <li>视频画面更新</li>
+        <li>拖拽结束后，视频不播放</li>
+      </ul>
+    </li>
+    <li>播放时，拖拽进度条的圆点
+      <ul>
+        <li>时间戳更新</li>
+        <li>进度条、进度条圆点位置更新</li>
+        <li>视频画面更新</li>
+        <li>拖拽结束后，视频往后播放</li>
+      </ul>
+    </li>
+  </ol>
   <p class="notes">
     用js修改元素样式时，千万注意CSS有没有设置transition，若设置了会表现为js修改不生效。
   </p>
