@@ -293,6 +293,9 @@
   <p class="notes">
     避免使用包括所有样式的transition。
   </p>
+  <p class="notes">
+    js的Map的[]和get语义完全不同，用Map时千万别使用[]。
+  </p>
 
   <script>
     function listenEvent(elem, event, callback, ...args) {
@@ -452,13 +455,14 @@
         }
         state = { ...state, value: clamp(e.offsetX / (container.offsetWidth - thumb.offsetWidth), 0, 1) };
         updateIndicatorAndThumb(state);
-        callOnChangeListeners(state);
+        emit(state);
       });
 
       let state = {
         lastEmittedValue: NaN,
+        oldValue: NaN,
         value: 0.25,
-        listeners: [],
+        listeners: new Map(),
       };
 
       function moveOnlyX(oldPos, newPos) {
@@ -474,40 +478,64 @@
         indicator.style.width = `${thumb.offsetLeft + thumb.offsetWidth / 2}px`;
       }
 
-      function callOnChangeListeners(s) {
-        if (s.value === state.lastEmittedValue) {
-          return;
+      function emit(type) {
+        switch (type) {
+          case "change":
+            state.listeners.get(type)
+              .forEach(cb => requestIdleCallback(() => cb({
+                value: state.value,
+                oldValue: state.oldValue,
+              }), { timeout: 30 }));
+            return;
+          case "input":
+            if (state.value === state.lastEmittedValue) {
+              return;
+            }
+            state = { ...state, lastEmittedValue: state.value };
+            state.listeners.get(type)
+              .forEach(cb => requestIdleCallback(() => cb({ value: state.value }), { timeout: 30 }));
+            return;
+          default:
+            console.error(`RangeInput cannot emit event type: ${type}`, state);
+            return;
         }
-        state = { ...state, lastEmittedValue: s.value };
-        s.listeners.forEach(cb => requestIdleCallback(() => cb(s.value), { timeout: 30 }));
       }
 
       const d = new Draggable(thumb,
-        null,
-        null,
+        () => state = { ...state, oldValue: state.value },
+        () => emit("change"),
         [
           moveOnlyX,
           boundedX,
           (_, newPos) => state = { ...state, value: newPos.x / (container.offsetWidth - thumb.offsetWidth) },
           () => updateIndicatorAndThumb(state),
-          () => callOnChangeListeners(state),
+          () => emit("input"),
         ],
       );
 
       function setValue(value) {
-        state = { ...state, value };
-        updateIndicatorAndThumb(state);
-        callOnChangeListeners(state);
+        console.log("RangeInput setValue value", value);
+        if (value !== state.value) {
+          emit("change");
+          state = { ...state, oldValue: state.value };
+          state = { ...state, value };
+          updateIndicatorAndThumb(state);
+        }
       }
 
-      function onValueChange(cb) {
-        state = { ...state, listeners: [...state.listeners, cb] };
+      function addEventListener(type, cb) {
+        console.assert(type === "input" || type === "change", "RangeInput emits only input and change events");
+        if (state.listeners.has(type)) {
+          state.listeners.get(type).push(cb);
+        } else {
+          state.listeners.set(type, [cb]);
+        }
       }
 
       return [
         container,
         setValue,
-        onValueChange,
+        addEventListener,
       ];
     }
   </script>
@@ -630,13 +658,23 @@
       setCurrentTime(state.currentTime);
     });
 
-    const [volumeInput, setVolume, onVolumeChange] = createRangeInput({
+    const [volumeInput, setVolume, addEventListener] = createRangeInput({
       bgColor: "#444",
       size: "4px",
       thumbSize: "10px",
     });
     oVolumeInput.appendChild(volumeInput);
-    onVolumeChange(value => {
+    addEventListener("input", (e) => oVideo.volume = e.value);
+    addEventListener("input", updateSpeakerIcon);
+    addEventListener("change", updateSpeakerIcon);
+    addEventListener("change", (e) => {
+      state = { ...state, volumeBeforeMute: e.value === 0 ? e.oldValue : e.value };
+      console.log("volumeInput change event, e.oldValue, e.value", e.oldValue, e.value);
+    });
+
+    function updateSpeakerIcon(e) {
+      const { value, oldValue } = e;
+      console.log("updateSpeakerIcon value", value, oldValue);
       oVolumeIconHigh.classList.add("btn__inactive");
       oVolumeIconLow.classList.add("btn__inactive");
       oVolumeIconMuted.classList.add("btn__inactive");
@@ -648,7 +686,7 @@
         oVolumeIconHigh.classList.remove("btn__inactive");
       }
       oVideo.volume = value;
-    });
+    }
 
     const muteVideo = () => {
       state = { ...state, volumeBeforeMute: oVideo.volume };
