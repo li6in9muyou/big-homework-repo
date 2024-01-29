@@ -147,6 +147,14 @@
       text-indent: 2em;
     }
 
+    .notes mark {
+      background-color: #c80000;
+      color: #fff;
+      padding: 4px;
+      border-radius: 4px;
+      line-height: 1.6em;
+    }
+
     ol.notes,
     ul.notes,
     .notes li {
@@ -288,13 +296,14 @@
     <li>拖动摁钮大小</li>
   </ul>
   <p class="notes">
-    用js修改元素样式时，千万注意CSS有没有设置transition，若设置了会表现为js修改不生效。
+    用js修改元素样式时，千万注意CSS有没有设置transition，若设置了会表现为js修改不生效。总之，
+    <mark>千万别使用包括所有样式的transition</mark>
+    。
   </p>
   <p class="notes">
-    避免使用包括所有样式的transition。
-  </p>
-  <p class="notes">
-    js的Map的[]和get语义完全不同，用Map时千万别使用[]。
+    js的Map的[]和get语义完全不同，
+    <mark>用Map时千万别使用[]</mark>
+    。
   </p>
 
   <script>
