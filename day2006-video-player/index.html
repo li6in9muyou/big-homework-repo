@@ -10,6 +10,12 @@
       color: #fff;
     }
 
+    ul {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
     .fill-white {
       fill: #fff;
     }
@@ -20,8 +26,10 @@
       gap: 6px;
     }
 
-    .menu-item {
-      background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAzMiAzMiIgdmVyc2lvbj0iMS4xIj48cGF0aCBkPSJtIDEyLjU5LDIwLjM0IDQuNTgsLTQuNTkgLTQuNTgsLTQuNTkgMS40MSwtMS40MSA2LDYgLTYsNiB6IiBmaWxsPSIjZmZmIiAvPjwvc3ZnPg==)
+    :root {
+      --arrow-right: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAzMiAzMiIgdmVyc2lvbj0iMS4xIj48cGF0aCBkPSJtIDEyLjU5LDIwLjM0IDQuNTgsLTQuNTkgLTQuNTgsLTQuNTkgMS40MSwtMS40MSA2LDYgLTYsNiB6IiBmaWxsPSIjZmZmIiAvPjwvc3ZnPg==);
+      --arrow-left: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAzMiAzMiIgdmVyc2lvbj0iMS4xIj48cGF0aCBkPSJNIDE5LjQxLDIwLjA5IDE0LjgzLDE1LjUgMTkuNDEsMTAuOTEgMTgsOS41IGwgLTYsNiA2LDYgeiIgZmlsbD0iI2ZmZiIgLz48L3N2Zz4=);
+      --tick: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgdmVyc2lvbj0iMS4xIj48cGF0aCBkPSJNOSAxNi4yTDQuOCAxMmwtMS40IDEuNEw5IDE5IDIxIDdsLTEuNC0xLjRMOSAxNi4yeiIgZmlsbD0iI2ZmZiIgLz48L3N2Zz4=);
     }
 
     .player {
@@ -233,6 +241,94 @@
     .notes li {
       text-indent: 0;
     }
+
+    .controls--popup-panel {
+      position: absolute;
+      bottom: 50px;
+      right: 16px;
+      background-color: #202020;
+      border-radius: 6px;
+      display: flex;
+      align-items: flex-start;
+      max-height: 250px;
+      z-index: 200;
+    }
+
+    .controls--popup-panel > .popup-content {
+      flex-shrink: 0;
+    }
+
+    .menu {
+      width: 200px;
+      padding: 8px 0;
+    }
+
+    .menu--content {
+      flex-grow: 1;
+      text-align: right;
+      padding-right: 18px;
+      background-position: right -12px center;
+      background-size: 2em;
+      background-repeat: no-repeat;
+      background-image: var(--arrow-right);
+    }
+
+    .menu--label {
+      padding-left: 10px;
+    }
+
+    .menu--item {
+      display: flex;
+      align-items: center;
+      padding: 6px;
+      cursor: pointer;
+    }
+
+    .menu--item:hover {
+      background-color: rgb(255, 255, 255, 0.2);
+    }
+
+    .menu--item > span {
+      line-height: 24px;
+    }
+
+    .menu--detail-container {
+      display: flex;
+      flex-direction: column;
+      width: 200px;
+      height: 250px;
+      font-family: monospace;
+      overflow-y: auto;
+    }
+
+    .menu--detail-container > .detail-header {
+      border-bottom: solid 2px rgb(255, 255, 255, 0.4);
+      padding: 12px 6px 12px 36px;
+      background-image: var(--arrow-left);
+      background-position: left 0 center;
+      background-size: 2em;
+      background-repeat: no-repeat;
+      line-height: 2em;
+      margin-bottom: 6px;
+      cursor: pointer;
+    }
+
+    .menu--detail-container > .detail-content > li {
+      cursor: pointer;
+      padding: 4px 36px;
+      line-height: 2em;
+    }
+
+    .menu--detail-container > .detail-content > li[data-ticked] {
+      background-image: var(--tick);
+      background-repeat: no-repeat;
+      background-position: left 8px center;
+      background-size: 1.2em;
+    }
+
+    .menu--detail-container > .detail-content > li:hover {
+      background-color: rgb(255, 255, 255, 0.2);
+    }
   </style>
 </head>
 <body>
@@ -297,6 +393,50 @@
               <path d="m 24,24 -4,0 0,2 L 26,26 l 0,-6 -2,0 0,4 0,0 z"></path>
               <path d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z"></path>
             </svg>
+          </div>
+        </div>
+        <div class="controls--popup-panel">
+          <ul class="menu popup-content">
+            <li class="menu--item" data-menu-playback-speed>
+              <svg class="fill-white menu--icon" height="24" viewBox="0 0 24 24" width="24">
+                <path
+                    d="M10,8v8l6-4L10,8L10,8z M6.3,5L5.7,4.2C7.2,3,9,2.2,11,2l0.1,1C9.3,3.2,7.7,3.9,6.3,5z            M5,6.3L4.2,5.7C3,7.2,2.2,9,2,11 l1,.1C3.2,9.3,3.9,7.7,5,6.3z            M5,17.7c-1.1-1.4-1.8-3.1-2-4.8L2,13c0.2,2,1,3.8,2.2,5.4L5,17.7z            M11.1,21c-1.8-0.2-3.4-0.9-4.8-2 l-0.6,.8C7.2,21,9,21.8,11,22L11.1,21z            M22,12c0-5.2-3.9-9.4-9-10l-0.1,1c4.6,.5,8.1,4.3,8.1,9s-3.5,8.5-8.1,9l0.1,1 C18.2,21.5,22,17.2,22,12z">
+                </path>
+              </svg>
+              <span class="menu--label">播放速度</span>
+              <span class="menu--content">正常</span>
+            </li>
+            <li class="menu--item" data-menu-playback-speed>
+              <svg class="fill-white menu--icon" height="24" viewBox="0 0 24 24" width="24">
+                <path
+                    d="M10,8v8l6-4L10,8L10,8z M6.3,5L5.7,4.2C7.2,3,9,2.2,11,2l0.1,1C9.3,3.2,7.7,3.9,6.3,5z            M5,6.3L4.2,5.7C3,7.2,2.2,9,2,11 l1,.1C3.2,9.3,3.9,7.7,5,6.3z            M5,17.7c-1.1-1.4-1.8-3.1-2-4.8L2,13c0.2,2,1,3.8,2.2,5.4L5,17.7z            M11.1,21c-1.8-0.2-3.4-0.9-4.8-2 l-0.6,.8C7.2,21,9,21.8,11,22L11.1,21z            M22,12c0-5.2-3.9-9.4-9-10l-0.1,1c4.6,.5,8.1,4.3,8.1,9s-3.5,8.5-8.1,9l0.1,1 C18.2,21.5,22,17.2,22,12z">
+                </path>
+              </svg>
+              <span class="menu--label">播放速度</span>
+              <span class="menu--content">正常</span>
+            </li>
+            <li class="menu--item" data-menu-playback-speed>
+              <svg class="fill-white menu--icon" height="24" viewBox="0 0 24 24" width="24">
+                <path
+                    d="M10,8v8l6-4L10,8L10,8z M6.3,5L5.7,4.2C7.2,3,9,2.2,11,2l0.1,1C9.3,3.2,7.7,3.9,6.3,5z            M5,6.3L4.2,5.7C3,7.2,2.2,9,2,11 l1,.1C3.2,9.3,3.9,7.7,5,6.3z            M5,17.7c-1.1-1.4-1.8-3.1-2-4.8L2,13c0.2,2,1,3.8,2.2,5.4L5,17.7z            M11.1,21c-1.8-0.2-3.4-0.9-4.8-2 l-0.6,.8C7.2,21,9,21.8,11,22L11.1,21z            M22,12c0-5.2-3.9-9.4-9-10l-0.1,1c4.6,.5,8.1,4.3,8.1,9s-3.5,8.5-8.1,9l0.1,1 C18.2,21.5,22,17.2,22,12z">
+                </path>
+              </svg>
+              <span class="menu--label">播放速度</span>
+              <span class="menu--content">正常</span>
+            </li>
+          </ul>
+          <div class="menu--detail-container popup-content" data-menu-playback-speed-detail>
+            <span class="detail-header">播放速度</span>
+            <ul class="detail-content">
+              <li>0.25</li>
+              <li>0.5</li>
+              <li>0.75</li>
+              <li data-ticked>正常</li>
+              <li>1.25</li>
+              <li>1.5</li>
+              <li>1.75</li>
+              <li>2</li>
+            </ul>
           </div>
         </div>
       </div>
@@ -625,6 +765,44 @@
     }
   </script>
   <script>
+    function addSlidingPanelEffect(container) {
+      let state = {
+        displayingChildIdx: 0,
+      };
+
+      function setContainerSize({ displayingChildIdx }) {
+        const displaying = container.children[displayingChildIdx];
+        console.assert(displaying.offsetWidth > 0 && displaying.offsetHeight > 0,
+          "SlidingPanelEffect only works with fixed size child element, this element size is not set",
+          displaying);
+        container.style.width = displaying.offsetWidth + "px";
+        container.style.height = displaying.offsetHeight + "px";
+      }
+
+      function setScrollLeft({ displayingChildIdx }) {
+        const scrollDistance = Array.from(container.children)
+          .filter((_, idx) => idx < displayingChildIdx)
+          .reduce((scrollLeft, node) => scrollLeft + node.offsetWidth, 0);
+        container.children[0].style.marginLeft = `-${scrollDistance}px`;
+      }
+
+      function slideTo(i) {
+        const childrenCnt = container.children.length;
+        const newIdx = (childrenCnt + i) % childrenCnt;
+        const newState = { ...state, displayingChildIdx: newIdx };
+        setContainerSize(newState);
+        setScrollLeft(newState);
+        return newState;
+      }
+
+      setContainerSize(state);
+      container.style.transition = "width .3s, height .3s";
+      container.children[0].style.transition = "margin-left .3s";
+      container.style.overflow = "hidden";
+      return [() => state = slideTo(state.displayingChildIdx - 1), () => state = slideTo(state.displayingChildIdx + 1)];
+    }
+  </script>
+  <script>
     const oPlayer = document.querySelector(".player");
     const oVideo = oPlayer.querySelector("video");
     const [oBtnPlay, oBtnPause] = oPlayer.querySelectorAll(".controls--main > .btn");
@@ -639,6 +817,10 @@
     const oVolumeIconLow = oPlayer.querySelector("[data-volume-low]");
     const oVolumeIconMuted = oPlayer.querySelector("[data-volume-muted]");
     const oFullscreenToggle = oPlayer.querySelector("[data-fullscreen-toggle]");
+    const oControlPopupToggle = oPlayer.querySelector(".controls--more > .btn:first-of-type");
+    const oControlPopupPanel = oPlayer.querySelector(".controls--popup-panel");
+    const aMenuItem = oControlPopupPanel.querySelectorAll(".menu--item");
+    const aMenuDetailHeader = oControlPopupPanel.querySelectorAll(".detail-header");
 
     function padTimestamp(x) {
       return x.toString().padStart(2, "0");
@@ -681,6 +863,7 @@
       seeking: false,
       volumeBeforeMute: NaN,
       fullscreen: false,
+      showPopup: false,
     };
 
     listenEvent(oBtnPlay, "click", () => {
@@ -795,11 +978,24 @@
           .catch(oFullscreenToggle.click);
       }
     });
+    const [slideLeft, slideRight] = addSlidingPanelEffect(oControlPopupPanel);
+    aMenuItem.forEach(item => listenEvent(item, "click", slideRight));
+    aMenuDetailHeader.forEach(item => listenEvent(item, "click", slideLeft));
+
+    function updateControlPopupPanel(s) {
+      oControlPopupPanel.style.visibility = s.showPopup ? "unset" : "hidden";
+    }
+
+    listenEvent(oControlPopupToggle, "click", () => {
+      state = { ...state, showPopup: !state.showPopup };
+      updateControlPopupPanel(state);
+    });
 
     setVolume(0.5);
     setCurrentTime(state.currentTime);
     setTotalTime(state.totalTime);
     updateProgressBar(state);
+    updateControlPopupPanel(state);
   </script>
 </body>
 </html>
