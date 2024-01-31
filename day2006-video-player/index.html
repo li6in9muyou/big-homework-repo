@@ -29,13 +29,14 @@
       top: 0;
       background-color: #000;
       padding: 4px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 360px;
     }
 
     @media (display-mode: fullscreen) {
       .player {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
         padding: 0;
       }
     }
@@ -49,14 +50,12 @@
       height: auto;
     }
 
-    @media (display-mode: fullscreen) {
-      .controls-container {
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-        box-sizing: border-box;
-        padding: 0 12px;
-      }
+    .controls-container {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0 12px;
     }
 
     .controls {
