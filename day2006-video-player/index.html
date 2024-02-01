@@ -721,7 +721,7 @@
         }
         state = { ...state, value: clamp(e.offsetX / (container.offsetWidth - thumb.offsetWidth), 0, 1) };
         updateIndicatorAndThumb(state);
-        emit(state);
+        emit("change");
       });
 
       let state = {
@@ -748,7 +748,7 @@
         switch (type) {
           case "change":
             state.listeners.get(type)
-              .forEach(cb => requestIdleCallback(() => cb({
+              ?.forEach(cb => requestIdleCallback(() => cb({
                 value: state.value,
                 oldValue: state.oldValue,
               }), { timeout: 30 }));
@@ -759,7 +759,7 @@
             }
             state = { ...state, lastEmittedValue: state.value };
             state.listeners.get(type)
-              .forEach(cb => requestIdleCallback(() => cb({ value: state.value }), { timeout: 30 }));
+              ?.forEach(cb => requestIdleCallback(() => cb({ value: state.value }), { timeout: 30 }));
             return;
           default:
             console.error(`RangeInput cannot emit event type: ${type}`, state);
