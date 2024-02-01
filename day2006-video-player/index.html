@@ -440,14 +440,14 @@
           <div class="menu--detail-container popup-content" data-menu-playback-speed-detail>
             <span class="detail-header">播放速度</span>
             <ul class="detail-content">
-              <li>0.25</li>
-              <li>0.5</li>
-              <li>0.75</li>
-              <li data-ticked>正常</li>
-              <li>1.25</li>
-              <li>1.5</li>
-              <li>1.75</li>
-              <li>2</li>
+              <li data-playback-speed="0.25">0.25</li>
+              <li data-playback-speed="0.5">0.5</li>
+              <li data-playback-speed="0.75">0.75</li>
+              <li data-ticked data-playback-speed="1">正常</li>
+              <li data-playback-speed="1.25">1.25</li>
+              <li data-playback-speed="1.5">1.5</li>
+              <li data-playback-speed="1.75">1.75</li>
+              <li data-playback-speed="2">2</li>
             </ul>
           </div>
         </div>
@@ -507,6 +507,17 @@
         <li>用静音图标</li>
       </ul>
     </li>
+    <li>设置面板为弹出状态时，点击面板之外
+      <ul>
+        <li>设置面板消失</li>
+      </ul>
+    </li>
+    <li>设置播放速度之后
+      <ul>
+        <li>视频播放速度相应改变</li>
+        <li>弹出的设置面板退回到第一级目录</li>
+      </ul>
+    </li>
   </ol>
   <ul class="notes">
     拖动条控件的API：
@@ -535,6 +546,16 @@
   </p>
 
   <script>
+    function nodeIndexOf(node) {
+      const siblings = node.parentNode.children;
+      for (let i = 0; i < siblings.length; i++) {
+        if (node === siblings[i]) {
+          return i;
+        }
+      }
+      return -1;
+    }
+
     function listenEvent(elem, event, callback, ...args) {
       let unlisten;
       if (elem.addEventListener) {
@@ -833,6 +854,7 @@
     const oControlPopupPanel = oPlayer.querySelector(".controls--popup-panel");
     const aMenuItem = oControlPopupPanel.querySelectorAll(".menu--item");
     const aMenuDetailHeader = oControlPopupPanel.querySelectorAll(".detail-header");
+    const oPlaybackSpeedSettings = oControlPopupPanel.querySelector("[data-menu-playback-speed-detail]");
 
     function padTimestamp(x) {
       return x.toString().padStart(2, "0");
@@ -876,6 +898,7 @@
       volumeBeforeMute: NaN,
       fullscreen: false,
       showPopup: false,
+      playbackSpeed: 1,
     };
 
     listenEvent(oBtnPlay, "click", () => {
@@ -998,9 +1021,36 @@
       oControlPopupPanel.style.visibility = s.showPopup ? "unset" : "hidden";
     }
 
-    listenEvent(oControlPopupToggle, "click", () => {
+    listenEvent(oControlPopupToggle, "click", (e) => {
       state = { ...state, showPopup: !state.showPopup };
       updateControlPopupPanel(state);
+      console.log("oControlPopupToggle click");
+      e.stopPropagation();
+      const unlisten = listenEvent(document, "click", (e) => {
+        if (oControlPopupPanel.contains(e.target)) {
+          return;
+        }
+        state = { ...state, showPopup: !state.showPopup };
+        updateControlPopupPanel(state);
+        console.log("oControlPopupToggle document click and unlisten");
+        unlisten();
+      });
+    });
+
+    function updatePlaybackSpeed(s) {
+      delete oPlaybackSpeedSettings.querySelector(`[data-ticked]`).dataset.ticked;
+      oPlaybackSpeedSettings.querySelector(`[data-playback-speed='${s.playbackSpeed}']`).dataset.ticked = "";
+      oVideo.playbackRate = s.playbackSpeed;
+    }
+
+    listenEvent(oPlaybackSpeedSettings, "click", (e) => {
+      if (e.target.tagName !== "LI") {
+        return;
+      }
+      const playbackSpeed = parseFloat(e.target.dataset.playbackSpeed);
+      state = { ...state, playbackSpeed };
+      updatePlaybackSpeed(state);
+      slideLeft();
     });
 
     setVolume(0.5);
@@ -1008,6 +1058,7 @@
     setTotalTime(state.totalTime);
     updateProgressBar(state);
     updateControlPopupPanel(state);
+    updatePlaybackSpeed(state);
   </script>
 </body>
 </html>
