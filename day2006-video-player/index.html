@@ -767,7 +767,7 @@
         }
       }
 
-      const d = new Draggable(thumb,
+      new Draggable(thumb,
         () => state = { ...state, oldValue: state.value },
         () => emit("change"),
         [
@@ -921,7 +921,7 @@
       oBtnPlay.classList.remove("btn__inactive");
       oBtnPause.classList.add("btn__inactive");
     });
-    listenEvent(oVideo, "durationchange", (e) => {
+    listenEvent(oVideo, "durationchange", () => {
       state = { ...state, totalTime: oVideo.duration };
       setTotalTime(state.totalTime);
       updateProgressBar(state);
