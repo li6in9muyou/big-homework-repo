@@ -1061,7 +1061,33 @@
       slideLeft();
     });
 
+    const [videoScrubber, setVideoScrubberPos, listenVideoScrubber] = createRangeInput({
+      bgColor: "rgba(255, 255, 255, .5)",
+      size: "5px",
+      thumbSize: "16px",
+      thumbColor: "rgb(204, 0, 0)",
+      alwaysShowThumb: false,
+    });
+    videoScrubber.style.top = "-18px";
+    oScrubberContainer.appendChild(videoScrubber);
+    listenVideoScrubber("input", ({ value }) => {
+      state = { ...state, currentTime: state.totalTime * value };
+      updateProgressBar(state);
+      oVideo.currentTime = state.currentTime;
+    });
+    listenVideoScrubber("change", ({ value }) => {
+      state = { ...state, currentTime: state.totalTime * value };
+      updateProgressBar(state);
+      oVideo.currentTime = state.currentTime;
+    });
+    listenEvent(oVideo, "timeupdate", () => {
+      if (!state.seeking) {
+        setVideoScrubberPos(state.currentTime / state.totalTime);
+      }
+    });
+
     setVolume(0.5);
+    setVideoScrubberPos(0);
     setCurrentTime(state.currentTime);
     setTotalTime(state.totalTime);
     updateProgressBar(state);
