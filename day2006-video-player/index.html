@@ -62,6 +62,9 @@
       width: 100%;
       box-sizing: border-box;
       padding: 0 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
     .controls {
@@ -140,37 +143,6 @@
       .btn.btn__fullscreen-toggle:hover svg {
         animation: .5s linear fullscreen-toggle__fullscreen;
       }
-    }
-
-    .scrubber-container {
-      position: relative;
-      height: 5px;
-      width: 100%;
-      box-sizing: border-box;
-      margin-top: 8px;
-      background-color: rgba(255, 255, 255, .5);
-    }
-
-    .scrubber-container:hover > .scrubber {
-      opacity: 1;
-    }
-
-    .scrubber-container > .scrubber {
-      position: absolute;
-      background-color: rgb(204, 0, 0);
-      border-radius: 100%;
-      height: 16px;
-      width: 16px;
-      top: -5px;
-      transition: opacity .3s;
-      opacity: 0;
-      cursor: pointer;
-    }
-
-    .scrubber-container > .progress {
-      height: 100%;
-      width: 25%;
-      background-color: rgb(204, 0, 0);
     }
 
     [data-tip] {
@@ -357,10 +329,6 @@
       <video src="video/video.webm"></video>
     </section>
     <section class="controls-container">
-      <section class="scrubber-container" data-click-to-seek>
-        <div class="progress" data-click-to-seek></div>
-        <div class="scrubber"></div>
-      </section>
       <div class="controls">
         <div class="controls--main">
           <div class="btn" data-tip="播放">
@@ -782,9 +750,9 @@
       function setValue(value) {
         console.log("RangeInput setValue value", value);
         if (value !== state.value) {
-          emit("change");
           state = { ...state, oldValue: state.value };
           state = { ...state, value };
+          emit("change");
           updateIndicatorAndThumb(state);
         }
       }
@@ -848,11 +816,7 @@
     const oVideo = oPlayer.querySelector("video");
     const [oBtnPlay, oBtnPause] = oPlayer.querySelectorAll(".controls--main > .btn");
     const oTimestamp = oPlayer.querySelector(".controls--timestamp");
-    const oProgressBar = oPlayer.querySelector(".progress");
-    const oScrubber = oPlayer.querySelector(".scrubber");
-    const oScrubberW = oScrubber.offsetWidth;
-    const oScrubberContainer = oPlayer.querySelector(".scrubber-container");
-    const oProgressBarW = oScrubberContainer.offsetWidth;
+    const oScrubberContainer = oPlayer.querySelector(".controls-container");
     const oVolumeInput = oPlayer.querySelector(".controls--volume--input");
     const oVolumeIconHigh = oPlayer.querySelector("[data-volume-high]");
     const oVolumeIconLow = oPlayer.querySelector("[data-volume-low]");
@@ -892,12 +856,6 @@
       oTimestamp.textContent = `${text}/${s}`;
     }
 
-    function updateProgressBar(s) {
-      const percentage = Math.round(100 * s.currentTime / (s.totalTime + 1e-6));
-      oProgressBar.style.width = `${percentage}%`;
-      oScrubber.style.left = `${percentage}%`;
-    }
-
     let state = {
       playing: true,
       totalTime: 0,
@@ -924,52 +882,9 @@
     listenEvent(oVideo, "durationchange", () => {
       state = { ...state, totalTime: oVideo.duration };
       setTotalTime(state.totalTime);
-      updateProgressBar(state);
-    });
-    listenEvent(oVideo, "timeupdate", () => {
-      state = { ...state, currentTime: oVideo.currentTime };
-      setCurrentTime(state.currentTime);
-      if (!state.seeking) {
-        updateProgressBar(state);
-      }
     });
     listenEvent(oVideo, "seeking", () => state = { ...state, seeking: true });
     listenEvent(oVideo, "seeked", () => state = { ...state, seeking: false });
-
-    function moveOnlyX(oldPos, newPos) {
-      return { x: newPos.x, y: oldPos.y };
-    }
-
-    function boundedX(oldPos, newPos) {
-      return { x: clamp(newPos.x, 0, oProgressBarW - oScrubberW), y: newPos.y };
-    }
-
-    function syncVideoCurrentTime(_, newPos) {
-      const ratio = newPos.x / (oProgressBarW - oScrubberW);
-      state = { ...state, currentTime: state.totalTime * ratio };
-      oVideo.currentTime = state.currentTime;
-    }
-
-    const d = new Draggable(oScrubber,
-      null,
-      null,
-      [moveOnlyX, boundedX, syncVideoCurrentTime, () => updateProgressBar(state)]);
-    listenEvent(oScrubberContainer, "drag", e => e.preventDefault());
-    listenEvent(oScrubberContainer, "dragstart", e => e.preventDefault());
-    listenEvent(oScrubber, "drag", e => e.preventDefault());
-    listenEvent(oScrubber, "dragstart", e => e.preventDefault());
-    listenEvent(oScrubberContainer, "click", e => {
-      if (!e.target.dataset.hasOwnProperty("clickToSeek")) {
-        return;
-      }
-      state = {
-        ...state,
-        currentTime: state.totalTime * (e.offsetX - oScrubberW / 2) / oProgressBarW,
-      };
-      oVideo.currentTime = state.currentTime;
-      updateProgressBar(state);
-      setCurrentTime(state.currentTime);
-    });
 
     const [volumeInput, setVolume, addEventListener] = createRangeInput({
       bgColor: "#444",
@@ -1068,16 +983,13 @@
       thumbColor: "rgb(204, 0, 0)",
       alwaysShowThumb: false,
     });
-    videoScrubber.style.top = "-18px";
-    oScrubberContainer.appendChild(videoScrubber);
+    oScrubberContainer.insertAdjacentElement("afterbegin", videoScrubber);
     listenVideoScrubber("input", ({ value }) => {
       state = { ...state, currentTime: state.totalTime * value };
-      updateProgressBar(state);
       oVideo.currentTime = state.currentTime;
     });
     listenVideoScrubber("change", ({ value }) => {
       state = { ...state, currentTime: state.totalTime * value };
-      updateProgressBar(state);
       oVideo.currentTime = state.currentTime;
     });
     listenEvent(oVideo, "timeupdate", () => {
@@ -1085,12 +997,15 @@
         setVideoScrubberPos(state.currentTime / state.totalTime);
       }
     });
+    listenEvent(oVideo, "timeupdate", () => {
+      state = { ...state, currentTime: oVideo.currentTime };
+      setCurrentTime(state.currentTime);
+    });
 
     setVolume(0.5);
     setVideoScrubberPos(0);
     setCurrentTime(state.currentTime);
     setTotalTime(state.totalTime);
-    updateProgressBar(state);
     updateControlPopupPanel(state);
     updatePlaybackSpeed(state);
   </script>
