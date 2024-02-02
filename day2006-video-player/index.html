@@ -714,6 +714,7 @@
 
       function emit(type) {
         switch (type) {
+          case "afterSetValue":
           case "change":
             state.listeners.get(type)
               ?.forEach(cb => requestIdleCallback(() => cb({
@@ -752,13 +753,16 @@
         if (value !== state.value) {
           state = { ...state, oldValue: state.value };
           state = { ...state, value };
-          emit("change");
+          emit("afterSetValue");
           updateIndicatorAndThumb(state);
         }
       }
 
+      const POSSIBLE_EVENTS = new Set(["input", "change", "afterSetValue"]);
+
       function addEventListener(type, cb) {
-        console.assert(type === "input" || type === "change", "RangeInput emits only input and change events");
+        console.assert(POSSIBLE_EVENTS.has(type),
+          `RangeInput only emits: ${[...POSSIBLE_EVENTS.values()].join(", ")}, attempt to listen "${type}" event`);
         if (state.listeners.has(type)) {
           state.listeners.get(type).push(cb);
         } else {
@@ -893,7 +897,9 @@
     });
     oVolumeInput.appendChild(volumeInput);
     addEventListener("input", (e) => oVideo.volume = e.value);
+    addEventListener("afterSetValue", (e) => oVideo.volume = e.value);
     addEventListener("input", updateSpeakerIcon);
+    addEventListener("afterSetValue", updateSpeakerIcon);
     addEventListener("change", updateSpeakerIcon);
     addEventListener("change", (e) => {
       state = { ...state, volumeBeforeMute: e.value === 0 ? e.oldValue : e.value };
