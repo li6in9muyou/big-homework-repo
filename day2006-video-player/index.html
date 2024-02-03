@@ -758,7 +758,7 @@
         if (e.target === thumb) {
           return;
         }
-        state = { ...state, value: clamp(e.offsetX / (fullRange.offsetWidth - thumb.offsetWidth), 0, 1) };
+        state = { ...state, value: clamp(e.offsetX / fullRange.offsetWidth, 0, 1) };
         updateIndicatorAndThumb(state);
         emit("change");
       });
