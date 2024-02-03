@@ -953,15 +953,23 @@
       mustShowControls: true,
     };
 
+    function updatePlayAndPauseBtn() {
+      if (state.playing) {
+        oBtnPlay.classList.add("btn__inactive");
+        oBtnPause.classList.remove("btn__inactive");
+      } else {
+        oBtnPlay.classList.remove("btn__inactive");
+        oBtnPause.classList.add("btn__inactive");
+      }
+    }
+
     listenEvent(oBtnPlay, "click", () => {
       oVideo.play();
-      oBtnPlay.classList.add("btn__inactive");
-      oBtnPause.classList.remove("btn__inactive");
+      updatePlayAndPauseBtn();
     });
     listenEvent(oBtnPause, "click", () => {
       oVideo.pause();
-      oBtnPlay.classList.remove("btn__inactive");
-      oBtnPause.classList.add("btn__inactive");
+      updatePlayAndPauseBtn();
     });
     listenEvent(oVideo, "durationchange", () => {
       state = { ...state, totalTime: oVideo.duration };
@@ -1114,10 +1122,16 @@
     });
     listenEvent(oVideo,
       "pause",
-      () => state = { ...state, mustShowControls: true, playing: false });
+      () => {
+        state = { ...state, mustShowControls: true, playing: false };
+        updatePlayAndPauseBtn();
+      });
     listenEvent(oVideo,
       "play",
-      () => state = { ...state, mustShowControls: false, playing: true });
+      () => {
+        state = { ...state, mustShowControls: false, playing: true };
+        updatePlayAndPauseBtn();
+      });
     listenEvent(oControlRightBtnContainer,
       "mouseenter",
       () => state = { ...state, mustShowControls: true });
