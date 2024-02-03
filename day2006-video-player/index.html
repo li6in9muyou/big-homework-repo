@@ -794,6 +794,12 @@
 
       function emit(type) {
         switch (type) {
+          case "input":
+            if (state.value === state.lastEmittedValue) {
+              return;
+            }
+            state = { ...state, lastEmittedValue: state.value };
+          // fall through
           case "afterSetValue":
           case "change":
             state.listeners.get(type)
@@ -801,14 +807,6 @@
                 value: state.value,
                 oldValue: state.oldValue,
               }), { timeout: 30 }));
-            return;
-          case "input":
-            if (state.value === state.lastEmittedValue) {
-              return;
-            }
-            state = { ...state, lastEmittedValue: state.value };
-            state.listeners.get(type)
-              ?.forEach(cb => requestIdleCallback(() => cb({ value: state.value }), { timeout: 30 }));
             return;
           default:
             console.error(`RangeInput cannot emit event type: ${type}`, state);
