@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bouncing discs</title>
+  <script src="js/jquery.js"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background-color: #101010;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      cursor: pointer;
+    }
+
+    .arena {
+      position: relative;
+      flex-grow: 1;
+    }
+
+    .disc {
+      position: absolute;
+      border-radius: 100%;
+      border: solid 1px crimson;
+    }
+
+    header {
+      padding: 6px;
+      font-size: 24px;
+      justify-content: space-between;
+      font-family: Consolas, monospace;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .gravity-wrap {
+      display: flex;
+      align-items: center;
+    }
+
+    .gravity-wrap > input[type='checkbox'] {
+      width: 24px;
+      height: 24px;
+      margin: 0 8px 0 0;
+    }
+
+    .stats-wrap {
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="stats-wrap">
+      <span>iteration:</span>
+      <span id="iteration">0</span>
+    </div>
+    <div class="stats-wrap">
+      <span>FPS:</span>
+      <span id="fps">0</span>
+    </div>
+    <div class="gravity-wrap">
+      <input type="checkbox" name="toggleGravity" id="toggleGravity">
+      <label for="toggleGravity">
+        toggle gravity
+      </label>
+    </div>
+  </header>
+  <main class="arena">
+  </main>
+  <script>
+    // 2d vector math
+
+    function dotProd(x1, y1, x2, y2) {
+      return x1 * x2 + y1 * y2;
+    }
+
+    function subtract(x1, y1, x2, y2) {
+      return [x1 - x2, y1 - y2];
+    }
+
+    function normalized(x, y) {
+      const len = Math.sqrt(x * x + y * y);
+      console.assert(Math.abs(len) > 1e-5, "error: can not normalize a zero length vector");
+      return [x / len, y / len];
+    }
+  </script>
+  <script>
+    const $arena = $(".arena");
+    const ARENA_W = $arena.width();
+    const ARENA_H = $arena.height();
+
+    const entities = [1000, 1001];
+
+    const posData = new Map([
+      [1000, { x: 60, y: 300 }],
+      [1001, { x: ARENA_W / 2, y: 100 }],
+    ]);
+    const speedData = new Map([
+      [1000, { x: -10, y: 30 }],
+      [1001, { x: 80, y: 40 }],
+    ]);
+    const sizeData = new Map([
+      [1000, { w: 40, h: 40 }],
+      [1001, { w: 80, h: 80 }],
+    ]);
+
+    const collideNormalData = new Map();
+
+    function applyKeepMoving(id, { position, speed }) {
+      const p = position.get(id);
+      const v = speed.get(id);
+      p.x += v.x;
+      p.y += v.y;
+    }
+
+    function queryCollideNormalAgainstArena(id, { position, size, collideNormal }) {
+      const p = position.get(id);
+      const { w, h } = size.get(id);
+      const hitT = (p.y - h / 2) <= 0;
+      const hitB = (p.y + h / 2) >= ARENA_H;
+      const hitL = (p.x - w / 2) <= 0;
+      const hitR = (p.x + w / 2) >= ARENA_W;
+
+      let nX = 0, nY = 0;
+
+      if (hitB) {
+        nY = -1;
+      }
+      if (hitT) {
+        nY = 1;
+      }
+      if (hitL) {
+        nX = 1;
+      }
+      if (hitR) {
+        nX = -1;
+      }
+
+      if (nX !== 0 || nY !== 0) {
+        const [x, y] = normalized(nX, nY);
+        collideNormal.set(id, { x, y });
+      } else {
+        collideNormal.delete(id);
+      }
+    }
+
+    function applyBounceBack(id, { speed, collideNormal }) {
+      if (!collideNormal.has(id)) {
+        return;
+      }
+      const n = collideNormal.get(id);
+      const v = speed.get(id);
+      const dp = dotProd(v.x, v.y, n.x, n.y);
+      const dNX = 2 * dp * n.x;
+      const dNY = 2 * dp * n.y;
+      const [x, y] = subtract(v.x, v.y, dNX, dNY);
+      v.x = x;
+      v.y = y;
+    }
+
+    const ENERGY_LOSS_FACTOR = 0.1;
+
+    function applyEnergyLoss(id, { speed, collideNormal }) {
+      const v = speed.get(id);
+      if (collideNormal.has(id)) {
+        v.x = Math.sign(v.x) * Math.sqrt((1 - ENERGY_LOSS_FACTOR) * v.x * v.x);
+        v.y = Math.sign(v.y) * Math.sqrt(((1 - ENERGY_LOSS_FACTOR)) * v.y * v.y);
+      }
+    }
+
+    const GRAVITY_ACC = 0.6;
+
+    function applyGravity(id, { speed }) {
+      const v = speed.get(id);
+      v.y += GRAVITY_ACC;
+    }
+
+    function applyHaltOnTheGround(id, { position, speed, size }) {
+      const v = speed.get(id);
+      const p = position.get(id);
+      const s = size.get(id);
+      const onTheGround = ARENA_H - (p.y + s.h / 2) < 0;
+      const notBouncingUp = 1 > Math.floor(Math.abs(v.y));
+      if (onTheGround && notBouncingUp) {
+        v.y = 0;
+      }
+    }
+
+    function clamp(v, min, max) {
+      return Math.max(min, Math.min(max, v));
+    }
+
+    function applyBoundedPos(id, { position, size }) {
+      const p = position.get(id);
+      const s = size.get(id);
+      p.x = clamp(p.x, s.w / 2, ARENA_W - s.w / 2);
+      p.y = clamp(p.y, s.h / 2, ARENA_H - s.h / 2);
+    }
+
+    const BALL_POOL = new Map();
+
+    function drawOrangeDisc(id, { position, size }) {
+      const s = size.get(id);
+
+      let domBall = BALL_POOL.get(id);
+      if (domBall === undefined) {
+        domBall = $("<div>").addClass("disc").attr("data-id", id);
+        $arena.append(domBall);
+        BALL_POOL.set(id, domBall);
+        domBall.css({
+          height: s.h + "px",
+          width: s.w + "px",
+          "background-color": "yellow",
+        });
+      }
+
+      const p = position.get(id);
+      domBall.css({
+        left: (p.x - s.w / 2) + "px",
+        top: (p.y - s.h / 2) + "px",
+      });
+    }
+
+    const querySystems = [
+      queryCollideNormalAgainstArena,
+    ];
+    const applySystems = new Set([
+      applyBounceBack,
+      applyEnergyLoss,
+      applyHaltOnTheGround,
+      applyKeepMoving,
+      applyBoundedPos,
+    ]);
+    const drawSystems = [
+      drawOrangeDisc,
+    ];
+
+    const context = {
+      speed: speedData,
+      position: posData,
+      size: sizeData,
+      collideNormal: collideNormalData,
+    };
+
+    function update() {
+      for (const id of entities) {
+        querySystems.forEach(system => system(id, context));
+        applySystems.forEach(system => system(id, context));
+        drawSystems.forEach(system => system(id, context));
+      }
+    }
+
+    const $iteration = $("#iteration");
+    const $fps = $("#fps");
+    const $header = $("header");
+
+    let frames = 0;
+    let iteration_limit = 600;
+    let iteration = 0;
+
+    function simulate() {
+      if (frames === 0) {
+        frames_start = performance.now();
+      }
+      update();
+      frames++;
+
+      if (frames > 10) {
+        const cost = performance.now() - frames_start;
+        $fps.text(Math.floor(1000 / (cost / 10)));
+        frames = 0;
+      }
+
+      if (++iteration <= iteration_limit) {
+        requestAnimationFrame(simulate);
+        $iteration.text(
+          iteration.toString().padStart(4, "0")
+          + "/"
+          + iteration_limit.toString().padStart(4, "0"),
+        );
+      } else {
+        console.info("update halts");
+        $header.css("background-color", "#3a3a3a");
+      }
+    }
+
+    $(document).on("click", ".arena", e => {
+      if (iteration >= iteration_limit) {
+        iteration_limit *= 2;
+        simulate();
+      }
+      addRandomDisc(e.offsetX, e.offsetY);
+    });
+    $("#toggleGravity").on("change", e => {
+      if (e.target.checked) {
+        applySystems.add(applyGravity);
+      } else {
+        applySystems.delete(applyGravity);
+      }
+    });
+
+    function addRandomDisc(x = ARENA_W / 2, y = ARENA_H / 2, n = 50) {
+      const init_id = 1000 + entities.length;
+      for (let i = 0; i < n; i++) {
+        const id = init_id + i;
+        entities.push(id);
+        sizeData.set(id, { w: 20, h: 20 });
+        posData.set(id, { x, y });
+        speedData.set(id, { x: 60 * (Math.random() - 0.5), y: 60 * (Math.random() - 0.5) });
+      }
+    }
+
+    addRandomDisc();
+
+    $header.css("background-color", "limegreen");
+    let frames_start = performance.now();
+    simulate();
+  </script>
+</body>
+</html>
