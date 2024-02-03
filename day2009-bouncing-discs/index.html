@@ -150,21 +150,35 @@
 
       if (nX !== 0 || nY !== 0) {
         const [x, y] = normalized(nX, nY);
-        collideNormal.set(id, { x, y });
+        collideNormal.set(id, [x, y]);
       } else {
         collideNormal.delete(id);
       }
+    }
+
+    function queryCollideNormalAgainstOtherDisc(id, { position, collideNormal, size }) {
+      const p = position.get(id);
+      const { w } = size.get(id);
+      Array.from(position.entries())
+        .filter(([other, _]) => other !== id)
+        .filter(([other, otherP]) => {
+          const { w: otherW } = size.get(other);
+          const radiusSumSqr = (w / 2 + otherW / 2) * (w / 2 + otherW / 2);
+          const distCenterSqr = (p.x - otherP.x) * (p.x - otherP.x) + (p.y - otherP.y) * (p.y - otherP.y);
+          return distCenterSqr < radiusSumSqr;
+        })
+        .forEach(([_, otherP]) => collideNormal.set(id, normalized(p.x - otherP.x, p.y - otherP.y)));
     }
 
     function applyBounceBack(id, { speed, collideNormal }) {
       if (!collideNormal.has(id)) {
         return;
       }
-      const n = collideNormal.get(id);
+      const [nX, nY] = collideNormal.get(id);
       const v = speed.get(id);
-      const dp = dotProd(v.x, v.y, n.x, n.y);
-      const dNX = 2 * dp * n.x;
-      const dNY = 2 * dp * n.y;
+      const dp = dotProd(v.x, v.y, nX, nY);
+      const dNX = 2 * dp * nX;
+      const dNY = 2 * dp * nY;
       const [x, y] = subtract(v.x, v.y, dNX, dNY);
       v.x = x;
       v.y = y;
@@ -235,6 +249,7 @@
 
     const querySystems = [
       queryCollideNormalAgainstArena,
+      queryCollideNormalAgainstOtherDisc,
     ];
     const applySystems = new Set([
       applyBounceBack,
