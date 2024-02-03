@@ -56,7 +56,14 @@
       height: auto;
     }
 
+    .controls-container.controls-container__expanded {
+      height: 52px;
+    }
+
     .controls-container {
+      height: 0;
+      transition: height .3s;
+      overflow-y: hidden;
       position: absolute;
       bottom: 0;
       width: 100%;
@@ -64,7 +71,6 @@
       padding: 0 12px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
     }
 
     .controls {
@@ -215,7 +221,7 @@
 
     ol.notes {
       list-style: simp-chinese-informal;
-      padding-left: 2em;
+      padding-left: 3em;
     }
 
     .notes mark {
@@ -344,7 +350,7 @@
     <section class="screen">
       <video src="video/video.webm"></video>
     </section>
-    <section class="controls-container">
+    <section class="controls-container controls-container__expanded">
       <div class="controls">
         <div class="controls--main">
           <div class="btn" data-tip="播放">
@@ -510,6 +516,21 @@
         <li>弹出的设置面板退回到第一级目录</li>
       </ul>
     </li>
+    <li>视频播放时
+      <ul>
+        <li>若光标在视频区域静止，控制器稍候消失</li>
+        <li>若光标离开视频区域，控制器立刻消失</li>
+        <li>若光标进入视频区域，控制器立刻出现</li>
+        <li>若光标在控制器右侧区域不论静止或移动，控制器不消失</li>
+        <li>只要弹出设置菜单展开，不论光标静止或移动，控制器不消失</li>
+      </ul>
+    </li>
+    <li>视频暂停时
+      <ul>
+        <li>无论如何，控制器不消失</li>
+        <li>若暂停前是消失状态，控制器出现</li>
+      </ul>
+    </li>
   </ol>
   <ul class="notes">
     拖动条控件的API：
@@ -538,6 +559,27 @@
   </p>
 
   <script>
+    function IdleTask(taskFn, options = {}) {
+      this.options = {
+        skipTaskPredicate: () => false,
+        idleTimeout: 500,
+        taskInterval: 800, ...options,
+      };
+      this.intervalHandle = null;
+      this.idleTimer = null;
+      this.taskFn = () => (!this.options.skipTaskPredicate() && taskFn());
+      this.wait();
+    }
+
+    IdleTask.prototype.wait = function () {
+      clearInterval(this.intervalHandle);
+      clearTimeout(this.idleTimer);
+      this.idleTimer = setTimeout(() => {
+        requestIdleCallback(this.taskFn, { timeout: 30 });
+        this.intervalHandle = setInterval(this.taskFn, this.options.taskInterval);
+      }, this.options.idleTimeout);
+    };
+
     function nodeIndexOf(node) {
       const siblings = node.parentNode.children;
       for (let i = 0; i < siblings.length; i++) {
@@ -868,6 +910,8 @@
     const aMenuItem = oControlPopupPanel.querySelectorAll(".menu--item");
     const aMenuDetailHeader = oControlPopupPanel.querySelectorAll(".detail-header");
     const oPlaybackSpeedSettings = oControlPopupPanel.querySelector("[data-menu-playback-speed-detail]");
+    const oControlContainer = oPlayer.querySelector(".controls-container");
+    const oControlRightBtnContainer = oPlayer.querySelector(".controls--more");
 
     function padTimestamp(x) {
       return x.toString().padStart(2, "0");
@@ -906,6 +950,7 @@
       fullscreen: false,
       showPopup: false,
       playbackSpeed: 1,
+      mustShowControls: true,
     };
 
     listenEvent(oBtnPlay, "click", () => {
@@ -1045,8 +1090,42 @@
       setCurrentTime(state.currentTime);
     });
 
+    function showControls() {
+      oControlContainer.classList.add("controls-container__expanded");
+    }
+
+    function hideControls() {
+      oControlContainer.classList.remove("controls-container__expanded");
+    }
+
+    const hideControlsIfNoInteraction = new IdleTask(
+      hideControls,
+      { taskInterval: 1e9, idleTimeout: 2e3, skipTaskPredicate: () => state.mustShowControls },
+    );
+    listenEvent(oPlayer, "mouseenter", () => {
+      showControls();
+    });
+    listenEvent(oPlayer, "mousemove", () => {
+      showControls();
+      hideControlsIfNoInteraction.wait();
+    });
+    listenEvent(oPlayer, "mouseleave", () => {
+      if (!state.mustShowControls) {
+        hideControls();
+      }
+    });
+    listenEvent(oVideo, "pause", () => state = { ...state, mustShowControls: true });
+    listenEvent(oVideo, "play", () => state = { ...state, mustShowControls: false });
+    listenEvent(oControlRightBtnContainer,
+      "mouseenter",
+      () => state = { ...state, mustShowControls: true });
+    listenEvent(oControlRightBtnContainer,
+      "mouseleave",
+      () => state = { ...state, mustShowControls: false });
+
     setVolume(0.5);
     setVideoScrubberPos(0);
+    showControls();
     setCurrentTime(state.currentTime);
     setTotalTime(state.totalTime);
     updateControlPopupPanel(state);
