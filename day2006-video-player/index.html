@@ -1129,6 +1129,7 @@
         state = { ...state, mustShowControls: true, playing: false };
         updatePlayAndPauseBtn();
       });
+    listenEvent(oVideo, "pause", showControls);
     listenEvent(oVideo,
       "play",
       () => {
