@@ -669,6 +669,15 @@
       };
       const container = document.createElement("div");
       setCssStyle(container, {
+        "height": options.thumbSize,
+        "width": "100%",
+        "box-sizing": "border-box",
+        "flex-shrink": 0,
+        "display": "flex",
+        "align-items": "center",
+      });
+      const fullRange = document.createElement("div");
+      setCssStyle(fullRange, {
         "position": "relative",
         "height": options.size,
         "width": "100%",
@@ -679,7 +688,7 @@
       });
       const indicator = document.createElement("div");
       setCssStyle(indicator, {
-        "height": "100%",
+        "height": options.size,
         "width": "25%",
         "background-color": options.thumbColor,
         "cursor": "pointer",
@@ -696,17 +705,29 @@
         "transition": "opacity .3s",
         "cursor": "pointer",
       });
-      container.append(indicator, thumb);
-      container.addEventListener("drag", e => e.preventDefault());
-      container.addEventListener("dragstart", e => e.preventDefault());
-      container.addEventListener("click", e => {
+      fullRange.append(indicator, thumb);
+      container.append(fullRange);
+      fullRange.addEventListener("drag", e => e.preventDefault());
+      fullRange.addEventListener("dragstart", e => e.preventDefault());
+      indicator.addEventListener("drag", e => e.preventDefault());
+      indicator.addEventListener("dragstart", e => e.preventDefault());
+      fullRange.addEventListener("click", e => {
         if (e.target === thumb) {
           return;
         }
-        state = { ...state, value: clamp(e.offsetX / (container.offsetWidth - thumb.offsetWidth), 0, 1) };
+        state = { ...state, value: clamp(e.offsetX / (fullRange.offsetWidth - thumb.offsetWidth), 0, 1) };
         updateIndicatorAndThumb(state);
         emit("change");
       });
+      if (!options.alwaysShowThumb) {
+        fullRange.addEventListener("mouseenter", e => {
+          thumb.style.opacity = "1";
+        });
+        fullRange.addEventListener("mouseleave", e => {
+          thumb.style.opacity = "0";
+        });
+        thumb.style.opacity = "0";
+      }
 
       let state = {
         lastEmittedValue: NaN,
@@ -720,11 +741,11 @@
       }
 
       function boundedX(oldPos, newPos) {
-        return { x: clamp(newPos.x, 0, container.offsetWidth - thumb.offsetWidth), y: newPos.y };
+        return { x: clamp(newPos.x, 0, fullRange.offsetWidth - thumb.offsetWidth), y: newPos.y };
       }
 
       function updateIndicatorAndThumb(s) {
-        thumb.style.left = `${s.value * (container.offsetWidth - thumb.offsetWidth)}px`;
+        thumb.style.left = `${s.value * (fullRange.offsetWidth - thumb.offsetWidth)}px`;
         indicator.style.width = `${thumb.offsetLeft + thumb.offsetWidth / 2}px`;
       }
 
@@ -758,7 +779,7 @@
         [
           moveOnlyX,
           boundedX,
-          (_, newPos) => state = { ...state, value: newPos.x / (container.offsetWidth - thumb.offsetWidth) },
+          (_, newPos) => state = { ...state, value: newPos.x / (fullRange.offsetWidth - thumb.offsetWidth) },
           () => updateIndicatorAndThumb(state),
           () => emit("input"),
         ],
