@@ -219,7 +219,7 @@
       this.elem.addEventListener("transitionend", () => {
           this.elem.remove();
           balls.delete(this.slot);
-        }, { once: true }
+        }, { once: true },
       );
     };
 
@@ -235,7 +235,7 @@
       this.elem.addEventListener("transitionend", () => {
           this.elem.remove();
           balls.delete(this.slot);
-        }, { once: true }
+        }, { once: true },
       );
     };
 
@@ -341,7 +341,7 @@
       gameOver: false,
       score: 0,
       shootingDirection: 0,
-      comingBallsColor: [BALL_COLORS[1], BALL_COLORS[0], BALL_COLORS[0], BALL_COLORS[0], BALL_COLORS[0], BALL_COLORS[2], BALL_COLORS[2], BALL_COLORS[2]]
+      comingBallsColor: [BALL_COLORS[1], BALL_COLORS[0], BALL_COLORS[0], BALL_COLORS[0], BALL_COLORS[0], BALL_COLORS[2], BALL_COLORS[2], BALL_COLORS[2]],
     };
 
     oBallsContainer.addEventListener("mousemove", (e) => {
