@@ -788,7 +788,7 @@
 
       function updateIndicatorAndThumb(s) {
         thumb.style.left = `${s.value * (fullRange.offsetWidth - thumb.offsetWidth)}px`;
-        indicator.style.width = `${thumb.offsetLeft + thumb.offsetWidth / 2}px`;
+        indicator.style.width = `${fullRange.offsetWidth * state.value}px`;
       }
 
       function emit(type) {
