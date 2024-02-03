@@ -58,6 +58,7 @@
 
     .controls-container.controls-container__expanded {
       height: 52px;
+      overflow-y: visible;
     }
 
     .controls-container {
@@ -1040,6 +1041,7 @@
 
     listenEvent(oControlPopupToggle, "click", (e) => {
       state = { ...state, showPopup: !state.showPopup };
+      state = { ...state, mustShowControls: true };
       updateControlPopupPanel(state);
       console.log("oControlPopupToggle click");
       e.stopPropagation();
@@ -1048,6 +1050,7 @@
           return;
         }
         state = { ...state, showPopup: !state.showPopup };
+        state = { ...state, mustShowControls: !state.playing };
         updateControlPopupPanel(state);
         console.log("oControlPopupToggle document click and unlisten");
         unlisten();
@@ -1129,7 +1132,8 @@
     listenEvent(oVideo,
       "play",
       () => {
-        state = { ...state, mustShowControls: false, playing: true };
+        state = { ...state, playing: true };
+        state = { ...state, mustShowControls: !state.playing || state.showPopup };
         updatePlayAndPauseBtn();
       });
     listenEvent(oControlRightBtnContainer,
@@ -1137,7 +1141,7 @@
       () => state = { ...state, mustShowControls: true });
     listenEvent(oControlRightBtnContainer,
       "mouseleave",
-      () => state = { ...state, mustShowControls: !state.playing || false });
+      () => state = { ...state, mustShowControls: !state.playing || state.showPopup });
 
     setVolume(0.5);
     setVideoScrubberPos(0);
