@@ -651,13 +651,11 @@
       if (!this.dragging) {
         return;
       }
-      console.log("Draggable::onDragMove tagName clientXY", e.target.tagName, e.clientX, e.clientY);
 
       const posDiff = {
         x: e.clientX - this.lastMousePos.x,
         y: e.clientY - this.lastMousePos.y,
       };
-      console.log("Draggable::onDragMove posDiff", posDiff);
       this.lastMousePos.x = e.clientX;
       this.lastMousePos.y = e.clientY;
       const oldPos = {
@@ -763,10 +761,10 @@
         emit("change");
       });
       if (!options.alwaysShowThumb) {
-        fullRange.addEventListener("mouseenter", e => {
+        fullRange.addEventListener("mouseenter", () => {
           thumb.style.opacity = "1";
         });
-        fullRange.addEventListener("mouseleave", e => {
+        fullRange.addEventListener("mouseleave", () => {
           thumb.style.opacity = "0";
         });
         thumb.style.opacity = "0";
@@ -827,7 +825,6 @@
       );
 
       function setValue(value) {
-        console.log("RangeInput setValue value", value);
         if (value !== state.value) {
           state = { ...state, oldValue: state.value };
           state = { ...state, value };
@@ -990,12 +987,10 @@
     addEventListener("change", updateSpeakerIcon);
     addEventListener("change", (e) => {
       state = { ...state, volumeBeforeMute: e.value === 0 ? e.oldValue : e.value };
-      console.log("volumeInput change event, e.oldValue, e.value", e.oldValue, e.value);
     });
 
     function updateSpeakerIcon(e) {
-      const { value, oldValue } = e;
-      console.log("updateSpeakerIcon value", value, oldValue);
+      const { value } = e;
       oVolumeIconHigh.classList.add("btn__inactive");
       oVolumeIconLow.classList.add("btn__inactive");
       oVolumeIconMuted.classList.add("btn__inactive");
@@ -1041,7 +1036,6 @@
       state = { ...state, showPopup: !state.showPopup };
       state = { ...state, mustShowControls: true };
       updateControlPopupPanel(state);
-      console.log("oControlPopupToggle click");
       e.stopPropagation();
       const unlisten = listenEvent(document, "click", (e) => {
         if (oControlPopupPanel.contains(e.target)) {
@@ -1050,7 +1044,6 @@
         state = { ...state, showPopup: !state.showPopup };
         state = { ...state, mustShowControls: !state.playing };
         updateControlPopupPanel(state);
-        console.log("oControlPopupToggle document click and unlisten");
         unlisten();
       });
     });
@@ -1141,7 +1134,6 @@
       () => state = { ...state, mustShowControls: !state.playing || state.showPopup });
     listenEvent(oPlayer, "click", e => {
       const t = e.target;
-      console.log("oPlayer click", t);
       if (oControlContainer.contains(t)
         || oControlPopupPanel.contains(t)) {
         return;
