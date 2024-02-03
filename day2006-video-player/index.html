@@ -1090,13 +1090,11 @@
       oVideo.currentTime = state.currentTime;
     });
     listenEvent(oVideo, "timeupdate", () => {
+      state = { ...state, currentTime: oVideo.currentTime };
+      setCurrentTime(state.currentTime);
       if (!state.seeking) {
         setVideoScrubberPos(state.currentTime / state.totalTime);
       }
-    });
-    listenEvent(oVideo, "timeupdate", () => {
-      state = { ...state, currentTime: oVideo.currentTime };
-      setCurrentTime(state.currentTime);
     });
 
     function showControls() {
