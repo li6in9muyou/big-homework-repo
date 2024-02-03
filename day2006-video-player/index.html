@@ -942,7 +942,7 @@
     }
 
     let state = {
-      playing: true,
+      playing: false,
       totalTime: 0,
       currentTime: 0,
       seeking: false,
@@ -955,13 +955,11 @@
 
     listenEvent(oBtnPlay, "click", () => {
       oVideo.play();
-      state = { ...state, playing: true };
       oBtnPlay.classList.add("btn__inactive");
       oBtnPause.classList.remove("btn__inactive");
     });
     listenEvent(oBtnPause, "click", () => {
       oVideo.pause();
-      state = { ...state, playing: false };
       oBtnPlay.classList.remove("btn__inactive");
       oBtnPause.classList.add("btn__inactive");
     });
@@ -1114,14 +1112,18 @@
         hideControls();
       }
     });
-    listenEvent(oVideo, "pause", () => state = { ...state, mustShowControls: true });
-    listenEvent(oVideo, "play", () => state = { ...state, mustShowControls: false });
+    listenEvent(oVideo,
+      "pause",
+      () => state = { ...state, mustShowControls: true, playing: false });
+    listenEvent(oVideo,
+      "play",
+      () => state = { ...state, mustShowControls: false, playing: true });
     listenEvent(oControlRightBtnContainer,
       "mouseenter",
       () => state = { ...state, mustShowControls: true });
     listenEvent(oControlRightBtnContainer,
       "mouseleave",
-      () => state = { ...state, mustShowControls: false });
+      () => state = { ...state, mustShowControls: !state.playing || false });
 
     setVolume(0.5);
     setVideoScrubberPos(0);
