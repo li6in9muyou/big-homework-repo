@@ -1143,6 +1143,20 @@
     listenEvent(oControlRightBtnContainer,
       "mouseleave",
       () => state = { ...state, mustShowControls: !state.playing || state.showPopup });
+    listenEvent(oPlayer, "click", e => {
+      const t = e.target;
+      console.log("oPlayer click", t);
+      if (oControlContainer.contains(t)
+        || oControlPopupPanel.contains(t)) {
+        return;
+      }
+      if (state.playing) {
+        oVideo.pause();
+      } else {
+        oVideo.play();
+      }
+      updatePlayAndPauseBtn();
+    });
 
     setVolume(0.5);
     setVideoScrubberPos(0);
