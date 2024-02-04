@@ -148,12 +148,12 @@
     const entities = [1000, 1001];
 
     const posData = new Map([
-      [1000, { x: 60, y: 300 }],
-      [1001, { x: ARENA_W / 2, y: 100 }],
+      [1000, { x: ARENA_W / 2, y: 100 }],
+      [1001, { x: ARENA_W / 2, y: 600 }],
     ]);
     const speedData = new Map([
-      [1000, { x: -10, y: 30 }],
-      [1001, { x: 80, y: 40 }],
+      [1000, { x: 0, y: 100 }],
+      [1001, { x: 0, y: -1 }],
     ]);
     const sizeData = new Map([
       [1000, { w: 40, h: 40 }],
@@ -382,7 +382,7 @@
       applyStopFalling,
       applyMoveToCollidePos,
       applyKeepMovingIfNoCollision,
-      applyGravity,
+      // applyGravity,
     ]);
     const drawSystems = [
       drawOrangeDisc,
@@ -449,7 +449,6 @@
         iteration_limit *= 2;
         simulate();
       }
-      addRandomDisc(e.offsetX, e.offsetY);
     });
 
     const $toggleGravity = $("#toggleGravity");
@@ -474,8 +473,6 @@
         speedData.set(id, { x: 60 * (Math.random() - 0.5), y: 60 * (Math.random() - 0.5) });
       }
     }
-
-    addRandomDisc();
 
     $header.css("background-color", "limegreen");
     let frames_start = performance.now();
