@@ -32,6 +32,7 @@
       position: absolute;
       border-radius: 100%;
       border: solid 1px crimson;
+      box-sizing: border-box;
     }
 
     header {
@@ -90,10 +91,36 @@
       return [x1 - x2, y1 - y2];
     }
 
+    function add(x1, y1, x2, y2) {
+      return [x1 + x2, y1 + y2];
+    }
+
     function normalized(x, y) {
       const len = Math.sqrt(x * x + y * y);
       console.assert(Math.abs(len) > 1e-5, "error: can not normalize a zero length vector");
       return [x / len, y / len];
+    }
+
+    function neq(a, b, epsilon = 1e-4) {
+      return !eq(a, b, epsilon);
+    }
+
+    function eq(a, b, epsilon = 1e-4) {
+      return epsilon > Math.abs(a - b);
+    }
+
+    function solveLinear(a, b, c) {
+      // ax + b = c
+
+      if (eq(a, 0)) {
+        if (neq(b, c)) {
+          return null;
+        } else {
+          return 0;
+        }
+      }
+
+      return (c - b) / a;
     }
   </script>
   <script>
@@ -116,25 +143,68 @@
       [1001, { w: 80, h: 80 }],
     ]);
 
-    const collideNormalData = new Map();
+    function applyKeepMovingIfNoCollision(id, { position, speed, distanceUntilCollision }) {
+      if (distanceUntilCollision.has(id)) {
+        return;
+      }
 
-    function applyKeepMoving(id, { position, speed }) {
       const p = position.get(id);
       const v = speed.get(id);
       p.x += v.x;
       p.y += v.y;
     }
 
-    function queryCollideNormalAgainstArena(id, { position, size, collideNormal }) {
+    function applyMoveToCollidePos(id, { position, distanceUntilCollision }) {
+      const d = distanceUntilCollision.get(id);
+      if (d === undefined) {
+        return;
+      }
+      const p = position.get(id);
+      p.x += d.x * 0.9999;
+      p.y += d.y * 0.9999;
+    }
+
+    function queryCollideNormalAndDistUntilCollisionAgainstArena(id, {
+      position,
+      size,
+      speed,
+      collideNormal,
+      distanceUntilCollision,
+    }) {
       const p = position.get(id);
       const { w, h } = size.get(id);
-      const hitT = (p.y - h / 2) <= 0;
-      const hitB = (p.y + h / 2) >= ARENA_H;
-      const hitL = (p.x - w / 2) <= 0;
-      const hitR = (p.x + w / 2) >= ARENA_W;
+      const v = speed.get(id);
 
+      const tToTop = solveLinear(v.y, p.y, h / 2) ?? Infinity;
+      const tToRight = solveLinear(v.x, p.x, ARENA_W - w / 2) ?? Infinity;
+      const tToBottom = solveLinear(v.y, p.y, ARENA_H - h / 2) ?? Infinity;
+      const tToLeft = solveLinear(v.x, p.x, w / 2) ?? Infinity;
+
+      let minTWithInZeroAndOne = Infinity;
+      if (0 <= tToTop && tToTop <= 1 && tToTop < minTWithInZeroAndOne) {
+        minTWithInZeroAndOne = tToTop;
+      }
+      if (0 <= tToRight && tToRight <= 1 && tToRight < minTWithInZeroAndOne) {
+        minTWithInZeroAndOne = tToRight;
+      }
+      if (0 <= tToBottom && tToBottom <= 1 && tToBottom < minTWithInZeroAndOne) {
+        minTWithInZeroAndOne = tToBottom;
+      }
+      if (0 <= tToLeft && tToLeft <= 1 && tToLeft < minTWithInZeroAndOne) {
+        minTWithInZeroAndOne = tToLeft;
+      }
+      if (minTWithInZeroAndOne >= Infinity) {
+        return;
+      }
+
+      distanceUntilCollision.set(id,
+        { x: v.x * minTWithInZeroAndOne, y: v.y * minTWithInZeroAndOne });
+
+      const hitT = minTWithInZeroAndOne === tToTop;
+      const hitR = minTWithInZeroAndOne === tToRight;
+      const hitB = minTWithInZeroAndOne === tToBottom;
+      const hitL = minTWithInZeroAndOne === tToLeft;
       let nX = 0, nY = 0;
-
       if (hitB) {
         nY = -1;
       }
@@ -147,16 +217,12 @@
       if (hitR) {
         nX = -1;
       }
-
-      if (nX !== 0 || nY !== 0) {
-        const [x, y] = normalized(nX, nY);
-        collideNormal.set(id, [x, y]);
-      } else {
-        collideNormal.delete(id);
-      }
+      collideNormal.set(id, normalized(nX, nY));
     }
 
-    function queryCollideNormalAgainstOtherDisc(id, { position, collideNormal, size }) {
+    function queryCollideNormalAgainstOtherDisc(
+      id,
+      { position, collideNormal, size, collideResetDist }) {
       const p = position.get(id);
       const { w } = size.get(id);
       Array.from(position.entries())
@@ -165,7 +231,16 @@
           const { w: otherW } = size.get(other);
           const radiusSumSqr = (w / 2 + otherW / 2) * (w / 2 + otherW / 2);
           const distCenterSqr = (p.x - otherP.x) * (p.x - otherP.x) + (p.y - otherP.y) * (p.y - otherP.y);
-          return distCenterSqr < radiusSumSqr;
+
+          const collided = radiusSumSqr > distCenterSqr;
+          if (collided) {
+            // TODO: i don't know why 0.1 works best
+            const distToClearCollision = 0.5 * (Math.sqrt(radiusSumSqr) - Math.sqrt(distCenterSqr));
+            collideResetDist.set(id, distToClearCollision);
+            collideResetDist.set(other, distToClearCollision);
+          }
+
+          return collided;
         })
         .forEach(([_, otherP]) => collideNormal.set(id, normalized(p.x - otherP.x, p.y - otherP.y)));
     }
@@ -201,26 +276,19 @@
       v.y += GRAVITY_ACC;
     }
 
-    function applyHaltOnTheGround(id, { position, speed, size }) {
+    function applyStopFalling(id, { position, speed, size }) {
       const v = speed.get(id);
       const p = position.get(id);
       const s = size.get(id);
-      const onTheGround = ARENA_H - (p.y + s.h / 2) < 0;
+      const onTheGround = ARENA_H - (p.y + s.h / 2) <= 0;
       const notBouncingUp = 1 > Math.floor(Math.abs(v.y));
       if (onTheGround && notBouncingUp) {
         v.y = 0;
+        // adding 1e-4 makes it sinks a bit into the floor thus keeping
+        // it from colliding with the ground
+        // so that it can scroll freely on the ground
+        p.y = ARENA_H - s.h / 2 + 1e-4;
       }
-    }
-
-    function clamp(v, min, max) {
-      return Math.max(min, Math.min(max, v));
-    }
-
-    function applyBoundedPos(id, { position, size }) {
-      const p = position.get(id);
-      const s = size.get(id);
-      p.x = clamp(p.x, s.w / 2, ARENA_W - s.w / 2);
-      p.y = clamp(p.y, s.h / 2, ARENA_H - s.h / 2);
     }
 
     const BALL_POOL = new Map();
@@ -248,15 +316,16 @@
     }
 
     const querySystems = [
-      queryCollideNormalAgainstArena,
-      queryCollideNormalAgainstOtherDisc,
+      queryCollideNormalAndDistUntilCollisionAgainstArena,
+      // queryCollideNormalAgainstOtherDisc,
     ];
     const applySystems = new Set([
       applyBounceBack,
       applyEnergyLoss,
-      applyHaltOnTheGround,
-      applyKeepMoving,
-      applyBoundedPos,
+      applyStopFalling,
+      applyMoveToCollidePos,
+      applyKeepMovingIfNoCollision,
+      applyGravity,
     ]);
     const drawSystems = [
       drawOrangeDisc,
@@ -266,7 +335,8 @@
       speed: speedData,
       position: posData,
       size: sizeData,
-      collideNormal: collideNormalData,
+      collideNormal: new Map(),
+      distanceUntilCollision: new Map(),
     };
 
     function update() {
@@ -275,6 +345,8 @@
         applySystems.forEach(system => system(id, context));
         drawSystems.forEach(system => system(id, context));
       }
+      context.collideNormal.clear();
+      context.distanceUntilCollision.clear();
     }
 
     const $iteration = $("#iteration");
@@ -318,7 +390,12 @@
       }
       addRandomDisc(e.offsetX, e.offsetY);
     });
-    $("#toggleGravity").on("change", e => {
+
+    const $toggleGravity = $("#toggleGravity");
+    if (applySystems.has(applyGravity)) {
+      $toggleGravity.attr("checked", true);
+    }
+    $toggleGravity.on("change", e => {
       if (e.target.checked) {
         applySystems.add(applyGravity);
       } else {
