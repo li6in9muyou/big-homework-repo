@@ -83,6 +83,10 @@
   <script>
     // 2d vector math
 
+    function lenSqr(x, y) {
+      return x * x + y * y;
+    }
+
     function dotProd(x1, y1, x2, y2) {
       return x1 * x2 + y1 * y2;
     }
@@ -122,6 +126,19 @@
 
       return (c - b) / a;
     }
+
+    function solveQuadratic(a, b, c) {
+      // ax^2 + bx + c = 0
+
+      const det = Math.sqrt(b * b - 4 * a * c);
+      if (Number.isNaN(det)) {
+        return null;
+      }
+
+      const base = -b / (2 * a);
+      const offset = det / (2 * a);
+      return [base + offset, base - offset];
+    }
   </script>
   <script>
     const $arena = $(".arena");
@@ -155,10 +172,11 @@
     }
 
     function applyMoveToCollidePos(id, { position, distanceUntilCollision }) {
-      const d = distanceUntilCollision.get(id);
-      if (d === undefined) {
+      if (!distanceUntilCollision.has(id)) {
         return;
       }
+
+      const d = distanceUntilCollision.get(id);
       const p = position.get(id);
       p.x += d.x * 0.9999;
       p.y += d.y * 0.9999;
@@ -220,29 +238,68 @@
       collideNormal.set(id, normalized(nX, nY));
     }
 
-    function queryCollideNormalAgainstOtherDisc(
+    function queryDiscCollision(
       id,
-      { position, collideNormal, size, collideResetDist }) {
+      { position, size, speed, collideNormal, distanceUntilCollision }) {
       const p = position.get(id);
-      const { w } = size.get(id);
+      const v = speed.get(id);
+      const r = size.get(id).w / 2;
       Array.from(position.entries())
         .filter(([other, _]) => other !== id)
-        .filter(([other, otherP]) => {
-          const { w: otherW } = size.get(other);
-          const radiusSumSqr = (w / 2 + otherW / 2) * (w / 2 + otherW / 2);
-          const distCenterSqr = (p.x - otherP.x) * (p.x - otherP.x) + (p.y - otherP.y) * (p.y - otherP.y);
-
-          const collided = radiusSumSqr > distCenterSqr;
-          if (collided) {
-            // TODO: i don't know why 0.1 works best
-            const distToClearCollision = 0.5 * (Math.sqrt(radiusSumSqr) - Math.sqrt(distCenterSqr));
-            collideResetDist.set(id, distToClearCollision);
-            collideResetDist.set(other, distToClearCollision);
+        .forEach(([other, otherPos]) => {
+          const otherR = size.get(other).w / 2;
+          const otherSpeed = speed.get(other);
+          const dPX = p.x - otherPos.x;
+          const dPY = p.y - otherPos.y;
+          const dVX = v.x - otherSpeed.x;
+          const dVY = v.y - otherSpeed.y;
+          const A = dVX * dVX + dVY * dVY;
+          const B = 2 * dPX * dVX + 2 * dPY * dVY;
+          const C = dPX * dPX + dPY * dPY - (r + otherR) * (r + otherR);
+          const solution = solveQuadratic(A, B, C);
+          if (solution === null) {
+            return;
           }
 
-          return collided;
-        })
-        .forEach(([_, otherP]) => collideNormal.set(id, normalized(p.x - otherP.x, p.y - otherP.y)));
+          const [t1, t2] = solution;
+          let t = Infinity;
+          if (0 < t1 && t1 < 1 && t1 < t) {
+            t = t1;
+          }
+          if (0 < t2 && t2 < 1 && t2 < t) {
+            t = t2;
+          }
+          if (t >= Infinity) {
+            return;
+          }
+
+          let setMyCollisionInfo = true, setOtherCollisionInfo = true;
+          if (distanceUntilCollision.has(id)) {
+            const prevT = distanceUntilCollision.get(id);
+            const prevLen = lenSqr(t * prevT.x, t * prevT.y);
+            const len = lenSqr(t * v.x, t * v.y);
+            if (len > prevLen) {
+              setMyCollisionInfo = false;
+            }
+          }
+          if (distanceUntilCollision.has(other)) {
+            const prevT = distanceUntilCollision.get(other);
+            const prevLen = lenSqr(t * prevT.x, t * prevT.y);
+            const len = lenSqr(t * otherSpeed.x, t * otherSpeed.y);
+            if (len > prevLen) {
+              setOtherCollisionInfo = false;
+            }
+          }
+
+          if (setMyCollisionInfo) {
+            distanceUntilCollision.set(id, { x: v.x * t, y: v.y * t });
+            collideNormal.set(id, normalized(p.x - otherPos.x, p.y - otherPos.y));
+          }
+          if (setOtherCollisionInfo) {
+            distanceUntilCollision.set(other, { x: otherSpeed.x * t, y: otherSpeed.y * t });
+            collideNormal.set(other, normalized(otherPos.x - p.x, otherPos.y - p.y));
+          }
+        });
     }
 
     function applyBounceBack(id, { speed, collideNormal }) {
@@ -317,7 +374,7 @@
 
     const querySystems = [
       queryCollideNormalAndDistUntilCollisionAgainstArena,
-      // queryCollideNormalAgainstOtherDisc,
+      queryDiscCollision,
     ];
     const applySystems = new Set([
       applyBounceBack,
@@ -342,7 +399,11 @@
     function update() {
       for (const id of entities) {
         querySystems.forEach(system => system(id, context));
+      }
+      for (const id of entities) {
         applySystems.forEach(system => system(id, context));
+      }
+      for (const id of entities) {
         drawSystems.forEach(system => system(id, context));
       }
       context.collideNormal.clear();
