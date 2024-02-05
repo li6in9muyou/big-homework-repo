@@ -302,7 +302,7 @@
         });
     }
 
-    function applyBounceBack(id, { speed, collideNormal }) {
+    function applySpeedReflectedByCollideNormal(id, { speed, collideNormal }) {
       if (!collideNormal.has(id)) {
         return;
       }
@@ -377,7 +377,7 @@
       queryDiscCollision,
     ];
     const applySystems = new Set([
-      applyBounceBack,
+      applySpeedReflectedByCollideNormal,
       applyEnergyLoss,
       applyStopFalling,
       applyMoveToCollidePos,
