@@ -145,21 +145,6 @@
     const ARENA_W = $arena.width();
     const ARENA_H = $arena.height();
 
-    const entities = [1000, 1001];
-
-    const posData = new Map([
-      [1000, { x: ARENA_W / 2, y: 100 }],
-      [1001, { x: ARENA_W / 2, y: 600 }],
-    ]);
-    const speedData = new Map([
-      [1000, { x: 0, y: 100 }],
-      [1001, { x: 0, y: -1 }],
-    ]);
-    const sizeData = new Map([
-      [1000, { w: 40, h: 40 }],
-      [1001, { w: 80, h: 80 }],
-    ]);
-
     function applyKeepMovingIfNoCollision(id, { position, speed, distanceUntilCollision }) {
       if (distanceUntilCollision.has(id)) {
         return;
@@ -388,10 +373,20 @@
       drawOrangeDisc,
     ];
 
+    const entities = [1000, 1001];
     const context = {
-      speed: speedData,
-      position: posData,
-      size: sizeData,
+      speed: new Map([
+        [1000, { x: 0, y: 100 }],
+        [1001, { x: 0, y: -1 }],
+      ]),
+      position: new Map([
+        [1000, { x: ARENA_W / 2, y: 100 }],
+        [1001, { x: ARENA_W / 2, y: 600 }],
+      ]),
+      size: new Map([
+        [1000, { w: 40, h: 40 }],
+        [1001, { w: 80, h: 80 }],
+      ]),
       collideNormal: new Map(),
       distanceUntilCollision: new Map(),
     };
