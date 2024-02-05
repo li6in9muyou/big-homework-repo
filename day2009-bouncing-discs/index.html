@@ -144,6 +144,10 @@
     const $arena = $(".arena");
     const ARENA_W = $arena.width();
     const ARENA_H = $arena.height();
+    const ARENA_TOP = -1;
+    const ARENA_RIGHT = -2;
+    const ARENA_BOTTOM = -3;
+    const ARENA_LEFT = -4;
 
     function applyKeepMovingIfNoCollision(id, { position, velocity, distanceUntilCollision }) {
       if (distanceUntilCollision.has(id)) {
@@ -173,6 +177,7 @@
       velocity,
       collideNormal,
       distanceUntilCollision,
+      collideWith,
     }) {
       const p = position.get(id);
       const { w, h } = size.get(id);
@@ -210,22 +215,26 @@
       let nX = 0, nY = 0;
       if (hitB) {
         nY = -1;
+        collideWith.set(id, ARENA_BOTTOM);
       }
       if (hitT) {
         nY = 1;
+        collideWith.set(id, ARENA_TOP);
       }
       if (hitL) {
         nX = 1;
+        collideWith.set(id, ARENA_LEFT);
       }
       if (hitR) {
         nX = -1;
+        collideWith.set(id, ARENA_RIGHT);
       }
       collideNormal.set(id, normalized(nX, nY));
     }
 
     function queryDiscCollision(
       id,
-      { position, size, velocity, collideNormal, distanceUntilCollision }) {
+      { position, size, velocity, collideNormal, distanceUntilCollision, collideWith }) {
       const p = position.get(id);
       const v = velocity.get(id);
       const r = size.get(id).w / 2;
@@ -284,10 +293,17 @@
             distanceUntilCollision.set(other, { x: otherVelocity.x * t, y: otherVelocity.y * t });
             collideNormal.set(other, normalized(otherPos.x - p.x, otherPos.y - p.y));
           }
+          if (setMyCollisionInfo && setOtherCollisionInfo) {
+            const prevOther = collideWith.get(id);
+            collideWith.delete(id);
+            collideWith.delete(prevOther);
+            collideWith.set(id, other);
+            collideWith.set(other, id);
+          }
         });
     }
 
-    function applyVelocityReflectedByCollideNormal(id, { velocity, collideNormal }) {
+    function applyReflectedVelocityIfCollideWithArena(id, { velocity, collideNormal }) {
       if (!collideNormal.has(id)) {
         return;
       }
@@ -361,8 +377,14 @@
       queryArenaCollision,
       queryDiscCollision,
     ];
+
+    function applyConservationOfMomentumAndEnergy(id, { mass, velocity, collisionPair }) {
+      return undefined;
+    }
+
     const applySystems = new Set([
-      applyVelocityReflectedByCollideNormal,
+      applyReflectedVelocityIfCollideWithArena,
+      applyConservationOfMomentumAndEnergy,
       applyEnergyLoss,
       applyStopFalling,
       applyMoveToCollidePos,
@@ -387,8 +409,13 @@
         [1000, { w: 40, h: 40 }],
         [1001, { w: 80, h: 80 }],
       ]),
+      mass: new Map([
+        [1000, 40],
+        [1001, 80],
+      ]),
       collideNormal: new Map(),
       distanceUntilCollision: new Map(),
+      collideWith: new Map(),
     };
 
     function update() {
@@ -403,6 +430,7 @@
       }
       context.collideNormal.clear();
       context.distanceUntilCollision.clear();
+      context.collideWith.clear();
     }
 
     const $iteration = $("#iteration");
