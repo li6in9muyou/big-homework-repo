@@ -182,7 +182,7 @@
       p.y += d.y * 0.9999;
     }
 
-    function queryCollideNormalAndDistUntilCollisionAgainstArena(id, {
+    function queryArenaCollision(id, {
       position,
       size,
       speed,
@@ -373,7 +373,7 @@
     }
 
     const querySystems = [
-      queryCollideNormalAndDistUntilCollisionAgainstArena,
+      queryArenaCollision,
       queryDiscCollision,
     ];
     const applySystems = new Set([
