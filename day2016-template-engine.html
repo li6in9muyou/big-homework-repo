@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Template Engine</title>
+  <script src="https://cdn.staticfile.net/jquery/3.7.1/jquery.js"></script>
+  <style>
+    body {
+      background-color: #101010;
+      color: white;
+      font-size: 20px;
+      font-family: monospace;
+    }
+
+    main#render-target {
+      outline: solid 2px #ff7200;
+    }
+  </style>
+</head>
+<body>
+  <script type="text/x-te-template" id="list-with-title">
+    <div class="te-list-wrap">
+      <h2>{{ ctx.title }}</h2>
+      <ul>
+        <li>{{ {a:10,b:20} }}</li>
+        <li>Title's length is {{ {{}} ctx.title.length }}</li>
+        <li>{{ ctx.title.length > 10 ? 'maybe too long' : 'may be too short' }}</li>
+        <li>{{@ &lt;div&gt; verbatim-1 &lt;/div&gt;}}</li>
+        <li>{{@ }}{{}} curly braces }}</li>
+        <li>{{@ verbatim-2 {{ []}} {{ }} }}</li>
+        <li>}}{{}}</li>
+      </ul>
+    </div>
+  </script>
+  <div class="te-list-wrap">
+    <h2>This is Title</h2>
+    <ul>
+      <li>list item one</li>
+      <li>list item two</li>
+      <li>list item three</li>
+      <li>lorem ipsum</li>
+    </ul>
+  </div>
+  <main id="render-target"></main>
+  <script>
+    function isObject(value) {
+      const type = typeof value;
+      return !!value && (type === "object" || type === "function");
+    }
+  </script>
+  <script>
+    function renderToText(tpl, ctx) {
+      const doubleCurlyBraces = /{{(.*?)}}/g;
+      return tpl.replaceAll(doubleCurlyBraces, dispatch);
+
+      function dispatch(all, inner, index, template) {
+
+        function emitJsExpr(_, expr) {
+          const value = (new Function("ctx", `return (${expr});`))(ctx);
+          if (isObject(value)) {
+            const tag = Object.prototype.toString.call(value);
+            if (tag === "[object Function]") {
+              return value.toString();
+            }
+            return JSON.stringify(value);
+          }
+          return value;
+        }
+
+        function emitVerbatim(a, i) {
+          if (i[0] !== "@") {
+            return null;
+          }
+          return i.slice(1);
+        }
+
+        function ignoreEmpty(_, i) {
+          if (i.trim().length === 0) {
+            return "";
+          }
+          return null;
+        }
+
+        const emitters = [
+          ignoreEmpty,
+          emitVerbatim,
+          emitJsExpr,
+        ];
+
+        for (const echo of emitters) {
+          const result = echo(all, inner, index, template);
+          if (result !== null) {
+            const fnName = echo.toString().match(/function (\w+)/)[1];
+            console.log(fnName, "echos", `^${result}$`);
+            return result;
+          }
+        }
+        return "!!error!!";
+      }
+    }
+
+    const context = {
+      title: "Title rendered by te",
+    };
+
+    const templateText = $("#list-with-title").text().trim();
+
+    const rendered = renderToText(templateText, context);
+    console.log("rendered\n", rendered);
+    $("main#render-target").html(rendered);
+  </script>
+</body>
+</html>
