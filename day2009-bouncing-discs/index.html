@@ -233,11 +233,11 @@
         .filter(([other, _]) => other !== id)
         .forEach(([other, otherPos]) => {
           const otherR = size.get(other).w / 2;
-          const otherSpeed = speed.get(other);
+          const otherVelocity = speed.get(other);
           const dPX = p.x - otherPos.x;
           const dPY = p.y - otherPos.y;
-          const dVX = v.x - otherSpeed.x;
-          const dVY = v.y - otherSpeed.y;
+          const dVX = v.x - otherVelocity.x;
+          const dVY = v.y - otherVelocity.y;
           const A = dVX * dVX + dVY * dVY;
           const B = 2 * dPX * dVX + 2 * dPY * dVY;
           const C = dPX * dPX + dPY * dPY - (r + otherR) * (r + otherR);
@@ -270,7 +270,7 @@
           if (distanceUntilCollision.has(other)) {
             const prevT = distanceUntilCollision.get(other);
             const prevLen = lenSqr(t * prevT.x, t * prevT.y);
-            const len = lenSqr(t * otherSpeed.x, t * otherSpeed.y);
+            const len = lenSqr(t * otherVelocity.x, t * otherVelocity.y);
             if (len > prevLen) {
               setOtherCollisionInfo = false;
             }
@@ -281,13 +281,13 @@
             collideNormal.set(id, normalized(p.x - otherPos.x, p.y - otherPos.y));
           }
           if (setOtherCollisionInfo) {
-            distanceUntilCollision.set(other, { x: otherSpeed.x * t, y: otherSpeed.y * t });
+            distanceUntilCollision.set(other, { x: otherVelocity.x * t, y: otherVelocity.y * t });
             collideNormal.set(other, normalized(otherPos.x - p.x, otherPos.y - p.y));
           }
         });
     }
 
-    function applySpeedReflectedByCollideNormal(id, { speed, collideNormal }) {
+    function applyVelocityReflectedByCollideNormal(id, { speed, collideNormal }) {
       if (!collideNormal.has(id)) {
         return;
       }
@@ -362,7 +362,7 @@
       queryDiscCollision,
     ];
     const applySystems = new Set([
-      applySpeedReflectedByCollideNormal,
+      applyVelocityReflectedByCollideNormal,
       applyEnergyLoss,
       applyStopFalling,
       applyMoveToCollidePos,
