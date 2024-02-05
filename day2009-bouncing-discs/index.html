@@ -145,13 +145,13 @@
     const ARENA_W = $arena.width();
     const ARENA_H = $arena.height();
 
-    function applyKeepMovingIfNoCollision(id, { position, speed, distanceUntilCollision }) {
+    function applyKeepMovingIfNoCollision(id, { position, velocity, distanceUntilCollision }) {
       if (distanceUntilCollision.has(id)) {
         return;
       }
 
       const p = position.get(id);
-      const v = speed.get(id);
+      const v = velocity.get(id);
       p.x += v.x;
       p.y += v.y;
     }
@@ -170,13 +170,13 @@
     function queryArenaCollision(id, {
       position,
       size,
-      speed,
+      velocity,
       collideNormal,
       distanceUntilCollision,
     }) {
       const p = position.get(id);
       const { w, h } = size.get(id);
-      const v = speed.get(id);
+      const v = velocity.get(id);
 
       const tToTop = solveLinear(v.y, p.y, h / 2) ?? Infinity;
       const tToRight = solveLinear(v.x, p.x, ARENA_W - w / 2) ?? Infinity;
@@ -225,15 +225,15 @@
 
     function queryDiscCollision(
       id,
-      { position, size, speed, collideNormal, distanceUntilCollision }) {
+      { position, size, velocity, collideNormal, distanceUntilCollision }) {
       const p = position.get(id);
-      const v = speed.get(id);
+      const v = velocity.get(id);
       const r = size.get(id).w / 2;
       Array.from(position.entries())
         .filter(([other, _]) => other !== id)
         .forEach(([other, otherPos]) => {
           const otherR = size.get(other).w / 2;
-          const otherVelocity = speed.get(other);
+          const otherVelocity = velocity.get(other);
           const dPX = p.x - otherPos.x;
           const dPY = p.y - otherPos.y;
           const dVX = v.x - otherVelocity.x;
@@ -287,12 +287,12 @@
         });
     }
 
-    function applyVelocityReflectedByCollideNormal(id, { speed, collideNormal }) {
+    function applyVelocityReflectedByCollideNormal(id, { velocity, collideNormal }) {
       if (!collideNormal.has(id)) {
         return;
       }
       const [nX, nY] = collideNormal.get(id);
-      const v = speed.get(id);
+      const v = velocity.get(id);
       const dp = dotProd(v.x, v.y, nX, nY);
       const dNX = 2 * dp * nX;
       const dNY = 2 * dp * nY;
@@ -303,8 +303,8 @@
 
     const ENERGY_LOSS_FACTOR = 0.1;
 
-    function applyEnergyLoss(id, { speed, collideNormal }) {
-      const v = speed.get(id);
+    function applyEnergyLoss(id, { velocity, collideNormal }) {
+      const v = velocity.get(id);
       if (collideNormal.has(id)) {
         v.x = Math.sign(v.x) * Math.sqrt((1 - ENERGY_LOSS_FACTOR) * v.x * v.x);
         v.y = Math.sign(v.y) * Math.sqrt(((1 - ENERGY_LOSS_FACTOR)) * v.y * v.y);
@@ -313,13 +313,13 @@
 
     const GRAVITY_ACC = 0.6;
 
-    function applyGravity(id, { speed }) {
-      const v = speed.get(id);
+    function applyGravity(id, { velocity }) {
+      const v = velocity.get(id);
       v.y += GRAVITY_ACC;
     }
 
-    function applyStopFalling(id, { position, speed, size }) {
-      const v = speed.get(id);
+    function applyStopFalling(id, { position, velocity, size }) {
+      const v = velocity.get(id);
       const p = position.get(id);
       const s = size.get(id);
       const onTheGround = ARENA_H - (p.y + s.h / 2) <= 0;
@@ -375,7 +375,7 @@
 
     const entities = [1000, 1001];
     const context = {
-      speed: new Map([
+      velocity: new Map([
         [1000, { x: 0, y: 100 }],
         [1001, { x: 0, y: -1 }],
       ]),
@@ -463,9 +463,9 @@
       for (let i = 0; i < n; i++) {
         const id = init_id + i;
         entities.push(id);
-        sizeData.set(id, { w: 20, h: 20 });
-        posData.set(id, { x, y });
-        speedData.set(id, { x: 60 * (Math.random() - 0.5), y: 60 * (Math.random() - 0.5) });
+        context.size.set(id, { w: 20, h: 20 });
+        context.position.set(id, { x, y });
+        context.velocity.set(id, { x: 60 * (Math.random() - 0.5), y: 60 * (Math.random() - 0.5) });
       }
     }
 
