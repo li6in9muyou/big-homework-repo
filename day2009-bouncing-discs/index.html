@@ -139,6 +139,11 @@
       const offset = det / (2 * a);
       return [base + offset, base - offset];
     }
+
+    function rotate(x, y, theta) {
+      return [x * Math.cos(theta) - y * Math.sin(theta), x * Math.sin(theta) + y * Math.cos(theta)];
+    }
+
   </script>
   <script>
     const $arena = $(".arena");
@@ -303,10 +308,16 @@
         });
     }
 
-    function applyReflectedVelocityIfCollideWithArena(id, { velocity, collideNormal }) {
+    function applyReflectedVelocityIfCollideWithArena(id, { velocity, collideNormal, collideWith }) {
       if (!collideNormal.has(id)) {
         return;
       }
+      const other = collideWith.get(id);
+      const collideWithArena = other === ARENA_TOP || other === ARENA_RIGHT || other === ARENA_BOTTOM || other === ARENA_LEFT;
+      if (!collideWithArena) {
+        return;
+      }
+
       const [nX, nY] = collideNormal.get(id);
       const v = velocity.get(id);
       const dp = dotProd(v.x, v.y, nX, nY);
@@ -378,13 +389,37 @@
       queryDiscCollision,
     ];
 
-    function applyConservationOfMomentumAndEnergy(id, { mass, velocity, collisionPair }) {
-      return undefined;
+    function applyConservationOfMomentum(id, { mass, velocity, collideWith, position }) {
+      if (!collideWith.has(id)) {
+        return;
+      }
+      const other = collideWith.get(id);
+      const p2 = position.get(other);
+      if (other === ARENA_TOP || other === ARENA_RIGHT || other === ARENA_BOTTOM || other === ARENA_LEFT) {
+        return;
+      }
+
+      const p1 = position.get(id);
+      const m1 = mass.get(id);
+      const m2 = mass.get(other);
+
+      const theta = -Math.atan2(p2.y - p1.y, p2.x - p1.x);
+      const v = velocity.get(id);
+      const otherV = velocity.get(other);
+      const v1 = rotate(v.x, v.y, theta);
+      const v2 = rotate(otherV.x, otherV.y, theta);
+      const u1 = rotate(v1[0] * (m1 - m2) / (m1 + m2) + v2[0] * 2 * m2 / (m1 + m2), v1[1], -theta);
+      const u2 = rotate(v2[0] * (m2 - m1) / (m1 + m2) + v1[0] * 2 * m1 / (m1 + m2), v2[1], -theta);
+
+      v.x = u1[0];
+      v.y = u1[1];
+      otherV.x = u2[0];
+      otherV.y = u2[1];
     }
 
     const applySystems = new Set([
       applyReflectedVelocityIfCollideWithArena,
-      applyConservationOfMomentumAndEnergy,
+      applyConservationOfMomentum,
       applyEnergyLoss,
       applyStopFalling,
       applyMoveToCollidePos,
