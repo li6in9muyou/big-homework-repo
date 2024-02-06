@@ -444,6 +444,16 @@
       vPtrJqTable.get(id).css("transform", `rotate(${Math.atan2(v.x, -v.y)}rad)`);
     }
 
+    function applyRoundMinimalVelocityToZero(id, { velocity }) {
+      const v = velocity.get(id);
+      if (-1e-5 < v.x && v.x < 1e-5) {
+        v.x = 0;
+      }
+      if (-1e-5 < v.y && v.y < 1e-5) {
+        v.y = 0;
+      }
+    }
+
     const applySystems = new Set([
       applyReflectedVelocityIfCollideWithArena,
       applyConservationOfMomentum,
@@ -451,6 +461,7 @@
       applyStopFalling,
       applyMoveToCollidePos,
       applyKeepMovingIfNoCollision,
+      applyRoundMinimalVelocityToZero,
       // applyGravity,
     ]);
     const drawSystems = [
