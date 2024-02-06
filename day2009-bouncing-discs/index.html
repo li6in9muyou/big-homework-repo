@@ -385,7 +385,7 @@
         domBall.css({
           height: s.h + "px",
           width: s.w + "px",
-          "background-color": "yellow",
+          "background-color": "#f3e322",
         });
       }
 
@@ -457,7 +457,7 @@
       applyReflectedVelocityIfCollideWithArena,
       applyConservationOfMomentum,
       applyEnergyLoss,
-      applyStopFalling,
+      // applyStopFalling,
       applyMoveToCollidePos,
       applyKeepMovingIfNoCollision,
       applyRoundMinimalVelocityToZero,
@@ -465,7 +465,7 @@
     ]);
     const drawSystems = [
       drawOrangeDisc,
-      drawVelocityPointer,
+      // drawVelocityPointer,
     ];
 
     const entities = [1000, 1001];
@@ -480,11 +480,11 @@
       ]),
       size: new Map([
         [1000, { w: 40, h: 40 }],
-        [1001, { w: 80, h: 80 }],
+        [1001, { w: 180, h: 180 }],
       ]),
       mass: new Map([
         [1000, 40],
-        [1001, 80],
+        [1001, 180],
       ]),
       collideNormal: new Map(),
       distanceUntilCollision: new Map(),
@@ -492,7 +492,24 @@
       vPtrJqTable: new Map(),
     };
 
+    const DISC_CNT_LIMIT = 200;
+    const SPAWN_INTERVAL = 30;
+    let spawn_countdown = SPAWN_INTERVAL;
+
     function update() {
+      if (--spawn_countdown === 0 && entities.length < DISC_CNT_LIMIT) {
+        spawn_countdown = SPAWN_INTERVAL;
+        const _v = 10 + Math.random() * 90;
+        const [vx, vy] = rotate(0, _v, Math.random() * 2 * Math.PI);
+        const id = entities.length;
+        entities.push(id);
+        context.velocity.set(id, { x: vx, y: vy });
+        context.position.set(id, { x: ARENA_W / 2, y: ARENA_H / 2 });
+        const m = 10 + Math.random() * 50;
+        context.size.set(id, { w: m, h: m });
+        context.mass.set(id, m);
+      }
+
       for (const id of entities) {
         querySystems.forEach(system => system(id, context));
       }
@@ -512,7 +529,7 @@
     const $header = $("header");
 
     let frames = 0;
-    let iteration_limit = 600;
+    let iteration_limit = 6000;
     let iteration = 0;
 
     function simulate() {
@@ -559,17 +576,6 @@
         applySystems.delete(applyGravity);
       }
     });
-
-    function addRandomDisc(x = ARENA_W / 2, y = ARENA_H / 2, n = 50) {
-      const init_id = 1000 + entities.length;
-      for (let i = 0; i < n; i++) {
-        const id = init_id + i;
-        entities.push(id);
-        context.size.set(id, { w: 20, h: 20 });
-        context.position.set(id, { x, y });
-        context.velocity.set(id, { x: 60 * (Math.random() - 0.5), y: 60 * (Math.random() - 0.5) });
-      }
-    }
 
     $header.css("background-color", "limegreen");
     let frames_start = performance.now();
