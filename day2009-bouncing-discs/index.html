@@ -274,10 +274,10 @@
 
           const [t1, t2] = solution;
           let t = Infinity;
-          if (0 < t1 && t1 < 1 && t1 < t) {
+          if (0 < t1 && t1 <= 1 && t1 < t) {
             t = t1;
           }
-          if (0 < t2 && t2 < 1 && t2 < t) {
+          if (0 < t2 && t2 <= 1 && t2 < t) {
             t = t2;
           }
           if (t >= Infinity) {
@@ -406,27 +406,30 @@
         return;
       }
       const other = collideWith.get(id);
-      const p2 = position.get(other);
       if (other === ARENA_TOP || other === ARENA_RIGHT || other === ARENA_BOTTOM || other === ARENA_LEFT) {
         return;
       }
-
+      const v1 = velocity.get(id);
+      const v2 = velocity.get(other);
       const p1 = position.get(id);
+      const p2 = position.get(other);
+      const alreadyApplied = 0 > (v1.x - v2.x) * (p2.x - p1.x) + (v1.y - v2.y) * (p2.y - p1.y);
+      if (alreadyApplied) {
+        return;
+      }
+
       const m1 = mass.get(id);
       const m2 = mass.get(other);
-
       const theta = -Math.atan2(p2.y - p1.y, p2.x - p1.x);
-      const v = velocity.get(id);
-      const otherV = velocity.get(other);
-      const v1 = rotate(v.x, v.y, theta);
-      const v2 = rotate(otherV.x, otherV.y, theta);
-      const u1 = rotate(v1[0] * (m1 - m2) / (m1 + m2) + v2[0] * 2 * m2 / (m1 + m2), v1[1], -theta);
-      const u2 = rotate(v2[0] * (m2 - m1) / (m1 + m2) + v1[0] * 2 * m1 / (m1 + m2), v2[1], -theta);
+      const _v1 = rotate(v1.x, v1.y, theta);
+      const _v2 = rotate(v2.x, v2.y, theta);
+      const u1 = rotate(_v1[0] * (m1 - m2) / (m1 + m2) + _v2[0] * 2 * m2 / (m1 + m2), _v1[1], -theta);
+      const u2 = rotate(_v2[0] * (m2 - m1) / (m1 + m2) + _v1[0] * 2 * m1 / (m1 + m2), _v2[1], -theta);
 
-      v.x = u1[0];
-      v.y = u1[1];
-      otherV.x = u2[0];
-      otherV.y = u2[1];
+      v1.x = u1[0];
+      v1.y = u1[1];
+      v2.x = u2[0];
+      v2.y = u2[1];
     }
 
     function drawVelocityPointer(id, { velocity, vPtrJqTable }) {
@@ -476,7 +479,7 @@
       collideNormal: new Map(),
       distanceUntilCollision: new Map(),
       collideWith: new Map(),
-      velocityPointerJqTable: new Map(),
+      vPtrJqTable: new Map(),
     };
 
     function update() {
