@@ -396,11 +396,6 @@
       });
     }
 
-    const querySystems = [
-      queryArenaCollision,
-      queryDiscCollision,
-    ];
-
     function applyConservationOfMomentum(id, { mass, velocity, collideWith, position }) {
       if (!collideWith.has(id)) {
         return;
@@ -454,6 +449,10 @@
       }
     }
 
+    const querySystems = [
+      queryArenaCollision,
+      queryDiscCollision,
+    ];
     const applySystems = new Set([
       applyReflectedVelocityIfCollideWithArena,
       applyConservationOfMomentum,
