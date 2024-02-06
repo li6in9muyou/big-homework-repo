@@ -35,6 +35,18 @@
       box-sizing: border-box;
     }
 
+    .disc > .velocity-pointer {
+      position: absolute;
+      width: 6px;
+      background-color: crimson;
+      height: 50%;
+      left: 0;
+      right: 0;
+      margin: auto;
+      top: -1px;
+      transform-origin: bottom;
+    }
+
     header {
       padding: 6px;
       font-size: 24px;
@@ -417,6 +429,18 @@
       otherV.y = u2[1];
     }
 
+    function drawVelocityPointer(id, { velocity, vPtrJqTable }) {
+      if (!vPtrJqTable.has(id)) {
+        const disc = $(`[data-id="${id}"]`);
+        const ptr = $("<div class='velocity-pointer'></div>");
+        disc.append(ptr);
+        vPtrJqTable.set(id, ptr);
+      }
+
+      const v = velocity.get(id);
+      vPtrJqTable.get(id).css("transform", `rotate(${Math.atan2(v.x, -v.y)}rad)`);
+    }
+
     const applySystems = new Set([
       applyReflectedVelocityIfCollideWithArena,
       applyConservationOfMomentum,
@@ -428,6 +452,7 @@
     ]);
     const drawSystems = [
       drawOrangeDisc,
+      drawVelocityPointer,
     ];
 
     const entities = [1000, 1001];
@@ -451,6 +476,7 @@
       collideNormal: new Map(),
       distanceUntilCollision: new Map(),
       collideWith: new Map(),
+      velocityPointerJqTable: new Map(),
     };
 
     function update() {
