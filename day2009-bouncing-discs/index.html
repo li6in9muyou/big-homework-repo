@@ -552,13 +552,13 @@
         frames = 0;
       }
 
-      if (context.elapsed <= iteration_limit) {
+      $iteration.text(
+        context.elapsed.toString().padStart(4, "0")
+        + "/"
+        + iteration_limit.toString().padStart(4, "0"),
+      );
+      if (context.elapsed < iteration_limit) {
         requestAnimationFrame(simulate);
-        $iteration.text(
-          context.elapsed.toString().padStart(4, "0")
-          + "/"
-          + iteration_limit.toString().padStart(4, "0"),
-        );
       } else {
         console.info("update halts");
         $header.css("background-color", "#3a3a3a");
