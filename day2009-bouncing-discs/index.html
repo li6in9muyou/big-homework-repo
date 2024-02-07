@@ -530,20 +530,20 @@
       elapsed: 0,
       entities: [1000, 1001],
       velocity: new Map([
-        [1000, { x: 0, y: 100 }],
-        [1001, { x: 0, y: -20 }],
+        [1000, { x: 0, y: -40 }],
+        [1001, { x: 0, y: -80 }],
       ]),
       position: new Map([
-        [1000, { x: ARENA_W / 2, y: ARENA_H / 4 }],
-        [1001, { x: ARENA_W / 2, y: ARENA_H - 45 }],
+        [1000, { x: ARENA_W / 2, y: 30 }],
+        [1001, { x: ARENA_W / 2, y: 100 }],
       ]),
       size: new Map([
         [1000, { w: 40, h: 40 }],
-        [1001, { w: 80, h: 80 }],
+        [1001, { w: 40, h: 40 }],
       ]),
       mass: new Map([
         [1000, 40],
-        [1001, 160],
+        [1001, 40],
       ]),
       collideNormal: new Map(),
       distanceUntilCollision: new Map(),
@@ -572,7 +572,7 @@
     const $header = $("header");
 
     let frames = 0;
-    let iteration_limit = 6000;
+    let iteration_limit = 1;
 
     function simulate() {
       context.elapsed++;
@@ -604,7 +604,7 @@
 
     $(document).on("click", ".arena", () => {
       if (context.elapsed >= iteration_limit) {
-        iteration_limit *= 2;
+        iteration_limit += 1;
         simulate();
       }
     });
