@@ -324,20 +324,17 @@
       if (!collideNormal.has(id)) {
         return;
       }
-      const other = collideWith.get(id);
-      const collideWithArena = other === ARENA_TOP || other === ARENA_RIGHT || other === ARENA_BOTTOM || other === ARENA_LEFT;
-      if (!collideWithArena) {
-        return;
-      }
-
-      const [nX, nY] = collideNormal.get(id);
       const v = velocity.get(id);
-      const dp = dotProd(v.x, v.y, nX, nY);
-      const dNX = 2 * dp * nX;
-      const dNY = 2 * dp * nY;
-      const [x, y] = subtract(v.x, v.y, dNX, dNY);
-      v.x = x;
-      v.y = y;
+      switch (collideWith.get(id)) {
+        case ARENA_BOTTOM:
+        case ARENA_TOP:
+          v.y *= -1;
+          break;
+        case ARENA_RIGHT:
+        case ARENA_LEFT:
+          v.x *= -1;
+          break;
+      }
     }
 
     const ENERGY_LOSS_FACTOR = 0.1;
@@ -572,7 +569,7 @@
     const $header = $("header");
 
     let frames = 0;
-    let iteration_limit = 1;
+    let iteration_limit = 1100;
 
     function simulate() {
       context.elapsed++;
