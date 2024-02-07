@@ -449,6 +449,27 @@
       }
     }
 
+    const DISC_CNT_LIMIT = 15;
+    let prevElapsed = NaN;
+
+    function applySpawnDisc(id, { elapsed, entities, velocity, position, size, mass }) {
+      if (elapsed === prevElapsed) {
+        return;
+      }
+      prevElapsed = elapsed;
+      if (elapsed % 30 === 0 && entities.length < DISC_CNT_LIMIT) {
+        const _v = 10 + Math.random() * 90;
+        const [vx, vy] = rotate(0, _v, Math.random() * 2 * Math.PI);
+        const id = entities.length;
+        entities.push(id);
+        velocity.set(id, { x: vx, y: vy });
+        position.set(id, { x: ARENA_W / 2, y: ARENA_H / 2 });
+        const m = 10 + Math.random() * 50;
+        size.set(id, { w: m, h: m });
+        mass.set(id, m);
+      }
+    }
+
     const querySystems = [
       queryArenaCollision,
       queryDiscCollision,
@@ -456,20 +477,22 @@
     const applySystems = new Set([
       applyReflectedVelocityIfCollideWithArena,
       applyConservationOfMomentum,
-      applyEnergyLoss,
+      // applyEnergyLoss,
       // applyStopFalling,
       applyMoveToCollidePos,
       applyKeepMovingIfNoCollision,
       applyRoundMinimalVelocityToZero,
       // applyGravity,
+      // applySpawnDisc,
     ]);
     const drawSystems = [
       drawOrangeDisc,
       // drawVelocityPointer,
     ];
 
-    const entities = [1000, 1001];
     const context = {
+      elapsed: 0,
+      entities: [1000, 1001],
       velocity: new Map([
         [1000, { x: 0, y: 100 }],
         [1001, { x: 0, y: -1 }],
@@ -492,31 +515,14 @@
       vPtrJqTable: new Map(),
     };
 
-    const DISC_CNT_LIMIT = 200;
-    const SPAWN_INTERVAL = 30;
-    let spawn_countdown = SPAWN_INTERVAL;
-
     function update() {
-      if (--spawn_countdown === 0 && entities.length < DISC_CNT_LIMIT) {
-        spawn_countdown = SPAWN_INTERVAL;
-        const _v = 10 + Math.random() * 90;
-        const [vx, vy] = rotate(0, _v, Math.random() * 2 * Math.PI);
-        const id = entities.length;
-        entities.push(id);
-        context.velocity.set(id, { x: vx, y: vy });
-        context.position.set(id, { x: ARENA_W / 2, y: ARENA_H / 2 });
-        const m = 10 + Math.random() * 50;
-        context.size.set(id, { w: m, h: m });
-        context.mass.set(id, m);
-      }
-
-      for (const id of entities) {
+      for (const id of context.entities) {
         querySystems.forEach(system => system(id, context));
       }
-      for (const id of entities) {
+      for (const id of context.entities) {
         applySystems.forEach(system => system(id, context));
       }
-      for (const id of entities) {
+      for (const id of context.entities) {
         drawSystems.forEach(system => system(id, context));
       }
       context.collideNormal.clear();
@@ -530,9 +536,10 @@
 
     let frames = 0;
     let iteration_limit = 6000;
-    let iteration = 0;
 
     function simulate() {
+      context.elapsed++;
+
       if (frames === 0) {
         frames_start = performance.now();
       }
@@ -545,10 +552,10 @@
         frames = 0;
       }
 
-      if (++iteration <= iteration_limit) {
+      if (context.elapsed <= iteration_limit) {
         requestAnimationFrame(simulate);
         $iteration.text(
-          iteration.toString().padStart(4, "0")
+          context.elapsed.toString().padStart(4, "0")
           + "/"
           + iteration_limit.toString().padStart(4, "0"),
         );
@@ -558,8 +565,8 @@
       }
     }
 
-    $(document).on("click", ".arena", e => {
-      if (iteration >= iteration_limit) {
+    $(document).on("click", ".arena", () => {
+      if (context.elapsed >= iteration_limit) {
         iteration_limit *= 2;
         simulate();
       }
