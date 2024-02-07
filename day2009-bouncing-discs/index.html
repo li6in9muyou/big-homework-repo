@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Bouncing discs</title>
+  <title>Bouncing dicks</title>
   <script src="vendor/jquery.js"></script>
   <style>
     html, body {
@@ -28,14 +28,14 @@
       flex-grow: 1;
     }
 
-    .disc {
+    .disk {
       position: absolute;
       border-radius: 100%;
       border: solid 1px crimson;
       box-sizing: border-box;
     }
 
-    .disc > .velocity-pointer {
+    .disk > .velocity-pointer {
       position: absolute;
       width: 6px;
       background-color: crimson;
@@ -249,7 +249,7 @@
       collideNormal.set(id, normalized(nX, nY));
     }
 
-    function queryDiscCollision(
+    function queryDiskCollision(
       id,
       { position, size, velocity, collideNormal, distanceUntilCollision, collideWith }) {
       const p = position.get(id);
@@ -374,12 +374,12 @@
 
     const BALL_POOL = new Map();
 
-    function drawOrangeDisc(id, { position, size }) {
+    function drawOrangeDisk(id, { position, size }) {
       const s = size.get(id);
 
       let domBall = BALL_POOL.get(id);
       if (domBall === undefined) {
-        domBall = $("<div>").addClass("disc").attr("data-id", id);
+        domBall = $("<div>").addClass("disk").attr("data-id", id);
         $arena.append(domBall);
         BALL_POOL.set(id, domBall);
         domBall.css({
@@ -429,9 +429,9 @@
 
     function drawVelocityPointer(id, { velocity, vPtrJqTable }) {
       if (!vPtrJqTable.has(id)) {
-        const disc = $(`[data-id="${id}"]`);
+        const disk = $(`[data-id="${id}"]`);
         const ptr = $("<div class='velocity-pointer'></div>");
-        disc.append(ptr);
+        disk.append(ptr);
         vPtrJqTable.set(id, ptr);
       }
 
@@ -449,15 +449,15 @@
       }
     }
 
-    const DISC_CNT_LIMIT = 15;
+    const DISK_CNT_LIMIT = 15;
     let prevElapsed = NaN;
 
-    function applySpawnDisc(id, { elapsed, entities, velocity, position, size, mass }) {
+    function applySpawnDisk(id, { elapsed, entities, velocity, position, size, mass }) {
       if (elapsed === prevElapsed) {
         return;
       }
       prevElapsed = elapsed;
-      if (elapsed % 30 === 0 && entities.length < DISC_CNT_LIMIT) {
+      if (elapsed % 30 === 0 && entities.length < DISK_CNT_LIMIT) {
         const _v = 10 + Math.random() * 90;
         const [vx, vy] = rotate(0, _v, Math.random() * 2 * Math.PI);
         const id = entities.length;
@@ -480,7 +480,7 @@
 
     const querySystems = [
       queryArenaCollision,
-      queryDiscCollision,
+      queryDiskCollision,
     ];
     const applySystems = new Set([
       applyReflectedVelocityIfCollideWithArena,
@@ -491,10 +491,10 @@
       applyKeepMovingIfNoCollision,
       applyRoundMinimalVelocityToZero,
       // applyGravity,
-      // applySpawnDisc,
+      // applySpawnDisk,
     ]);
     const drawSystems = [
-      drawOrangeDisc,
+      drawOrangeDisk,
       // drawVelocityPointer,
     ];
     const debugSystems = [
