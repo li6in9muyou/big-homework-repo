@@ -50,13 +50,18 @@
   </script>
   <script>
     function renderToText(tpl, ctx) {
-      const doubleCurlyBraces = /{{(.*?)}}/g;
+      const doubleCurlyBraces = /{{(.*)}}/g;
       return tpl.replaceAll(doubleCurlyBraces, dispatch);
 
       function dispatch(all, inner, index, template) {
 
         function emitJsExpr(_, expr) {
-          const value = (new Function("ctx", `return (${expr});`))(ctx);
+          let value;
+          try {
+            value = (new Function("ctx", `return (${expr});`))(ctx);
+          } catch {
+            return emitVerbatim(_, expr, true);
+          }
           if (isObject(value)) {
             const tag = Object.prototype.toString.call(value);
             if (tag === "[object Function]") {
@@ -67,11 +72,11 @@
           return value;
         }
 
-        function emitVerbatim(a, i) {
-          if (i[0] !== "@") {
-            return null;
+        function emitVerbatim(a, i, mustEmit = false) {
+          if (mustEmit === true || a.startsWith("{{@")) {
+            return i.slice(1);
           }
-          return i.slice(1);
+          return null;
         }
 
         function ignoreEmpty(_, i) {
