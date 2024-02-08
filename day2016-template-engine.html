@@ -75,7 +75,7 @@
   <script>
     function renderToText(tpl, ctx) {
       const doubleCurlyBraces = /{{(.*)}}/g;
-      const conditionalBlockStack = [];
+      ctx.__conditionalBlockStack = ctx.__conditionalBlockStack ?? [];
 
       return tpl.replaceAll(doubleCurlyBraces, dispatch);
 
@@ -125,14 +125,16 @@
 
           if (isCondStart) {
             const booleanExpr = i.slice(2);
-            conditionalBlockStack.push(booleanExpr);
             const shouldExec = betterEval(booleanExpr);
-            return `conditional block starts ${booleanExpr} = ${shouldExec}`;
+            ctx.__conditionalBlockStack.push(shouldExec);
+            console.log(`conditional block starts ${booleanExpr} = ${shouldExec}`);
+            return "";
           }
 
           if (isCondEnd) {
-            conditionalBlockStack.pop();
-            return "conditional block ends";
+            ctx.__conditionalBlockStack.pop();
+            console.log("conditional block ends");
+            return "";
           }
         }
 
