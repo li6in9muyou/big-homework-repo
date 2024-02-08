@@ -35,6 +35,31 @@
         <li>{{@ verbatim-2 {{ []}} {{ }} }}</li>
         <li>}}{{}}</li>
       </ul>
+      {{if 20 > 10}}
+
+      <p>This text should be rendered, 20>10 is {{20>10}}</p>
+
+      {{/if}}
+
+      {{if !(20 > 10)}}
+
+      <p>This text should be not rendered, !(20 > 10) is {{!(20 > 10)}}</p>
+
+      {{/if}}
+
+      {{if 20 > 10}}
+
+      {{if 20 > 15}}
+      <p>20 > 15</p>
+      {{/if}}
+
+      {{if 20 < 15}}
+      <p>20 < 15</p>
+      {{/if}}
+
+      <p>20>10</p>
+
+      {{/if}}
     </div>
   </script>
   <main id="render-target"></main>
@@ -50,14 +75,20 @@
   <script>
     function renderToText(tpl, ctx) {
       const doubleCurlyBraces = /{{(.*)}}/g;
+      const conditionalBlockStack = [];
+
       return tpl.replaceAll(doubleCurlyBraces, dispatch);
 
       function dispatch(all, inner, index, template) {
 
+        function betterEval(expr, ...args) {
+          return (new Function("ctx", `return (${expr});`))(...args);
+        }
+
         function emitJsExpr(_, expr) {
           let value;
           try {
-            value = (new Function("ctx", `return (${expr});`))(ctx);
+            value = betterEval(expr, ctx);
           } catch {
             return emitVerbatim(_, expr, true);
           }
@@ -85,8 +116,29 @@
           return null;
         }
 
+        function emitConditionalBlock(a, i) {
+          const isCondStart = a.startsWith("{{if");
+          const isCondEnd = a.startsWith("{{/if");
+          if (!isCondStart && !isCondEnd) {
+            return null;
+          }
+
+          if (isCondStart) {
+            const booleanExpr = i.slice(2);
+            conditionalBlockStack.push(booleanExpr);
+            const shouldExec = betterEval(booleanExpr);
+            return `conditional block starts ${booleanExpr} = ${shouldExec}`;
+          }
+
+          if (isCondEnd) {
+            conditionalBlockStack.pop();
+            return "conditional block ends";
+          }
+        }
+
         const emitters = [
           ignoreEmpty,
+          emitConditionalBlock,
           emitVerbatim,
           emitJsExpr,
         ];
