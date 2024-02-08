@@ -478,6 +478,26 @@
       };
     }
 
+    function applySeparateOverlappedDisks(_, { entities, position, velocity, size }) {
+      entities.forEach(id => {
+        entities.filter(other => other !== id).forEach((other) => {
+          const p1 = position.get(id);
+          const p2 = position.get(other);
+          const r1 = size.get(id);
+          const r2 = size.get(id);
+          const distance = Math.sqrt(lenSqr(p1.x - p2.x, p1.y - p2.y));
+          const overlappedDist = r1 + r2 - distance;
+          if (overlappedDist > 0) {
+            const v1 = velocity.get(id);
+            const displacement = overlappedDist / 2;
+            const tangent = v1.x / (v1.y);
+
+            const v2 = velocity.get(other);
+          }
+        });
+      });
+    }
+
     const querySystems = [
       queryArenaCollision,
       queryDiskCollision,
@@ -490,6 +510,7 @@
       applyMoveToCollidePos,
       applyKeepMovingIfNoCollision,
       applyRoundMinimalVelocityToZero,
+      applySeparateOverlappedDisks,
       // applyGravity,
       // applySpawnDisk,
     ]);
