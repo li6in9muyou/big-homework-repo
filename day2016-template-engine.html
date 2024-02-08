@@ -1,19 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
   <meta charset="UTF-8">
   <title>Template Engine</title>
   <script src="https://cdn.staticfile.net/jquery/3.7.1/jquery.js"></script>
   <style>
     body {
+      max-width: 400px;
       background-color: #101010;
       color: white;
       font-size: 20px;
-      font-family: monospace;
+      font-family: Consolas, NSimSun, serif;
     }
 
     main#render-target {
       outline: solid 2px #ff7200;
+    }
+
+    .notes > .note {
+      list-style: simp-chinese-informal;
     }
   </style>
 </head>
@@ -32,16 +37,10 @@
       </ul>
     </div>
   </script>
-  <div class="te-list-wrap">
-    <h2>This is Title</h2>
-    <ul>
-      <li>list item one</li>
-      <li>list item two</li>
-      <li>list item three</li>
-      <li>lorem ipsum</li>
-    </ul>
-  </div>
   <main id="render-target"></main>
+  <ul class="notes">
+    <li class="note">统统使用贪心正则，如果表达式求值出错，则视为 {{@ }}</li>
+  </ul>
   <script>
     function isObject(value) {
       const type = typeof value;
