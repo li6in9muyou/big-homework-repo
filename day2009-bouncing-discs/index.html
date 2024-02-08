@@ -439,12 +439,14 @@
       vPtrJqTable.get(id).css("transform", `rotate(${Math.atan2(v.x, -v.y)}rad)`);
     }
 
+    const EPSILON = 1e-5;
+
     function applyRoundMinimalVelocityToZero(id, { velocity }) {
       const v = velocity.get(id);
-      if (-1e-5 < v.x && v.x < 1e-5) {
+      if (-EPSILON < v.x && v.x < EPSILON) {
         v.x = 0;
       }
-      if (-1e-5 < v.y && v.y < 1e-5) {
+      if (-EPSILON < v.y && v.y < EPSILON) {
         v.y = 0;
       }
     }
