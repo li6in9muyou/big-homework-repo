@@ -157,6 +157,7 @@
     }
 
   </script>
+  <script src="js/helper.js"></script>
   <script>
     const $arena = $(".arena");
     const ARENA_W = $arena.width();
@@ -195,6 +196,8 @@
       collideNormal,
       distanceUntilCollision,
       collideWith,
+      needQueryAgain,
+      timeUntilCollision,
     }) {
       const p = position.get(id);
       const { w, h } = size.get(id);
@@ -222,6 +225,8 @@
         return;
       }
 
+      needQueryAgain[0] = true;
+      timeUntilCollision.set(id, minTWithInZeroAndOne);
       distanceUntilCollision.set(id,
         { x: v.x * minTWithInZeroAndOne, y: v.y * minTWithInZeroAndOne });
 
@@ -251,7 +256,16 @@
 
     function queryDiskCollision(
       id,
-      { position, size, velocity, collideNormal, distanceUntilCollision, collideWith }) {
+      {
+        position,
+        size,
+        velocity,
+        collideNormal,
+        distanceUntilCollision,
+        collideWith,
+        needQueryAgain,
+        timeUntilCollision,
+      }) {
       const p = position.get(id);
       const v = velocity.get(id);
       const r = size.get(id).w / 2;
@@ -284,38 +298,27 @@
             return;
           }
 
-          let setMyCollisionInfo = true, setOtherCollisionInfo = true;
-          if (distanceUntilCollision.has(id)) {
-            const prevT = distanceUntilCollision.get(id);
-            const prevLen = lenSqr(t * prevT.x, t * prevT.y);
-            const len = lenSqr(t * v.x, t * v.y);
-            if (len > prevLen) {
-              setMyCollisionInfo = false;
-            }
-          }
-          if (distanceUntilCollision.has(other)) {
-            const prevT = distanceUntilCollision.get(other);
-            const prevLen = lenSqr(t * prevT.x, t * prevT.y);
-            const len = lenSqr(t * otherVelocity.x, t * otherVelocity.y);
-            if (len > prevLen) {
-              setOtherCollisionInfo = false;
-            }
-          }
+          const prevT = timeUntilCollision.get(id) ?? Infinity;
+          const otherPrevT = timeUntilCollision.get(other) ?? Infinity;
+          const setMyCollisionInfo = prevT < t;
+          const setOtherCollisionInfo = otherPrevT < t;
 
-          if (setMyCollisionInfo) {
-            distanceUntilCollision.set(id, { x: v.x * t, y: v.y * t });
-            collideNormal.set(id, normalized(p.x - otherPos.x, p.y - otherPos.y));
-          }
-          if (setOtherCollisionInfo) {
-            distanceUntilCollision.set(other, { x: otherVelocity.x * t, y: otherVelocity.y * t });
-            collideNormal.set(other, normalized(otherPos.x - p.x, otherPos.y - p.y));
-          }
           if (setMyCollisionInfo && setOtherCollisionInfo) {
+            distanceUntilCollision.set(id, { x: v.x * t, y: v.y * t });
+            timeUntilCollision.set(id, t);
+            collideNormal.set(id, normalized(p.x - otherPos.x, p.y - otherPos.y));
+
+            distanceUntilCollision.set(other, { x: otherVelocity.x * t, y: otherVelocity.y * t });
+            timeUntilCollision.set(other, t);
+            collideNormal.set(other, normalized(otherPos.x - p.x, otherPos.y - p.y));
+
             const prevOther = collideWith.get(id);
             collideWith.delete(id);
             collideWith.delete(prevOther);
             collideWith.set(id, other);
             collideWith.set(other, id);
+          } else {
+            needQueryAgain[0] = true;
           }
         });
     }
@@ -480,8 +483,8 @@
       queryDiskCollision,
     ];
     const applySystems = new Set([
-      applyReflectedVelocityIfCollideWithArena,
-      applyConservationOfMomentum,
+      // applyReflectedVelocityIfCollideWithArena,
+      // applyConservationOfMomentum,
       // applyEnergyLoss,
       // applyStopFalling,
       applyMoveToCollidePos,
@@ -492,7 +495,7 @@
     ]);
     const drawSystems = [
       drawOrangeDisk,
-      // drawVelocityPointer,
+      drawVelocityPointer,
     ];
     const debugSystems = [
       ({ position, size, entities }) => {
@@ -544,13 +547,24 @@
       ]),
       collideNormal: new Map(),
       distanceUntilCollision: new Map(),
+      timeUntilCollision: new Map(),
       collideWith: new Map(),
       vPtrJqTable: new Map(),
+      needQueryAgain: [true],
     };
 
     function update() {
-      for (const id of context.entities) {
-        querySystems.forEach(system => system(id, context));
+      while (context.needQueryAgain[0]) {
+        context.needQueryAgain[0] = false;
+        for (const id of context.entities) {
+          querySystems.forEach(system => {
+            console.log(`before ${system.name}\n`, dumpContext(context));
+            system(id, context);
+            console.log(`after ${system.name}\n`, dumpContext(context));
+          });
+          applyReflectedVelocityIfCollideWithArena(id, context);
+          applyConservationOfMomentum(id, context);
+        }
       }
       for (const id of context.entities) {
         applySystems.forEach(system => system(id, context));
@@ -559,6 +573,7 @@
         drawSystems.forEach(system => system(id, context));
       }
       debugSystems.forEach(system => system(context));
+      context.needQueryAgain[0] = false;
       context.collideNormal.clear();
       context.distanceUntilCollision.clear();
       context.collideWith.clear();
@@ -569,7 +584,7 @@
     const $header = $("header");
 
     let frames = 0;
-    let iteration_limit = 1100;
+    let iteration_limit = 1;
 
     function simulate() {
       context.elapsed++;
