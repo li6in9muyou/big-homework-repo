@@ -1,3 +1,6 @@
+import { dumpContext } from "./helper.js";
+import { lenSqr, normalized, rotate, solveLinear, solveQuadratic } from "./math.js";
+
 const ARENA_TOP = -1;
 const ARENA_RIGHT = -2;
 const ARENA_BOTTOM = -3;
