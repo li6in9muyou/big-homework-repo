@@ -196,7 +196,6 @@
       collideNormal,
       distanceUntilCollision,
       collideWith,
-      needQueryAgain,
       timeUntilCollision,
     }) {
       const p = position.get(id);
@@ -225,7 +224,6 @@
         return;
       }
 
-      needQueryAgain[0] = true;
       timeUntilCollision.set(id, minTWithInZeroAndOne);
       distanceUntilCollision.set(id,
         { x: v.x * minTWithInZeroAndOne, y: v.y * minTWithInZeroAndOne });
@@ -263,7 +261,6 @@
         collideNormal,
         distanceUntilCollision,
         collideWith,
-        needQueryAgain,
         timeUntilCollision,
       }) {
       const p = position.get(id);
@@ -317,8 +314,6 @@
             collideWith.delete(prevOther);
             collideWith.set(id, other);
             collideWith.set(other, id);
-          } else {
-            needQueryAgain[0] = true;
           }
         });
     }
@@ -577,18 +572,13 @@
     };
 
     function update() {
-      while (context.needQueryAgain[0]) {
-        context.needQueryAgain[0] = false;
+      querySystems.forEach(system => {
+        console.log(`before ${system.name}\n`, dumpContext(context));
         for (const id of context.entities) {
-          querySystems.forEach(system => {
-            console.log(`before ${system.name}\n`, dumpContext(context));
-            system(id, context);
-            console.log(`after ${system.name}\n`, dumpContext(context));
-          });
-          applyReflectedVelocityIfCollideWithArena(id, context);
-          applyConservationOfMomentum(id, context);
+          system(id, context);
         }
-      }
+        console.log(`after ${system.name}\n`, dumpContext(context));
+      });
       for (const id of context.entities) {
         applySystems.forEach(system => system(id, context));
       }
