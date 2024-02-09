@@ -197,6 +197,8 @@
       distanceUntilCollision,
       collideWith,
       timeUntilCollision,
+      ARENA_W,
+      ARENA_H,
     }) {
       const p = position.get(id);
       const { w, h } = size.get(id);
@@ -355,7 +357,7 @@
       v.y += GRAVITY_ACC;
     }
 
-    function applyStopFalling(id, { position, velocity, size }) {
+    function applyStopFalling(id, { position, velocity, size, ARENA_H }) {
       const v = velocity.get(id);
       const p = position.get(id);
       const s = size.get(id);
@@ -452,7 +454,7 @@
     const DISK_CNT_LIMIT = 15;
     let prevElapsed = NaN;
 
-    function applySpawnDisk(id, { elapsed, entities, velocity, position, size, mass }) {
+    function applySpawnDisk(id, { elapsed, entities, velocity, position, size, mass, ARENA_W, ARENA_H }) {
       if (elapsed === prevElapsed) {
         return;
       }
@@ -556,7 +558,7 @@
       },
     ];
 
-    const context = {
+    const rearDiskChaseFrontDiskIntoWall = (arena_width) => ({
       elapsed: 0,
       entities: [1000, 1001],
       velocity: new Map([
@@ -564,8 +566,8 @@
         [1001, { x: 0, y: -80 }],
       ]),
       position: new Map([
-        [1000, { x: ARENA_W / 2, y: 30 }],
-        [1001, { x: ARENA_W / 2, y: 100 }],
+        [1000, { x: arena_width / 2, y: 30 }],
+        [1001, { x: arena_width / 2, y: 100 }],
       ]),
       size: new Map([
         [1000, { w: 40, h: 40 }],
@@ -581,7 +583,7 @@
       collideWith: new Map(),
       vPtrJqTable: new Map(),
       needQueryAgain: [true],
-    };
+    });
 
     const $iteration = $("#iteration");
     const $fps = $("#fps");
@@ -589,8 +591,9 @@
 
     let frames = 0;
     let iteration_limit = 1;
+    const CONTEXT = rearDiskChaseFrontDiskIntoWall(ARENA_W);
 
-    function simulate() {
+    function simulate(context) {
       context.elapsed++;
 
       if (frames === 0) {
@@ -619,9 +622,9 @@
     }
 
     $(document).on("click", ".arena", () => {
-      if (context.elapsed >= iteration_limit) {
+      if (CONTEXT.elapsed >= iteration_limit) {
         iteration_limit += 1;
-        simulate();
+        simulate(CONTEXT);
       }
     });
 
@@ -639,7 +642,7 @@
 
     $header.css("background-color", "limegreen");
     let frames_start = performance.now();
-    simulate();
+    simulate(CONTEXT);
   </script>
 </body>
 </html>
