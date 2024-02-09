@@ -1,4 +1,4 @@
-function dumpContext(ctx) {
+export function dumpContext(ctx) {
   function replacer(key, value) {
     const tag = value.toString();
     switch (tag) {
