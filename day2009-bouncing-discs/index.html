@@ -250,6 +250,7 @@
         collideWith.set(id, ARENA_RIGHT);
       }
       collideNormal.set(id, normalized(nX, nY));
+      console.log(`${id} collide with ${collideWith.get(id)} after ${minTWithInZeroAndOne}`);
     }
 
     function queryDiskCollision(
@@ -294,6 +295,8 @@
           if (t >= Infinity) {
             return;
           }
+          console.log(`${id} collide with ${other} after ${t}`);
+          console.log(dumpContext(timeUntilCollision));
 
           const prevT = timeUntilCollision.get(id) ?? Infinity;
           const otherPrevT = timeUntilCollision.get(other) ?? Infinity;
