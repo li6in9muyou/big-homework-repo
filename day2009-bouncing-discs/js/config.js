@@ -7,7 +7,7 @@ import {
   drawVelocityPointer,
   queryArenaCollision,
   queryDiskCollision,
-} from "../js/system.js";
+} from "./system.js";
 
 
 export const queries = [
