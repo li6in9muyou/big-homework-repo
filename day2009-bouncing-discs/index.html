@@ -580,25 +580,21 @@
       needQueryAgain: [true],
     };
 
-    function update() {
-      querySystems.forEach(system => {
-        console.log(`before ${system.name}\n`, dumpContext(context));
-        for (const id of context.entities) {
-          system(id, context);
-        }
-        console.log(`after ${system.name}\n`, dumpContext(context));
-      });
-      for (const id of context.entities) {
-        applySystems.forEach(system => system(id, context));
+    function update(ctx, queries, appliers, drawers, debuggers) {
+      for (const id of ctx.entities) {
+        queries.forEach(system => system(id, ctx));
       }
-      for (const id of context.entities) {
-        drawSystems.forEach(system => system(id, context));
+      for (const id of ctx.entities) {
+        appliers.forEach(system => system(id, ctx));
       }
-      debugSystems.forEach(system => system(context));
-      context.needQueryAgain[0] = false;
-      context.collideNormal.clear();
-      context.distanceUntilCollision.clear();
-      context.collideWith.clear();
+      for (const id of ctx.entities) {
+        drawers.forEach(system => system(id, ctx));
+      }
+      debuggers.forEach(system => system(ctx));
+      ctx.needQueryAgain[0] = false;
+      ctx.collideNormal.clear();
+      ctx.distanceUntilCollision.clear();
+      ctx.collideWith.clear();
     }
 
     const $iteration = $("#iteration");
@@ -614,7 +610,7 @@
       if (frames === 0) {
         frames_start = performance.now();
       }
-      update();
+      update(context, querySystems, applySystems, drawSystems, debugSystems);
       frames++;
 
       if (frames > 10) {
