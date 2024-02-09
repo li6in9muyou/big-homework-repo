@@ -485,11 +485,20 @@
           const distance = Math.sqrt(lenSqr(p1.x - p2.x, p1.y - p2.y));
           const overlappedDist = r1 + r2 - distance;
           if (overlappedDist > 0) {
-            const v1 = velocity.get(id);
             const displacement = overlappedDist / 2;
-            const tangent = v1.x / (v1.y);
+            const v1 = velocity.get(id);
+            const theta1 = Math.atan2(v1.y, v1.x);
+            const disp1X = displacement * Math.cos(theta1);
+            const disp1Y = displacement * Math.sin(theta1);
+            p1.x += disp1X;
+            p1.y += disp1Y;
 
-            const v2 = velocity.get(other);
+            const v2 = velocity.get(id);
+            const theta2 = Math.atan2(v2.y, v2.x);
+            const disp2X = displacement * Math.cos(theta2);
+            const disp2Y = displacement * Math.sin(theta2);
+            p2.x += disp2X;
+            p2.y += disp2Y;
           }
         });
       });
