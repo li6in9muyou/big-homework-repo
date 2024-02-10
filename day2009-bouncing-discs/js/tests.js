@@ -1,10 +1,10 @@
-import { debuggers } from "./config.js";
 import { eq } from "./math.js";
 import {
   applyKeepMovingIfNoCollision,
   applyMoveToCollidePos,
   applyReflectedVelocityIfCollideWithArena,
   queryArenaCollision,
+  warnDiskPenetration,
 } from "./system.js";
 
 function it(msg, assert) {
@@ -54,7 +54,7 @@ function assertOneDiskPosition(initP, initV, expectedP) {
       applyKeepMovingIfNoCollision,
     ]),
     [],
-    debuggers,
+    [warnDiskPenetration],
   ];
 
   const id = 1000;
