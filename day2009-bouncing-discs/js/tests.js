@@ -1,10 +1,10 @@
-import { debuggers } from "../config.js";
+import { debuggers } from "./config.js";
 import {
   applyKeepMovingIfNoCollision,
   applyMoveToCollidePos,
   applyReflectedVelocityIfCollideWithArena,
   queryArenaCollision,
-} from "../system.js";
+} from "./system.js";
 
 function it(msg, assert) {
   return (...args) => {
