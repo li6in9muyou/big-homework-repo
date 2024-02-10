@@ -94,38 +94,10 @@
   </main>
   <script type="module">
     import update from "./js/update.js";
-    import { queries, appliers, drawers, debuggers } from "./js/config.js";
-    import { applyGravity } from "./js/system.js";
+    import { config as CONFIG, init as INIT } from "./input-state/two-disks-bouncing-against-each-other.js";
 
     const $arena = $(".arena");
-    const ARENA_W = $arena.width();
-
-    const rearDiskChaseFrontDiskIntoWall = (arena_width) => ({
-      elapsed: 0,
-      entities: [1000, 1001],
-      velocity: new Map([
-        [1000, { x: 0, y: -40 }],
-        [1001, { x: 0, y: -80 }],
-      ]),
-      position: new Map([
-        [1000, { x: arena_width / 2, y: 30 }],
-        [1001, { x: arena_width / 2, y: 100 }],
-      ]),
-      size: new Map([
-        [1000, { w: 40, h: 40 }],
-        [1001, { w: 40, h: 40 }],
-      ]),
-      mass: new Map([
-        [1000, 40],
-        [1001, 40],
-      ]),
-      collideNormal: new Map(),
-      distanceUntilCollision: new Map(),
-      timeUntilCollision: new Map(),
-      collideWith: new Map(),
-      vPtrJqTable: new Map(),
-      needQueryAgain: [true],
-    });
+    const CONTEXT = { ...INIT($arena.outerWidth(), $arena.outerHeight()), $arena };
 
     const $iteration = $("#iteration");
     const $fps = $("#fps");
@@ -133,15 +105,14 @@
 
     let frames = 0;
     let iteration_limit = 1;
-    const CONTEXT = { ...rearDiskChaseFrontDiskIntoWall(ARENA_W), $arena };
 
-    function simulate(context) {
-      context.elapsed++;
+    function simulate() {
+      CONTEXT.elapsed++;
 
       if (frames === 0) {
         frames_start = performance.now();
       }
-      update(context, queries, appliers, drawers, debuggers);
+      update(CONTEXT, ...CONFIG);
       frames++;
 
       if (frames > 10) {
@@ -151,11 +122,11 @@
       }
 
       $iteration.text(
-        context.elapsed.toString().padStart(4, "0")
+        CONTEXT.elapsed.toString().padStart(4, "0")
         + "/"
         + iteration_limit.toString().padStart(4, "0"),
       );
-      if (context.elapsed < iteration_limit) {
+      if (CONTEXT.elapsed < iteration_limit) {
         requestAnimationFrame(simulate);
       } else {
         console.info("update halts");
@@ -166,25 +137,13 @@
     $(document).on("click", ".arena", () => {
       if (CONTEXT.elapsed >= iteration_limit) {
         iteration_limit += 1;
-        simulate(CONTEXT);
-      }
-    });
-
-    const $toggleGravity = $("#toggleGravity");
-    if (appliers.has(applyGravity)) {
-      $toggleGravity.attr("checked", true);
-    }
-    $toggleGravity.on("change", e => {
-      if (e.target.checked) {
-        appliers.add(applyGravity);
-      } else {
-        appliers.delete(applyGravity);
+        simulate();
       }
     });
 
     $header.css("background-color", "limegreen");
     let frames_start = performance.now();
-    simulate(CONTEXT);
+    simulate();
   </script>
 </body>
 </html>
