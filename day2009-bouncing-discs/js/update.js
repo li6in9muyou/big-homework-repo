@@ -12,5 +12,6 @@ export default function update(ctx, queries, appliers, drawers, debuggers) {
   ctx.needQueryAgain[0] = false;
   ctx.collideNormal.clear();
   ctx.distanceUntilCollision.clear();
+  ctx.timeUntilCollision.clear();
   ctx.collideWith.clear();
 }

@@ -142,8 +142,8 @@ export function queryDiskCollision(
 
       const prevT = timeUntilCollision.get(id) ?? Infinity;
       const otherPrevT = timeUntilCollision.get(other) ?? Infinity;
-      const setMyCollisionInfo = prevT < t;
-      const setOtherCollisionInfo = otherPrevT < t;
+      const setMyCollisionInfo = prevT > t;
+      const setOtherCollisionInfo = otherPrevT > t;
 
       if (setMyCollisionInfo && setOtherCollisionInfo) {
         distanceUntilCollision.set(id, { x: v.x * t, y: v.y * t });
