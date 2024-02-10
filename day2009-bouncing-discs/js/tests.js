@@ -70,3 +70,60 @@ export function testDiskBouncingAgainstWall() {
 
   return [config, init, asserts];
 }
+
+export function testDiskBouncingAgainstWallHorizontal() {
+  const config = [
+    [
+      queryArenaCollision,
+    ],
+    new Set([
+      applyReflectedVelocityIfCollideWithArena,
+      applyMoveToCollidePos,
+      applyKeepMovingIfNoCollision,
+    ]),
+    [],
+    debuggers,
+  ];
+
+  const id = 1000;
+
+  const init = () => ({
+    elapsed: 0,
+    entities: [id],
+    velocity: new Map([
+      [id, { x: -40, y: 0 }],
+    ]),
+    position: new Map([
+      [id, { x: 50, y: 50 }],
+    ]),
+    size: new Map([
+      [id, { w: 40, h: 40 }],
+    ]),
+    mass: new Map([
+      [id, 40],
+    ]),
+    collideNormal: new Map(),
+    distanceUntilCollision: new Map(),
+    timeUntilCollision: new Map(),
+    collideWith: new Map(),
+    vPtrJqTable: new Map(),
+    needQueryAgain: [true],
+    ARENA_W: 100,
+    ARENA_H: 100,
+  });
+
+  const expectedXPositions = [null, 20, 60, 80, 40, 20];
+
+  const asserts = [
+    it("should bounce back at arena wall", ctx => {
+      const expected = expectedXPositions[ctx.elapsed];
+      if (expected !== undefined) {
+        return ctx.position.get(id).x === expected;
+      } else {
+        return true;
+      }
+    }),
+  ];
+
+  return [config, init, asserts];
+}
