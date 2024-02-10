@@ -139,7 +139,6 @@ export function queryDiskCollision(
         return;
       }
       console.log(`${id} collide with ${other} after ${t}`);
-      console.log(dumpContext(timeUntilCollision));
 
       const prevT = timeUntilCollision.get(id) ?? Infinity;
       const otherPrevT = timeUntilCollision.get(other) ?? Infinity;
@@ -161,6 +160,7 @@ export function queryDiskCollision(
         collideWith.set(id, other);
         collideWith.set(other, id);
       }
+      console.log("timeUntilCollision", dumpContext(timeUntilCollision));
     });
 }
 
