@@ -1,3 +1,4 @@
+import { dumpContext } from "../js/helper.js";
 import {
   applyConservationOfMomentum,
   applyKeepMovingIfNoCollision,
@@ -22,7 +23,19 @@ export const config = [
     applyKeepMovingIfNoCollision,
   ]),
   [drawOrangeDisk, drawVelocityPointer],
-  [warnDiskPenetration],
+  [
+    warnDiskPenetration, ({ position, velocity, elapsed }) => {
+    console.debug("^^^^" + elapsed);
+    console.debug(dumpContext(position));
+    console.debug(dumpContext(velocity));
+    console.debug("$$$$" + elapsed);
+  },
+    ({ position, size }) => {
+      console.log("distance: center to center", Math.abs(position.get(1000).y - position.get(1001).y));
+      console.log("distance: perimeter to perimeter",
+        Math.abs(position.get(1000).y - position.get(1001).y) - size.get(1000).w / 2 - size.get(1001).w / 2);
+    },
+  ],
 ];
 
 export const init = (ARENA_W, ARENA_H) => ({
