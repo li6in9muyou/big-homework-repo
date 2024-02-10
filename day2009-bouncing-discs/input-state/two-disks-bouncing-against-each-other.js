@@ -45,8 +45,8 @@ export const init = (ARENA_W, ARENA_H) => ({
     [1001, { x: 0, y: -40 }],
   ]),
   position: new Map([
-    [1000, { x: ARENA_W / 2, y: 20 }],
-    [1001, { x: ARENA_W / 2, y: ARENA_H - 40 }],
+    [1000, { x: ARENA_W / 2, y: 380 }],
+    [1001, { x: ARENA_W / 2, y: 489 }],
   ]),
   size: new Map([
     [1000, { w: 40, h: 40 }],
