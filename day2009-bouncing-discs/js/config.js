@@ -1,3 +1,4 @@
+import { lenSqr } from "./math.js";
 import {
   applyKeepMovingIfNoCollision,
   applyMoveToCollidePos,
