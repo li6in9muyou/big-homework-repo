@@ -28,6 +28,10 @@ export function eq(a, b, epsilon = 1e-4) {
   return epsilon > Math.abs(a - b);
 }
 
+export function gt(big, small, epsilon = 1e-4) {
+  return big - small > epsilon;
+}
+
 export function solveLinear(a, b, c) {
   // ax + b = c
 

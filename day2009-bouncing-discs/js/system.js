@@ -1,5 +1,5 @@
 import { dumpContext } from "./helper.js";
-import { lenSqr, normalized, rotate, solveLinear, solveQuadratic } from "./math.js";
+import { gt, lenSqr, normalized, rotate, solveLinear, solveQuadratic } from "./math.js";
 
 const ARENA_TOP = -1;
 const ARENA_RIGHT = -2;
@@ -24,8 +24,8 @@ export function applyMoveToCollidePos(id, { position, distanceUntilCollision }) 
 
   const d = distanceUntilCollision.get(id);
   const p = position.get(id);
-  p.x += d.x * 0.9999;
-  p.y += d.y * 0.9999;
+  p.x += d.x;
+  p.y += d.y;
 }
 
 export function queryArenaCollision(id, {
@@ -65,14 +65,10 @@ export function queryArenaCollision(id, {
     return;
   }
 
-  timeUntilCollision.set(id, minTWithInZeroAndOne);
-  distanceUntilCollision.set(id,
-    { x: v.x * minTWithInZeroAndOne, y: v.y * minTWithInZeroAndOne });
-
-  const hitT = minTWithInZeroAndOne === tToTop;
-  const hitR = minTWithInZeroAndOne === tToRight;
-  const hitB = minTWithInZeroAndOne === tToBottom;
-  const hitL = minTWithInZeroAndOne === tToLeft;
+  const hitT = minTWithInZeroAndOne === tToTop && gt(0, v.y);
+  const hitR = minTWithInZeroAndOne === tToRight && gt(v.x, 0);
+  const hitB = minTWithInZeroAndOne === tToBottom && gt(v.y, 0);
+  const hitL = minTWithInZeroAndOne === tToLeft && gt(0, v.x);
   let nX = 0, nY = 0;
   if (hitB) {
     nY = -1;
@@ -90,8 +86,14 @@ export function queryArenaCollision(id, {
     nX = -1;
     collideWith.set(id, ARENA_RIGHT);
   }
-  collideNormal.set(id, normalized(nX, nY));
-  console.log(`${id} collide with ${collideWith.get(id)} after ${minTWithInZeroAndOne}`);
+
+  if (hitT || hitR || hitB || hitL) {
+    timeUntilCollision.set(id, minTWithInZeroAndOne);
+    distanceUntilCollision.set(id,
+      { x: v.x * minTWithInZeroAndOne, y: v.y * minTWithInZeroAndOne });
+    collideNormal.set(id, normalized(nX, nY));
+    console.log(`${id} collide with ${collideWith.get(id)} after ${minTWithInZeroAndOne}`);
+  }
 }
 
 export function queryDiskCollision(

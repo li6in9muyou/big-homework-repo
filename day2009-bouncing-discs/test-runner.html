@@ -19,7 +19,7 @@
     const CONTEXT = init();
 
     console.log(dumpContext(CONTEXT));
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
       update(CONTEXT, ...CONFIG);
       CONTEXT.elapsed += 1;
       console.log(`====== at the end of ${CONTEXT.elapsed} iteration`);

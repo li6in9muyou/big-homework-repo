@@ -58,7 +58,7 @@ export function testDiskBouncingAgainstWall() {
   const expectedYPositions = [null, 20, 60, 80, 40, 20];
 
   const asserts = [
-    it("should stop at arena wall", ctx => {
+    it("should bounce back at arena wall", ctx => {
       const expected = expectedYPositions[ctx.elapsed];
       if (expected !== undefined) {
         return ctx.position.get(id).y === expected;
