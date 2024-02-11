@@ -8,6 +8,131 @@
   <script src="vendor/less.js"></script>
 </head>
 <body>
+  <section class="category-nav">
+    <a href="javascript:" class="category-nav--item">
+      <img src="images/40x40.png" alt="商品分类一图标" width="40" height="40"/>
+      <span>商品分类一</span>
+    </a>
+  </section>
+  <main>
+    <section class="sales">
+      <div class="sales--header">
+        <div class="sales--countdown">
+          <i icon="sales-timer"></i>
+          <h2>快点来买</h2>
+          <span class="digits-timer" data-timer-digits>
+           <strong>1</strong>
+           <strong>2</strong>
+           <i class="digits-timer--delimiter">:</i>
+           <strong>3</strong>
+           <strong>4</strong>
+          </span>
+        </div>
+        <div class="sales--link">更多<i icon="arrow-right"></i></div>
+      </div>
+      <ul class="sales--body">
+        <li class="sales--product">
+          <img src="images/100x100.png" alt="秒杀商品一图片" width="100" height="100">
+          <span class="sales--price">0.99</span>
+          <span class="sales--price sales--price__original">4</span>
+        </li>
+        <li class="sales--product">
+          <img src="images/100x100.png" alt="秒杀商品一图片" width="100" height="100">
+          <span class="sales--price">10</span>
+          <span class="sales--price sales--price__original">26</span>
+        </li>
+        <li class="sales--product">
+          <img src="images/100x100.png" alt="秒杀商品一图片" width="100" height="100">
+          <span class="sales--price">99.99</span>
+          <span class="sales--price sales--price__original">149.9</span>
+        </li>
+      </ul>
+    </section>
+    <section class="featured">
+      <h2 class="featured--header">京东自营</h2>
+      <ul class="featured--products">
+        <li class="featured--product featured--product__big">
+          <div class="featured--product-title">
+            <h3>手机专享</h3>
+            <h4>掌上特惠为你省</h4>
+          </div>
+          <a href="javascript:">
+            <img src="images/200x200.png" alt="特色商品图一" width="200" height="200">
+          </a>
+        </li>
+        <li class="featured--product featured--product__sm-1">
+          <div class="featured--product-title">
+            <h3>闪购</h3>
+            <h4>玩转羽绒轻盈保暖</h4>
+          </div>
+          <a href="javascript:">
+            <img data-img-fill-height src="images/200x200.png" alt="特色商品图一" width="200" height="200">
+          </a>
+        </li>
+        <li class="featured--product featured--product__sm-2">
+          <div class="featured--product-title">
+            <h3>团购</h3>
+            <h4>1元试用团</h4>
+          </div>
+          <a href="javascript:">
+            <img data-img-fill-height src="images/200x200.png" alt="特色商品图一" width="200" height="200">
+          </a>
+        </li>
+      </ul>
+    </section>
+    <section class="featured">
+      <h2 class="featured--header">京东自营</h2>
+      <ul class="featured--products featured--products__flipped">
+        <li class="featured--product featured--product__big">
+          <div class="featured--product-title">
+            <h3>手机专享</h3>
+            <h4>掌上特惠为你省</h4>
+          </div>
+          <a href="javascript:">
+            <img src="images/200x200.png" alt="特色商品图一" width="200" height="200">
+          </a>
+        </li>
+        <li class="featured--product featured--product__sm-1">
+          <div class="featured--product-title">
+            <h3>闪购</h3>
+            <h4>玩转羽绒轻盈保暖</h4>
+          </div>
+          <a href="javascript:">
+            <img data-img-fill-height src="images/200x200.png" alt="特色商品图一" width="200" height="200">
+          </a>
+        </li>
+        <li class="featured--product featured--product__sm-2">
+          <div class="featured--product-title">
+            <h3>团购</h3>
+            <h4>1元试用团</h4>
+          </div>
+          <a href="javascript:">
+            <img data-img-fill-height src="images/200x200.png" alt="特色商品图一" width="200" height="200">
+          </a>
+        </li>
+      </ul>
+    </section>
+  </main>
 
+
+  <script src="vendor/jquery.js"></script>
+  <script>
+    const isPreferDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (isPreferDark) {
+      $(":root").attr("data-theme", "dark");
+    } else {
+      $(":root").attr("data-theme", "light");
+    }
+  </script>
+  <script>
+    const sci = "零一二三四五六七八九十".split("");
+    const navItem = $(".category-nav--item:first");
+    for (let i = 2; i < 2 + 7; i++) {
+      const newNavItem = navItem.clone();
+      const nt = newNavItem.children("span");
+      nt.text(nt.text().slice(0, -1) + sci[i]);
+      newNavItem.appendTo(navItem.parent());
+    }
+  </script>
 </body>
 </html>
