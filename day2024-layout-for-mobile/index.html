@@ -5,9 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>手机商城</title>
   <link rel="stylesheet/less" type="text/css" href="less/styles.less"/>
+  <link rel="stylesheet" href="vendor/swiper-bundle.css"/>
   <script src="vendor/less.js"></script>
 </head>
 <body>
+  <section class="swiper banner">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide">
+        <img class="banner--img" src="images/400x200.png" alt="轮播图一" width="400" height="200">
+      </div>
+      <div class="swiper-slide">
+        <img class="banner--img" src="images/400x200.png" alt="轮播图二" width="400" height="200">
+      </div>
+      <div class="swiper-slide">
+        <img class="banner--img" src="images/400x200.png" alt="轮播图三" width="400" height="200">
+      </div>
+    </div>
+    <div class="swiper-pagination"></div>
+  </section>
   <section class="category-nav">
     <a href="javascript:" class="category-nav--item">
       <img src="images/40x40.png" alt="商品分类一图标" width="40" height="40"/>
@@ -133,6 +148,15 @@
       nt.text(nt.text().slice(0, -1) + sci[i]);
       newNavItem.appendTo(navItem.parent());
     }
+  </script>
+  <script src="vendor/swiper-bundle.js"></script>
+  <script>
+    const __s = new Swiper(".banner", {
+      loop: true,
+      pagination: {
+        el: ".swiper-pagination",
+      },
+    });
   </script>
 </body>
 </html>
