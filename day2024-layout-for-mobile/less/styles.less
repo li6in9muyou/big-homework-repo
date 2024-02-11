@@ -289,6 +289,12 @@ body {
 
   &--product&--product__sm-2 {
     grid-area: sm-2;
+
+    .featured--product-title {
+      left: unset;
+      right: @p-2;
+      text-align: right;
+    }
   }
 
   &--product-title {
@@ -306,12 +312,6 @@ body {
     h4 {
       font-size: @font-size-sm;
     }
-  }
-
-  &--product-title&--product-title__right {
-    left: unset;
-    right: @p-2;
-    text-align: right;
   }
 }
 
