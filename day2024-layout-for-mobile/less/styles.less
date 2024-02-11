@@ -9,6 +9,7 @@
 @font-size-sm: 3.5vw;
 @line-height-sm: 4vw;
 @font-size-base: 5vw;
+@mpx: 0.533vw;
 
 .text-sm {
   font-size: @font-size-sm;
@@ -79,6 +80,11 @@ body {
     flex-direction: column;
     align-items: center;
 
+    img {
+      width: 60%;
+      height: auto;
+    }
+
     span {
       padding-top: @p-1;
       .text-sm();
@@ -144,9 +150,13 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    flex: 1;
 
     img {
       margin-bottom: @m-2;
+      display: block;
+      width: 100%;
+      height: auto;
     }
   }
 
@@ -244,14 +254,21 @@ body {
   &--product&--product__big {
     grid-area: big;
     border-right: @border-big;
+
+    img {
+      width: 100%;
+      height: auto;
+    }
   }
 
   &--product&--product__sm-1,
   &--product&--product__sm-2 {
     img {
-      width: 100px;
-      height: 100px;
       display: block;
+      position: absolute;
+      height: 100%;
+      width: auto;
+      z-index: 0;
     }
   }
 
@@ -260,7 +277,7 @@ body {
     border-bottom: solid 1px var(--color-border);
 
     img {
-      margin-left: auto;
+      right: 0;
     }
   }
 
@@ -272,6 +289,7 @@ body {
     position: absolute;
     top: @p-2;
     left: @p-2;
+    z-index: 10;
 
     h3 {
       font-family: cursive;
