@@ -22,6 +22,7 @@
   --color-content-bg-primary: #101010;
   --color-content-bg-accent: #000;
   --color-bg: #030303;
+  --color-bg-header: var(--color-content-bg);
   --color-text: #fafafa;
   --color-text-secondary: #a0a0a0;
   --color-text-accent: crimson;
@@ -50,7 +51,7 @@ ul {
   list-style: none;
 }
 
-h2, h3, h4 {
+h1, h2, h3, h4 {
   font-weight: normal;
   font-size: unset;
   margin: 0;
@@ -94,6 +95,16 @@ body {
   }
 }
 
+[icon=arrow-right] {
+  display: inline-block;
+  background-image: @arrow-right;
+  width: @font-size-sm;
+  height: @font-size-sm;
+  background-position: center;
+  background-size: 200%;
+  vertical-align: middle;
+}
+
 .sales {
   .card();
 
@@ -132,13 +143,6 @@ body {
   }
 
   .sales--link > [icon=arrow-right] {
-    display: inline-block;
-    background-image: @arrow-right;
-    width: @font-size-sm;
-    height: @font-size-sm;
-    background-position: center;
-    background-size: 200%;
-    vertical-align: middle;
     margin-left: 0.5 * @m-1;
   }
 
@@ -319,5 +323,64 @@ body {
     height: auto;
     object-fit: cover;
     object-position: center;
+  }
+}
+
+
+header {
+  @input-height: 1.4 * @font-size-base + 2 * @p-1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: @p-1 @p-2;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background-color: var(--color-bg-header);
+  border-bottom: solid 2px var(--color-border);
+
+  form {
+    display: flex;
+    align-items: center;
+    width: 60%;
+    border: solid 1px var(--color-border);
+    border-radius: @input-height;
+
+    input {
+      font-size: @font-size-base;
+    }
+
+    input[name=query] {
+      font-size: @font-size-base;
+      width: 100%;
+      height: @input-height;
+      border: none;
+      background-color: var(--color-content-bg);
+      color: var(--color-text);
+      padding-left: @p-2;
+      border-radius: @input-height 0 0 @input-height;
+    }
+
+    input[name=query]::-webkit-input-placeholder {
+      color: var(--color-text-secondary);
+    }
+
+    input[type=submit] {
+      color: var(--color-text-accent);
+      background-color: var(--color-content-bg-accent);
+      border: none;
+      border-left: solid 1px var(--color-border);
+      border-radius: 0 @input-height @input-height 0;
+      padding: @p-1 @p-2;
+      height: @input-height;
+    }
+  }
+
+  .logo {
+    font-size: 1.2*@font-size-base;
+    width: 2em;
+    line-height: 1em;
   }
 }
