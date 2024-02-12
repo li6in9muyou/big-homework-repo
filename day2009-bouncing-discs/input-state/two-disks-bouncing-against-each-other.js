@@ -1,37 +1,6 @@
-import {
-  applyConservationOfMomentum,
-  applyKeepMovingIfNoCollision,
-  applyMoveToCollidePos,
-  applyReflectedVelocityIfCollideWithArena,
-  drawOrangeDisk,
-  drawVelocityPointer,
-  logDiskDistance,
-  logDiskDynamics,
-  logReproductionInfo,
-  queryArenaCollision,
-  queryDiskCollision,
-  warnDiskPenetration,
-} from "../js/system.js";
+import { TwoDimElasticCollision } from "../js/config.js";
 
-export const config = [
-  [
-    queryArenaCollision,
-    queryDiskCollision,
-  ],
-  new Set([
-    applyReflectedVelocityIfCollideWithArena,
-    applyConservationOfMomentum,
-    applyMoveToCollidePos,
-    applyKeepMovingIfNoCollision,
-  ]),
-  [drawOrangeDisk, drawVelocityPointer],
-  [
-    warnDiskPenetration,
-    logReproductionInfo,
-    logDiskDistance,
-    logDiskDynamics,
-  ],
-];
+export const config = TwoDimElasticCollision;
 
 export const init = (ARENA_W, ARENA_H) => ({
   entities: [1000, 1001],

@@ -1,17 +1,5 @@
+import { SingleDiskBouncingNoDraw, TwoDimElasticCollisionNoDraw } from "./config.js";
 import { eq, gt } from "./math.js";
-import {
-  applyConservationOfMomentum,
-  applyKeepMovingIfNoCollision,
-  applyMoveToCollidePos,
-  applyReflectedVelocityIfCollideWithArena,
-  logDiskDistance,
-  logDiskDynamics,
-  logElapsed,
-  logReproductionInfo,
-  queryArenaCollision,
-  queryDiskCollision,
-  warnDiskPenetration,
-} from "./system.js";
 
 function it(msg, assert) {
   return (...args) => {
@@ -53,23 +41,9 @@ export const testDiskBouncingAgainstWallHorizontal =
   );
 
 function assertOneDiskPosition(initP, initV, expectedP) {
-  const config = [
-    [
-      queryArenaCollision,
-    ],
-    new Set([
-      applyReflectedVelocityIfCollideWithArena,
-      applyMoveToCollidePos,
-      applyKeepMovingIfNoCollision,
-    ]),
-    [],
-    [warnDiskPenetration],
-  ];
-
   const id = 1000;
 
-  const init = () => ({
-    elapsed: 0,
+  const init = () => createStateFromDiskDynamics({
     entities: [id],
     velocity: new Map([
       [id, initV],
@@ -83,12 +57,6 @@ function assertOneDiskPosition(initP, initV, expectedP) {
     mass: new Map([
       [id, 40],
     ]),
-    collideNormal: new Map(),
-    distanceUntilCollision: new Map(),
-    timeUntilCollision: new Map(),
-    collideWith: new Map(),
-    vPtrJqTable: new Map(),
-    needQueryAgain: [true],
     ARENA_W: 100,
     ARENA_H: 100,
   });
@@ -106,10 +74,10 @@ function assertOneDiskPosition(initP, initV, expectedP) {
     }),
   ];
 
-  return [config, init, asserts];
+  return [SingleDiskBouncingNoDraw, init, asserts];
 }
 
-function createStateFromPhysicsState(ps) {
+function createStateFromDiskDynamics(ps) {
   function toMap(a) {
     if (!(a instanceof Map)) {
       return new Map(a);
@@ -135,7 +103,7 @@ function createStateFromPhysicsState(ps) {
 }
 
 export function testTouchingDisksOfDifferentVelocityCanSeparate() {
-  const init = () => createStateFromPhysicsState({
+  const init = () => createStateFromDiskDynamics({
     entities: [
       1000,
       1001,
@@ -183,27 +151,6 @@ export function testTouchingDisksOfDifferentVelocityCanSeparate() {
     ARENA_W: 418,
     ARENA_H: 889,
   });
-  const config = [
-    [
-      queryArenaCollision,
-      queryDiskCollision,
-    ],
-    new Set([
-      applyConservationOfMomentum,
-      applyMoveToCollidePos,
-      applyKeepMovingIfNoCollision,
-    ]),
-    [],
-    [
-      warnDiskPenetration,
-      logReproductionInfo,
-      ({ position, size }) => {
-        console.log("distance: center to center", Math.abs(position.get(1000).y - position.get(1001).y));
-        console.log("distance: perimeter to perimeter",
-          Math.abs(position.get(1000).y - position.get(1001).y) - size.get(1000).w / 2 - size.get(1001).w / 2);
-      },
-    ],
-  ];
   const asserts = [
     it("should collide then separate and keep moving", ({ elapsed, position, velocity }) => {
       switch (elapsed) {
@@ -218,11 +165,11 @@ export function testTouchingDisksOfDifferentVelocityCanSeparate() {
       }
     }),
   ];
-  return [config, init, asserts];
+  return [TwoDimElasticCollisionNoDraw, init, asserts];
 }
 
 export function testTwoArenaCollisionInTwoFrames() {
-  const init = () => createStateFromPhysicsState({
+  const init = () => createStateFromDiskDynamics({
     entities: [
       1000,
     ],
@@ -250,24 +197,6 @@ export function testTwoArenaCollisionInTwoFrames() {
     ARENA_W: 300,
     ARENA_H: 300,
   });
-  const config = [
-    [
-      queryArenaCollision,
-      queryDiskCollision,
-    ],
-    new Set([
-      applyConservationOfMomentum,
-      applyMoveToCollidePos,
-      applyKeepMovingIfNoCollision,
-    ]),
-    [],
-    [
-      warnDiskPenetration,
-      logReproductionInfo,
-      logDiskDistance,
-      logElapsed,
-    ],
-  ];
   const asserts = [
     it("should collide with arena twice", ({ elapsed, position, velocity }) => {
       const p = position.get(1000);
@@ -281,13 +210,13 @@ export function testTwoArenaCollisionInTwoFrames() {
       }
     }),
   ];
-  return [config, init, asserts];
+  return [TwoDimElasticCollisionNoDraw, init, asserts];
 }
 
 export function testRoundingErrorIsManageable() {
   const ARENA_W = 300;
   const ARENA_H = 300;
-  const init = () => createStateFromPhysicsState({
+  const init = () => createStateFromDiskDynamics({
     entities: [1000, 1001],
     velocity: new Map([
       [1000, { x: 0, y: 40 }],
@@ -315,24 +244,6 @@ export function testRoundingErrorIsManageable() {
     ARENA_W,
     ARENA_H,
   });
-  const config = [
-    [
-      queryArenaCollision,
-      queryDiskCollision,
-    ],
-    new Set([
-      applyConservationOfMomentum,
-      applyMoveToCollidePos,
-      applyKeepMovingIfNoCollision,
-    ]),
-    [],
-    [
-      warnDiskPenetration,
-      logReproductionInfo,
-      logDiskDistance,
-      logElapsed,
-    ],
-  ];
   const asserts = [
     it("should not have v.x", ({ velocity }) => {
       const p1 = velocity.get(1000);
@@ -340,11 +251,11 @@ export function testRoundingErrorIsManageable() {
       return eq(p1.x, 0) && eq(p2.x, 0);
     }),
   ];
-  return [config, init, asserts];
+  return [TwoDimElasticCollisionNoDraw, init, asserts];
 }
 
 export function testDiskHitArenaCorner() {
-  const init = () => createStateFromPhysicsState({
+  const init = () => createStateFromDiskDynamics({
     entities: [
       1000,
       1001,
@@ -392,26 +303,6 @@ export function testDiskHitArenaCorner() {
     ARENA_W: 300,
     ARENA_H: 300,
   });
-  const config = [
-    [
-      queryArenaCollision,
-      queryDiskCollision,
-    ],
-    new Set([
-      applyReflectedVelocityIfCollideWithArena,
-      applyConservationOfMomentum,
-      applyMoveToCollidePos,
-      applyKeepMovingIfNoCollision,
-    ]),
-    [],
-    [
-      warnDiskPenetration,
-      logReproductionInfo,
-      logDiskDynamics,
-      logDiskDistance,
-      logElapsed,
-    ],
-  ];
   const asserts = [
     it("should move in south east direction", ({ elapsed, velocity }) => {
       const v = velocity.get(1000);
@@ -421,5 +312,5 @@ export function testDiskHitArenaCorner() {
       return true;
     }),
   ];
-  return [config, init, asserts];
+  return [TwoDimElasticCollisionNoDraw, init, asserts];
 }
