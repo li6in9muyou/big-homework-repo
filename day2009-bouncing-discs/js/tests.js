@@ -14,6 +14,9 @@ function it(msg, assert) {
   return (...args) => {
     if (assert(...args) === false) {
       console.error("test failed: " + msg);
+      return false;
+    } else {
+      return true;
     }
   };
 }
