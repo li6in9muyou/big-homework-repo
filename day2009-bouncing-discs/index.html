@@ -25,7 +25,10 @@
 
     .arena {
       position: relative;
-      flex-grow: 1;
+      flex-grow: 0;
+      margin: 6px;
+      border: solid 5px antiquewhite;
+      box-sizing: content-box;
     }
 
     .disk {
@@ -97,7 +100,11 @@
     import { config as CONFIG, init as INIT } from "./input-state/two-disks-bouncing-against-each-other.js";
 
     const $arena = $(".arena");
-    const CONTEXT = { ...INIT($arena.outerWidth(), $arena.outerHeight()), $arena };
+    $arena.innerHeight(300);
+    $arena.innerWidth(300);
+    const ARENA_W = $arena.innerHeight();
+    const ARENA_H = $arena.innerWidth();
+    const CONTEXT = { ARENA_W, ARENA_H, ...INIT($arena.innerWidth(), $arena.innerHeight()), $arena };
 
     const $iteration = $("#iteration");
     const $fps = $("#fps");

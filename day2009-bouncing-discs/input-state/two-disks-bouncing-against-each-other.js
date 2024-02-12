@@ -5,6 +5,7 @@ import {
   applyReflectedVelocityIfCollideWithArena,
   drawOrangeDisk,
   drawVelocityPointer,
+  logDiskDistance,
   logReproductionInfo,
   queryArenaCollision,
   queryDiskCollision,
@@ -26,11 +27,7 @@ export const config = [
   [
     warnDiskPenetration,
     logReproductionInfo,
-    ({ position, size }) => {
-      console.log("distance: center to center", Math.abs(position.get(1000).y - position.get(1001).y));
-      console.log("distance: perimeter to perimeter",
-        Math.abs(position.get(1000).y - position.get(1001).y) - size.get(1000).w / 2 - size.get(1001).w / 2);
-    },
+    logDiskDistance,
   ],
 ];
 
@@ -41,8 +38,8 @@ export const init = (ARENA_W, ARENA_H) => ({
     [1001, { x: 0, y: -40 }],
   ]),
   position: new Map([
-    [1000, { x: ARENA_W / 2, y: 380 }],
-    [1001, { x: ARENA_W / 2, y: 489 }],
+    [1000, { x: ARENA_W / 2, y: 20 }],
+    [1001, { x: ARENA_W / 2, y: ARENA_H - 40 }],
   ]),
   size: new Map([
     [1000, { w: 40, h: 40 }],
