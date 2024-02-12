@@ -342,4 +342,80 @@ export function testRoundingErrorIsManageable() {
   return [config, init, asserts];
 }
 
+export function testDiskHitArenaCorner() {
+  const init = () => createStateFromPhysicsState({
+    entities: [
+      1000,
+      1001,
+    ],
+    position: [
+      [
+        1000,
+        { x: 30.786796564403566, y: 30.786796564403573 },
+      ],
+      [
+        1001,
+        { x: 153.21320343559643, y: 153.21320343559643 },
+      ],
+    ],
+    size: [
+      [
+        1000,
+        { w: 40, h: 40 },
+      ],
+      [
+        1001,
+        { w: 80, h: 80 },
+      ],
+    ],
+    velocity: [
+      [
+        1000,
+        { x: -44.00000000000001, y: -44 },
+      ],
+      [
+        1001,
+        { x: -3.9999999999999996, y: -4.000000000000002 },
+      ],
+    ],
+    mass: [
+      [
+        1000,
+        40,
+      ],
+      [
+        1001,
+        160,
+      ],
+    ],
+    ARENA_W: 300,
+    ARENA_H: 300,
+  });
+  const config = [
+    [
+      queryArenaCollision,
+      queryDiskCollision,
+    ],
+    new Set([
+      applyConservationOfMomentum,
+      applyMoveToCollidePos,
+      applyKeepMovingIfNoCollision,
+    ]),
+    [],
+    [
+      warnDiskPenetration,
+      logReproductionInfo,
+      logDiskDistance,
+      logElapsed,
+    ],
+  ];
+  const asserts = [
+    it("should move in south east direction", ({ velocity }) => {
+      const v = velocity.get(1000);
+      return eq(v.x / v.y, 1);
+    }),
+  ];
+  return [config, init, asserts];
+}
+
 

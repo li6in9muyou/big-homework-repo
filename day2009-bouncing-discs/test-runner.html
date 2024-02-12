@@ -15,6 +15,7 @@
     import {
       testDiskBouncingAgainstWall,
       testDiskBouncingAgainstWallHorizontal,
+      testDiskHitArenaCorner,
       testRoundingErrorIsManageable,
       testTouchingDisksOfDifferentVelocityCanSeparate,
       testTwoArenaCollisionInTwoFrames,
@@ -84,6 +85,22 @@
       const CONTEXT = init();
 
       for (let i = 0; i < 100; i++) {
+        update(CONTEXT, ...CONFIG);
+        CONTEXT.elapsed += 1;
+        const failed = asserts.map(a => a(CONTEXT)).some(r => !!r === false);
+        if (failed) {
+          console.error("test halted after failed assertion");
+          break;
+        }
+      }
+    }
+
+    {
+      const [CONFIG, init, asserts] = testDiskHitArenaCorner();
+      console.log(1);
+      const CONTEXT = init();
+
+      for (let i = 0; i < 4; i++) {
         update(CONTEXT, ...CONFIG);
         CONTEXT.elapsed += 1;
         const failed = asserts.map(a => a(CONTEXT)).some(r => !!r === false);
