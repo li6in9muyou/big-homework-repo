@@ -36,12 +36,12 @@ export const config = [
 export const init = (ARENA_W, ARENA_H) => ({
   entities: [1000, 1001],
   velocity: new Map([
-    [1000, { x: 0, y: 40 }],
-    [1001, { x: 0, y: -40 }],
+    [1000, { x: 20, y: 20 }],
+    [1001, { x: -20, y: -20 }],
   ]),
   position: new Map([
-    [1000, { x: ARENA_W / 2, y: 20 }],
-    [1001, { x: ARENA_W / 2, y: ARENA_H - 40 }],
+    [1000, { x: 20, y: 20 }],
+    [1001, { x: ARENA_W - 40, y: ARENA_H - 40 }],
   ]),
   size: new Map([
     [1000, { w: 40, h: 40 }],
