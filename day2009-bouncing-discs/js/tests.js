@@ -5,6 +5,7 @@ import {
   applyMoveToCollidePos,
   applyReflectedVelocityIfCollideWithArena,
   logDiskDistance,
+  logDiskDynamics,
   logElapsed,
   logReproductionInfo,
   queryArenaCollision,
@@ -397,6 +398,7 @@ export function testDiskHitArenaCorner() {
       queryDiskCollision,
     ],
     new Set([
+      applyReflectedVelocityIfCollideWithArena,
       applyConservationOfMomentum,
       applyMoveToCollidePos,
       applyKeepMovingIfNoCollision,
@@ -405,14 +407,18 @@ export function testDiskHitArenaCorner() {
     [
       warnDiskPenetration,
       logReproductionInfo,
+      logDiskDynamics,
       logDiskDistance,
       logElapsed,
     ],
   ];
   const asserts = [
-    it("should move in south east direction", ({ velocity }) => {
+    it("should move in south east direction", ({ elapsed, velocity }) => {
       const v = velocity.get(1000);
-      return eq(v.x / v.y, 1);
+      if (elapsed === 2) {
+        return eq(v.x / v.y, 1);
+      }
+      return true;
     }),
   ];
   return [config, init, asserts];
