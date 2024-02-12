@@ -105,7 +105,7 @@ function assertOneDiskPosition(initP, initV, expectedP) {
 
 function createStateFromPhysicsState(ps) {
   function toMap(a) {
-    if (!a instanceof Map) {
+    if (!(a instanceof Map)) {
       return new Map(a);
     } else {
       return a;
