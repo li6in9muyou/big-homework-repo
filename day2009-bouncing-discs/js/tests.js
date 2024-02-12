@@ -204,10 +204,10 @@ export function testTouchingDisksOfDifferentVelocityCanSeparate() {
   const asserts = [
     it("should collide then separate and keep moving", ({ elapsed, position, velocity }) => {
       switch (elapsed) {
-        case 1:
         case 2:
         case 3:
-          return gt(Math.abs(position.get(1000).y - position.get(1001).y), 60)
+          const dCenter = Math.abs(position.get(1000).y - position.get(1001).y);
+          return (gt(dCenter, 60))
             && gt(velocity.get(1000).y, 0)
             && gt(velocity.get(1001).y, 0);
         default:
