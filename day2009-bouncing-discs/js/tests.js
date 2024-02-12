@@ -417,5 +417,3 @@ export function testDiskHitArenaCorner() {
   ];
   return [config, init, asserts];
 }
-
-
