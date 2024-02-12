@@ -26,7 +26,7 @@
     .arena {
       position: relative;
       flex-grow: 0;
-      margin: 6px;
+      margin: 6px auto;
       border: solid 5px antiquewhite;
       box-sizing: content-box;
     }
@@ -53,45 +53,51 @@
     header {
       padding: 6px;
       font-size: 24px;
-      justify-content: space-between;
       font-family: Consolas, monospace;
       display: flex;
       flex-direction: column;
-      gap: 4px;
     }
 
-    .gravity-wrap {
-      display: flex;
+    header > p {
+      margin: 0;
+    }
+
+    header button {
+      font-size: 1.2rem;
+    }
+
+    .gravity-control {
+      display: none;
       align-items: center;
     }
 
-    .gravity-wrap > input[type='checkbox'] {
+    .gravity-control > input[type='checkbox'] {
       width: 24px;
       height: 24px;
       margin: 0 8px 0 0;
-    }
-
-    .stats-wrap {
-      flex-shrink: 0;
     }
   </style>
 </head>
 <body>
   <header>
-    <div class="stats-wrap">
+    <p>
       <span>iteration:</span>
       <span id="iteration">0</span>
-    </div>
-    <div class="stats-wrap">
+    </p>
+    <p>
       <span>FPS:</span>
       <span id="fps">0</span>
-    </div>
-    <div class="gravity-wrap">
+    </p>
+    <p>
+      <button data-step>Step</button>
+      <button data-step-multiple>200 Step</button>
+    </p>
+    <p class="gravity-control">
       <input type="checkbox" name="toggleGravity" id="toggleGravity">
       <label for="toggleGravity">
         toggle gravity
       </label>
-    </div>
+    </p>
   </header>
   <main class="arena">
   </main>
@@ -110,30 +116,37 @@
     const $fps = $("#fps");
     const $header = $("header");
 
-    let frames = 0;
-    let iteration_limit = 1;
+    const state = {
+      frames: 0,
+      iteration_limit: 10,
+      frames_start: NaN,
+    };
+
+    function isSimulating(s) {
+      return s.iteration_limit > CONTEXT.elapsed;
+    }
 
     function simulate() {
       CONTEXT.elapsed++;
 
-      if (frames === 0) {
-        frames_start = performance.now();
+      if (state.frames === 0) {
+        state.frames_start = performance.now();
       }
       update(CONTEXT, ...CONFIG);
-      frames++;
+      state.frames++;
 
-      if (frames > 10) {
-        const cost = performance.now() - frames_start;
+      if (state.frames > 10) {
+        const cost = performance.now() - state.frames_start;
         $fps.text(Math.floor(1000 / (cost / 10)));
-        frames = 0;
+        state.frames = 0;
       }
 
       $iteration.text(
         CONTEXT.elapsed.toString().padStart(4, "0")
         + "/"
-        + iteration_limit.toString().padStart(4, "0"),
+        + state.iteration_limit.toString().padStart(4, "0"),
       );
-      if (CONTEXT.elapsed < iteration_limit) {
+      if (CONTEXT.elapsed < state.iteration_limit) {
         requestAnimationFrame(simulate);
       } else {
         console.info("update halts");
@@ -141,15 +154,24 @@
       }
     }
 
-    $(document).on("click", ".arena", () => {
-      if (CONTEXT.elapsed >= iteration_limit) {
-        iteration_limit += 1;
+    const $btnStep = $("[data-step]");
+
+    $arena.on("click", () => $btnStep.click());
+    $btnStep.on("click", () => {
+      if (!isSimulating(state)) {
+        state.iteration_limit += 1;
+        simulate();
+      }
+    });
+    $("[data-step-multiple]").on("click", (e) => {
+      if (!isSimulating(state)) {
+        state.iteration_limit += parseInt($(e.target).text().match(/\d+/)[0]);
         simulate();
       }
     });
 
     $header.css("background-color", "limegreen");
-    let frames_start = performance.now();
+    state.frames_start = performance.now();
     simulate();
   </script>
 </body>
