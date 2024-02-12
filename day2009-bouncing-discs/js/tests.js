@@ -282,3 +282,64 @@ export function testTwoArenaCollisionInTwoFrames() {
   ];
   return [config, init, asserts];
 }
+
+export function testRoundingErrorIsManageable() {
+  const ARENA_W = 300;
+  const ARENA_H = 300;
+  const init = () => createStateFromPhysicsState({
+    entities: [1000, 1001],
+    velocity: new Map([
+      [1000, { x: 0, y: 40 }],
+      [1001, { x: 0, y: -40 }],
+    ]),
+    position: new Map([
+      [1000, { x: ARENA_W / 2, y: 20 }],
+      [1001, { x: ARENA_W / 2, y: ARENA_H - 40 }],
+    ]),
+    size: new Map([
+      [1000, { w: 40, h: 40 }],
+      [1001, { w: 80, h: 80 }],
+    ]),
+    mass: new Map([
+      [1000, 40],
+      [1001, 160],
+    ]),
+    elapsed: 0,
+    collideNormal: new Map(),
+    distanceUntilCollision: new Map(),
+    timeUntilCollision: new Map(),
+    collideWith: new Map(),
+    vPtrJqTable: new Map(),
+    needQueryAgain: [true],
+    ARENA_W,
+    ARENA_H,
+  });
+  const config = [
+    [
+      queryArenaCollision,
+      queryDiskCollision,
+    ],
+    new Set([
+      applyConservationOfMomentum,
+      applyMoveToCollidePos,
+      applyKeepMovingIfNoCollision,
+    ]),
+    [],
+    [
+      warnDiskPenetration,
+      logReproductionInfo,
+      logDiskDistance,
+      logElapsed,
+    ],
+  ];
+  const asserts = [
+    it("should not have v.x", ({ velocity }) => {
+      const p1 = velocity.get(1000);
+      const p2 = velocity.get(1001);
+      return eq(p1.x, 0) && eq(p2.x, 0);
+    }),
+  ];
+  return [config, init, asserts];
+}
+
+
