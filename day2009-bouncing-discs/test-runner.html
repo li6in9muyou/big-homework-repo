@@ -12,7 +12,11 @@
 <body>
   <script type="module">
     import { dumpContext } from "./js/helper.js";
-    import { testDiskBouncingAgainstWall, testDiskBouncingAgainstWallHorizontal } from "./js/tests.js";
+    import {
+      testDiskBouncingAgainstWall,
+      testDiskBouncingAgainstWallHorizontal,
+      testTouchingDisksOfDifferentVelocityCanSeparate,
+    } from "./js/tests.js";
     import update from "./js/update.js";
 
     {
@@ -31,6 +35,20 @@
 
     {
       const [CONFIG, init, asserts] = testDiskBouncingAgainstWallHorizontal();
+      const CONTEXT = init();
+
+      console.log(dumpContext(CONTEXT));
+      for (let i = 0; i < 5; i++) {
+        update(CONTEXT, ...CONFIG);
+        CONTEXT.elapsed += 1;
+        console.log(`====== at the end of ${CONTEXT.elapsed} iteration`);
+        console.log(dumpContext(CONTEXT));
+        asserts.forEach(a => a(CONTEXT));
+      }
+    }
+
+    {
+      const [CONFIG, init, asserts] = testTouchingDisksOfDifferentVelocityCanSeparate();
       const CONTEXT = init();
 
       console.log(dumpContext(CONTEXT));
