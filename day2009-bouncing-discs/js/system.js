@@ -373,13 +373,13 @@ export function warnDiskPenetration({ position, size, entities }) {
         return lenSqr(p1.x - p2.x, p1.y - p2.y) < (r1 + r2) * (r1 + r2);
       });
     if (penetrateInto !== undefined) {
-      console.log(`penetration found between ${id} ${penetrateInto}`);
+      console.warn(`penetration found between ${id} ${penetrateInto}`);
     }
   }
 }
 
 export function logReproductionInfo({ entities, mass, position, size, velocity, ARENA_W, ARENA_H }) {
-  console.log(dumpContext({
+  console.log("reproduction info:\n" + dumpContext({
     entities,
     position,
     size,
@@ -390,7 +390,16 @@ export function logReproductionInfo({ entities, mass, position, size, velocity, 
   }));
 }
 
+export function logDiskDynamics({ entities, position, velocity }) {
+  for (const id of entities) {
+    const p = position.get(id);
+    const v = velocity.get(id);
+    console.log(`dynamics: ${id} p.x ${p.x} p.y ${p.y} v.x ${v.x} v.y ${v.y}`);
+  }
+}
+
 export function logDiskDistance({ entities, position, size }) {
+  console.group("disk distances");
   for (let i = 0; i < entities.length - 1; i++) {
     const id = entities[i];
     for (let j = i + 1; j < entities.length; j++) {
@@ -402,6 +411,7 @@ export function logDiskDistance({ entities, position, size }) {
       console.log(`${id} ${other} dCenter ${dCenter} dPerimeter ${dPerimeter}`);
     }
   }
+  console.groupEnd();
 }
 
 export function logElapsed({ elapsed }) {

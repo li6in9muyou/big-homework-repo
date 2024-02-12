@@ -6,6 +6,7 @@ import {
   drawOrangeDisk,
   drawVelocityPointer,
   logDiskDistance,
+  logDiskDynamics,
   logReproductionInfo,
   queryArenaCollision,
   queryDiskCollision,
@@ -28,6 +29,7 @@ export const config = [
     warnDiskPenetration,
     logReproductionInfo,
     logDiskDistance,
+    logDiskDynamics,
   ],
 ];
 
