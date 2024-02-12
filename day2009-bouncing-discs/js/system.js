@@ -49,16 +49,16 @@ export function queryArenaCollision(id, {
   const tToLeft = solveLinear(v.x, p.x, w / 2) ?? Infinity;
 
   let minTWithInZeroAndOne = Infinity;
-  if (0 <= tToTop && tToTop <= 1 && tToTop < minTWithInZeroAndOne) {
+  if (gt(tToTop, 0) && tToTop <= 1 && tToTop < minTWithInZeroAndOne) {
     minTWithInZeroAndOne = tToTop;
   }
-  if (0 <= tToRight && tToRight <= 1 && tToRight < minTWithInZeroAndOne) {
+  if (gt(tToRight, 0) && tToRight <= 1 && tToRight < minTWithInZeroAndOne) {
     minTWithInZeroAndOne = tToRight;
   }
-  if (0 <= tToBottom && tToBottom <= 1 && tToBottom < minTWithInZeroAndOne) {
+  if (gt(tToBottom, 0) && tToBottom <= 1 && tToBottom < minTWithInZeroAndOne) {
     minTWithInZeroAndOne = tToBottom;
   }
-  if (0 <= tToLeft && tToLeft <= 1 && tToLeft < minTWithInZeroAndOne) {
+  if (gt(tToLeft, 0) && tToLeft <= 1 && tToLeft < minTWithInZeroAndOne) {
     minTWithInZeroAndOne = tToLeft;
   }
   if (minTWithInZeroAndOne >= Infinity) {
