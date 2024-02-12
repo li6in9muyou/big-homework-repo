@@ -377,3 +377,15 @@ export function warnDiskPenetration({ position, size, entities }) {
     }
   }
 }
+
+export function logReproductionInfo({ entities, mass, position, size, velocity, ARENA_W, ARENA_H }) {
+  console.log(dumpContext({
+    entities,
+    position,
+    size,
+    velocity,
+    mass,
+    ARENA_W,
+    ARENA_H,
+  }));
+}

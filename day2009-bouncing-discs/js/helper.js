@@ -4,13 +4,13 @@ export function dumpContext(ctx) {
     switch (tag) {
       case "[object Map]":
         return Array.from(value.entries())
-          .map(([id, v]) => `${id} ${JSON.stringify(v)}`.replaceAll("\"", ""));
+          .map(([id, v]) => [id, JSON.stringify(v).replaceAll("\"", "")]);
       default:
         return value;
     }
   }
 
-  return JSON.stringify(ctx, replacer, 2);
+  return JSON.stringify(ctx, replacer, 2).replaceAll("\"", "");
 }
 
 function getRandomColor() {
