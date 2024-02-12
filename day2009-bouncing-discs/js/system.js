@@ -129,10 +129,10 @@ export function queryDiskCollision(
 
       const [t1, t2] = solution;
       let t = Infinity;
-      if (0 < t1 && t1 <= 1 && t1 < t) {
+      if (gt(t1, 0) && t1 <= 1 && t1 < t) {
         t = t1;
       }
-      if (0 < t2 && t2 <= 1 && t2 < t) {
+      if (gt(t2, 0) && t2 <= 1 && t2 < t) {
         t = t2;
       }
       if (t >= Infinity) {
