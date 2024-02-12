@@ -389,3 +389,21 @@ export function logReproductionInfo({ entities, mass, position, size, velocity, 
     ARENA_H,
   }));
 }
+
+export function logDiskDistance({ entities, position, size }) {
+  for (let i = 0; i < entities.length - 1; i++) {
+    const id = entities[i];
+    for (let j = i + 1; j < entities.length; j++) {
+      const other = entities[j];
+      const p1 = position.get(id);
+      const p2 = position.get(other);
+      const dCenter = Math.sqrt(lenSqr(p1.x - p2.x, p1.y - p2.y));
+      const dPerimeter = dCenter - size.get(id).w / 2 - size.get(other).w / 2;
+      console.log(`${id} ${other} dCenter ${dCenter} dPerimeter ${dPerimeter}`);
+    }
+  }
+}
+
+export function logElapsed({ elapsed }) {
+  console.log(`iteration ${elapsed} ends`);
+}

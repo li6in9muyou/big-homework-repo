@@ -4,6 +4,8 @@ import {
   applyKeepMovingIfNoCollision,
   applyMoveToCollidePos,
   applyReflectedVelocityIfCollideWithArena,
+  logDiskDistance,
+  logElapsed,
   logReproductionInfo,
   queryArenaCollision,
   queryDiskCollision,
@@ -210,6 +212,69 @@ export function testTouchingDisksOfDifferentVelocityCanSeparate() {
           return (gt(dCenter, 60))
             && gt(velocity.get(1000).y, 0)
             && gt(velocity.get(1001).y, 0);
+        default:
+          return true;
+      }
+    }),
+  ];
+  return [config, init, asserts];
+}
+
+export function testTwoArenaCollisionInTwoFrames() {
+  const init = () => createStateFromPhysicsState({
+    entities: [
+      1000,
+    ],
+    position: [
+      [
+        1000, { x: 39.67829218060014, y: 207.04960014440516 },
+      ],
+    ],
+    size: [
+      [
+        1000, { w: 40, h: 40 },
+      ],
+    ],
+    velocity: [
+      [
+        1000, { x: -22.856316635357658, y: 62.34986671480171 },
+      ],
+    ],
+    mass: [
+      [
+        1000,
+        40,
+      ],
+    ],
+    ARENA_W: 300,
+    ARENA_H: 300,
+  });
+  const config = [
+    [
+      queryArenaCollision,
+      queryDiskCollision,
+    ],
+    new Set([
+      applyConservationOfMomentum,
+      applyMoveToCollidePos,
+      applyKeepMovingIfNoCollision,
+    ]),
+    [],
+    [
+      warnDiskPenetration,
+      logReproductionInfo,
+      logDiskDistance,
+      logElapsed,
+    ],
+  ];
+  const asserts = [
+    it("should collide with arena twice", ({ elapsed, position, velocity }) => {
+      const p = position.get(1000);
+      switch (elapsed) {
+        case 1:
+          return eq(p.x, 20);
+        case 2:
+          return eq(p.y, 280);
         default:
           return true;
       }
