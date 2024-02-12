@@ -219,12 +219,26 @@ body {
 
 .featured {
   @border-big: solid 1px var(--color-border);
+  @header-padding-w: @p-1;
+  @header-border-w: 0.2*@font-size-base;
   .card();
 
   &--header {
-    border-left: solid 0.2*@font-size-base var(--color-text-accent);
-    padding: @p-1 0 @p-1 @p-2;
+    border-left: solid @header-border-w var(--color-text-accent);
+    padding: @header-padding-w @header-padding-w @header-padding-w 2 * @header-padding-w;
     line-height: 100%;
+    position: relative;
+  }
+
+  &--header::after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: calc(100% + 2 * @header-padding-w + @header-border-w);
+    left: -@p-2;
+    bottom: -@p-1;
+    height: 1px;
+    background-color: var(--color-border);
   }
 
   &--products {
