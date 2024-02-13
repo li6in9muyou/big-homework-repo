@@ -1,327 +1,350 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Scratch</title>
-  <style>
-    * {
-      padding: 0;
-      margin: 0;
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      height: 100%;
-      background-color: #888;
-    }
-
-    li {
-      list-style: none;
-    }
-
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .box {
-      width: 200px;
-      height: 100px;
-      background-color: limegreen;
-      border-radius: 8px;
-      cursor: move;
-      transition: 300ms ease-in-out;
-      font-size: 64px;
-      line-height: 100px;
-      text-align: center;
-      user-select: none;
-    }
-
-    .box__lifted {
-      transform: scale(1.05);
-      box-shadow: 3px 3px 6px #222;
-      z-index: 100;
-      transition: none;
-    }
-
-    .box__collided {
-      background-color: crimson;
-    }
-
-    .box-wrap {
-      position: relative;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      width: calc(200px * 3 + 20px * 2 + 20px * 2 + 4px * 2);
-      padding: 20px;
-      border: solid 4px lightgreen;
-      border-radius: 8px;
-    }
-  </style>
-  <script>
-    function listenEvent(elem, event, callback, ...args) {
-      let removeListener;
-      if (elem.addEventListener) {
-        elem.addEventListener(event, callback, ...args);
-        removeListener = function () {
-          elem.removeEventListener(event, callback);
-        };
-      } else {
-        // IE 9
-        elem.attachEvent("on" + event);
-        removeListener = function () {
-          elem.detachEvent("on" + event, callback);
-        };
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Scratch</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
       }
-      return removeListener;
-    }
-  </script>
-</head>
 
-<body>
-  <ul class="box-wrap">
-    <li class="box">1</li>
-    <li class="box">2</li>
-    <li class="box">3</li>
-    <li class="box">4</li>
-    <li class="box">5</li>
-    <li class="box">6</li>
-    <li class="box">7</li>
-    <li class="box">8</li>
-    <li class="box">9</li>
-    <li class="box">10</li>
-    <li class="box">11</li>
-    <li class="box">12</li>
-  </ul>
-  <script>
-    function DraggableManager() {
-      function Draggable(elem, cbDragStart, cbDragEnd, cbDragMove) {
-        this.elem = elem;
-        this.cbDragStart = cbDragStart;
-        this.cbDragEnd = cbDragEnd;
-        this.cbDragMove = cbDragMove;
-        this.dragging = false;
-        this.lastMousePos = { x: 0, y: 0 };
-        this.dragKey = NaN;
-        this.onDragStart = function (e) {
-          if (!isNaN(this.dragKey) && e.button !== this.dragKey) {
-            return;
-          }
-          if (this.dragging) {
-            return;
-          }
+      html,
+      body {
+        height: 100%;
+        background-color: #888;
+      }
 
-          this.dragKey = e.button;
-          this.dragging = true;
-          this.elem.dataset.dgDragging = this.dragging;
-          this.lastMousePos.x = e.clientX;
-          this.lastMousePos.y = e.clientY;
-          this.cbDragStart && this.cbDragStart();
-        };
-        this.onDragMove = function (e) {
-          if (!this.dragging) {
-            return;
-          }
+      li {
+        list-style: none;
+      }
 
-          const posDiff = {
-            x: e.clientX - this.lastMousePos.x,
-            y: e.clientY - this.lastMousePos.y
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .box {
+        width: 200px;
+        height: 100px;
+        background-color: limegreen;
+        border-radius: 8px;
+        cursor: move;
+        transition: 300ms ease-in-out;
+        font-size: 64px;
+        line-height: 100px;
+        text-align: center;
+        user-select: none;
+      }
+
+      .box__lifted {
+        transform: scale(1.05);
+        box-shadow: 3px 3px 6px #222;
+        z-index: 100;
+        transition: none;
+      }
+
+      .box__collided {
+        background-color: crimson;
+      }
+
+      .box-wrap {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        width: calc(200px * 3 + 20px * 2 + 20px * 2 + 4px * 2);
+        padding: 20px;
+        border: solid 4px lightgreen;
+        border-radius: 8px;
+      }
+    </style>
+    <script>
+      function listenEvent(elem, event, callback, ...args) {
+        let removeListener;
+        if (elem.addEventListener) {
+          elem.addEventListener(event, callback, ...args);
+          removeListener = function () {
+            elem.removeEventListener(event, callback);
           };
-          this.lastMousePos.x = e.clientX;
-          this.lastMousePos.y = e.clientY;
-          const newPos = {
-            x: this.elem.offsetLeft,
-            y: this.elem.offsetTop
+        } else {
+          // IE 9
+          elem.attachEvent("on" + event);
+          removeListener = function () {
+            elem.detachEvent("on" + event, callback);
           };
-          newPos.x += posDiff.x;
-          newPos.y += posDiff.y;
-          this.elem.style.top = newPos.y + "px";
-          this.elem.style.left = newPos.x + "px";
-          this.cbDragMove && this.cbDragMove(newPos.x, newPos.y);
-        };
-        this.onDragEnd = function (e) {
-          if (!isNaN(this.dragKey) && e.button !== this.dragKey) {
-            return;
-          }
-          if (!this.dragging) {
-            return;
-          }
-          this.dragKey = NaN;
+        }
+        return removeListener;
+      }
+    </script>
+  </head>
+
+  <body>
+    <ul class="box-wrap">
+      <li class="box">1</li>
+      <li class="box">2</li>
+      <li class="box">3</li>
+      <li class="box">4</li>
+      <li class="box">5</li>
+      <li class="box">6</li>
+      <li class="box">7</li>
+      <li class="box">8</li>
+      <li class="box">9</li>
+      <li class="box">10</li>
+      <li class="box">11</li>
+      <li class="box">12</li>
+    </ul>
+    <script>
+      function DraggableManager() {
+        function Draggable(elem, cbDragStart, cbDragEnd, cbDragMove) {
+          this.elem = elem;
+          this.cbDragStart = cbDragStart;
+          this.cbDragEnd = cbDragEnd;
+          this.cbDragMove = cbDragMove;
           this.dragging = false;
-          this.elem.dataset.dgDragging = this.dragging;
-          this.cbDragEnd && this.cbDragEnd();
+          this.lastMousePos = { x: 0, y: 0 };
+          this.dragKey = NaN;
+          this.onDragStart = function (e) {
+            if (!isNaN(this.dragKey) && e.button !== this.dragKey) {
+              return;
+            }
+            if (this.dragging) {
+              return;
+            }
+
+            this.dragKey = e.button;
+            this.dragging = true;
+            this.elem.dataset.dgDragging = this.dragging;
+            this.lastMousePos.x = e.clientX;
+            this.lastMousePos.y = e.clientY;
+            this.cbDragStart && this.cbDragStart();
+          };
+          this.onDragMove = function (e) {
+            if (!this.dragging) {
+              return;
+            }
+
+            const posDiff = {
+              x: e.clientX - this.lastMousePos.x,
+              y: e.clientY - this.lastMousePos.y,
+            };
+            this.lastMousePos.x = e.clientX;
+            this.lastMousePos.y = e.clientY;
+            const newPos = {
+              x: this.elem.offsetLeft,
+              y: this.elem.offsetTop,
+            };
+            newPos.x += posDiff.x;
+            newPos.y += posDiff.y;
+            this.elem.style.top = newPos.y + "px";
+            this.elem.style.left = newPos.x + "px";
+            this.cbDragMove && this.cbDragMove(newPos.x, newPos.y);
+          };
+          this.onDragEnd = function (e) {
+            if (!isNaN(this.dragKey) && e.button !== this.dragKey) {
+              return;
+            }
+            if (!this.dragging) {
+              return;
+            }
+            this.dragKey = NaN;
+            this.dragging = false;
+            this.elem.dataset.dgDragging = this.dragging;
+            this.cbDragEnd && this.cbDragEnd();
+          };
+
+          listenEvent(elem, "mousedown", this.onDragStart.bind(this));
+          listenEvent(elem, "mousemove", this.onDragMove.bind(this), {
+            passive: true,
+          });
+          listenEvent(elem, "mouseup", this.onDragEnd.bind(this));
+          listenEvent(elem, "mouseout", this.onDragEnd.bind(this));
+        }
+
+        this.draggableList = [];
+        this.addDraggable = function (...args) {
+          this.draggableList.push(new Draggable(...args));
         };
-
-        listenEvent(elem, "mousedown", this.onDragStart.bind(this));
-        listenEvent(elem, "mousemove", this.onDragMove.bind(this), { passive: true });
-        listenEvent(elem, "mouseup", this.onDragEnd.bind(this));
-        listenEvent(elem, "mouseout", this.onDragEnd.bind(this));
       }
 
-      this.draggableList = [];
-      this.addDraggable = function (...args) {
-        this.draggableList.push(new Draggable(...args));
-      };
-    }
-
-    function boxOnDragStart(box) {
-      return () => {
-        aBox.forEach((box) => box.classList.remove("box__collided"));
-        box.classList.toggle("box__lifted");
-      };
-    }
-
-    function moveBoxToSlot(table, box, slotIdx) {
-      const newTable = [...table];
-      newTable[+box.dataset.boxId] = +slotIdx;
-      return newTable;
-    }
-
-    function getSlotId(box) {
-      return boxSlotTable[+box.dataset.boxId];
-    }
-
-    function reflowBoxes(boxes) {
-      boxes.forEach((box) => {
-        const boxSlotId = getSlotId(box);
-        console.assert(0 <= boxSlotId && boxSlotId < BOX_SLOTS.length, "reflowBoxes: invalid slot id", boxSlotId, BOX_SLOTS);
-        const [slotX, slotY] = BOX_SLOTS[getSlotId(box)];
-        box.style.top = slotY + "px";
-        box.style.left = slotX + "px";
-      });
-    }
-
-    function boxOnDragEnd(box) {
-      return () => {
-        boxOnDragStart(box)();
-        reflowBoxes(aBox);
-      };
-    }
-
-    function findCollidedElements(me, others) {
-      return others.filter((other) => {
-        const t1 = me.offsetTop;
-        const t2 = other.offsetTop;
-        const l1 = me.offsetLeft;
-        const l2 = other.offsetLeft;
-        const r1 = l1 + me.offsetWidth;
-        const r2 = l2 + other.offsetWidth;
-        const b1 = t1 + me.offsetHeight;
-        const b2 = t2 + other.offsetHeight;
-        return !(t1 > b2 || r1 < l2 || b1 < t2 || l1 > r2);
-      });
-    }
-
-    function findClosestElement(me, others) {
-      let collidedBox = others[0];
-      let minCenterDistSqr = Number.MAX_SAFE_INTEGER;
-      for (const other of others) {
-        const t1 = me.offsetTop;
-        const t2 = other.offsetTop;
-        const l1 = me.offsetLeft;
-        const l2 = other.offsetLeft;
-        const r1 = l1 + me.offsetWidth;
-        const r2 = l2 + other.offsetWidth;
-        const b1 = t1 + me.offsetHeight;
-        const b2 = t2 + other.offsetHeight;
-        const c1X = (l1 + r1) / 2;
-        const c1Y = (t1 + b1) / 2;
-        const c2X = (l2 + r2) / 2;
-        const c2Y = (t2 + b2) / 2;
-        const centerDistanceSqr = (c1X - c2X) * (c1X - c2X) + (c1Y - c2Y) * (c1Y - c2Y);
-        if (centerDistanceSqr < minCenterDistSqr) {
-          minCenterDistSqr = centerDistanceSqr;
-          collidedBox = other;
-        }
-      }
-      return collidedBox;
-    }
-
-    function findCollidedBox(me, others) {
-      return findClosestElement(me, findCollidedElements(me, others));
-    }
-
-    function boxOnDragMove(box) {
-      function markCollidedBox(bb) {
-        aBox.forEach((other) => other.classList.remove("box__collided"));
-        if (bb === null) {
-          return;
-        }
-        bb.classList.add("box__collided");
+      function boxOnDragStart(box) {
+        return () => {
+          aBox.forEach((box) => box.classList.remove("box__collided"));
+          box.classList.toggle("box__lifted");
+        };
       }
 
-      return () => {
-        const others = aBox.filter((b) => b !== box);
-        const dragTo = findCollidedBox(box, others);
-        markCollidedBox(dragTo);
+      function moveBoxToSlot(table, box, slotIdx) {
+        const newTable = [...table];
+        newTable[+box.dataset.boxId] = +slotIdx;
+        return newTable;
+      }
 
-        if (dragTo !== null && relocationThrottle.canDo()) {
-          const dragToSlot = boxSlotTable[+dragTo.dataset.boxId];
-          const origSlot = boxSlotTable[+box.dataset.boxId];
-          if (origSlot > dragToSlot) {
-            others
-              .filter((other) => {
-                const needRelocate = getSlotId(other);
-                return dragToSlot <= needRelocate && needRelocate < origSlot;
-              })
-              .forEach((relocatingBox) => {
-                boxSlotTable = moveBoxToSlot(boxSlotTable, relocatingBox, getSlotId(relocatingBox) + 1);
-              });
-          } else {
-            others
-              .filter((other) => {
-                const needRelocate = getSlotId(other);
-                return origSlot < needRelocate && needRelocate <= dragToSlot;
-              })
-              .forEach((box) => {
-                boxSlotTable = moveBoxToSlot(boxSlotTable, box, getSlotId(box) - 1);
-              });
+      function getSlotId(box) {
+        return boxSlotTable[+box.dataset.boxId];
+      }
+
+      function reflowBoxes(boxes) {
+        boxes.forEach((box) => {
+          const boxSlotId = getSlotId(box);
+          console.assert(
+            0 <= boxSlotId && boxSlotId < BOX_SLOTS.length,
+            "reflowBoxes: invalid slot id",
+            boxSlotId,
+            BOX_SLOTS,
+          );
+          const [slotX, slotY] = BOX_SLOTS[getSlotId(box)];
+          box.style.top = slotY + "px";
+          box.style.left = slotX + "px";
+        });
+      }
+
+      function boxOnDragEnd(box) {
+        return () => {
+          boxOnDragStart(box)();
+          reflowBoxes(aBox);
+        };
+      }
+
+      function findCollidedElements(me, others) {
+        return others.filter((other) => {
+          const t1 = me.offsetTop;
+          const t2 = other.offsetTop;
+          const l1 = me.offsetLeft;
+          const l2 = other.offsetLeft;
+          const r1 = l1 + me.offsetWidth;
+          const r2 = l2 + other.offsetWidth;
+          const b1 = t1 + me.offsetHeight;
+          const b2 = t2 + other.offsetHeight;
+          return !(t1 > b2 || r1 < l2 || b1 < t2 || l1 > r2);
+        });
+      }
+
+      function findClosestElement(me, others) {
+        let collidedBox = others[0];
+        let minCenterDistSqr = Number.MAX_SAFE_INTEGER;
+        for (const other of others) {
+          const t1 = me.offsetTop;
+          const t2 = other.offsetTop;
+          const l1 = me.offsetLeft;
+          const l2 = other.offsetLeft;
+          const r1 = l1 + me.offsetWidth;
+          const r2 = l2 + other.offsetWidth;
+          const b1 = t1 + me.offsetHeight;
+          const b2 = t2 + other.offsetHeight;
+          const c1X = (l1 + r1) / 2;
+          const c1Y = (t1 + b1) / 2;
+          const c2X = (l2 + r2) / 2;
+          const c2Y = (t2 + b2) / 2;
+          const centerDistanceSqr =
+            (c1X - c2X) * (c1X - c2X) + (c1Y - c2Y) * (c1Y - c2Y);
+          if (centerDistanceSqr < minCenterDistSqr) {
+            minCenterDistSqr = centerDistanceSqr;
+            collidedBox = other;
           }
-          boxSlotTable = moveBoxToSlot(boxSlotTable, box, dragToSlot);
-          reflowBoxes(others);
         }
-      };
-    }
+        return collidedBox;
+      }
 
-    function Throttler(minIntervalMilliSec) {
-      this.ok = true;
-      this.timer = null;
-      this.minIntervalMilliSec = minIntervalMilliSec;
-      this.canDo = function () {
-        const oldOk = this.ok;
-        this.ok = false;
-        if (this.timer === null) {
-          setTimeout(() => {
-            this.ok = true;
-            this.timer = null;
-          }, this.minIntervalMilliSec);
+      function findCollidedBox(me, others) {
+        return findClosestElement(me, findCollidedElements(me, others));
+      }
+
+      function boxOnDragMove(box) {
+        function markCollidedBox(bb) {
+          aBox.forEach((other) => other.classList.remove("box__collided"));
+          if (bb === null) {
+            return;
+          }
+          bb.classList.add("box__collided");
         }
-        return oldOk;
-      };
-    }
 
-    const aBox = Array.from(document.querySelectorAll(".box"));
-    const oBoxWrap = document.querySelector(".box-wrap");
-    const dMgr = new DraggableManager();
-    const relocationThrottle = new Throttler(500);
-    const BOX_SLOTS = [];
-    let boxSlotTable = [];
+        return () => {
+          const others = aBox.filter((b) => b !== box);
+          const dragTo = findCollidedBox(box, others);
+          markCollidedBox(dragTo);
 
-    aBox.forEach((box) => dMgr.addDraggable(box, boxOnDragStart(box), boxOnDragEnd(box), boxOnDragMove(box)));
-    oBoxWrap.style.height = oBoxWrap.offsetHeight + "px";
-    oBoxWrap.style.width = oBoxWrap.offsetWidth + "px";
-    aBox.forEach((box, idx) => {
-      box.style.top = box.offsetTop + "px";
-      box.style.left = box.offsetLeft + "px";
-      BOX_SLOTS.push([box.offsetLeft, box.offsetTop]);
-      boxSlotTable.push(idx);
-      box.dataset.boxId = idx.toString();
-    });
-    aBox.forEach((box) => (box.style.position = "absolute"));
-  </script>
-</body>
+          if (dragTo !== null && relocationThrottle.canDo()) {
+            const dragToSlot = boxSlotTable[+dragTo.dataset.boxId];
+            const origSlot = boxSlotTable[+box.dataset.boxId];
+            if (origSlot > dragToSlot) {
+              others
+                .filter((other) => {
+                  const needRelocate = getSlotId(other);
+                  return dragToSlot <= needRelocate && needRelocate < origSlot;
+                })
+                .forEach((relocatingBox) => {
+                  boxSlotTable = moveBoxToSlot(
+                    boxSlotTable,
+                    relocatingBox,
+                    getSlotId(relocatingBox) + 1,
+                  );
+                });
+            } else {
+              others
+                .filter((other) => {
+                  const needRelocate = getSlotId(other);
+                  return origSlot < needRelocate && needRelocate <= dragToSlot;
+                })
+                .forEach((box) => {
+                  boxSlotTable = moveBoxToSlot(
+                    boxSlotTable,
+                    box,
+                    getSlotId(box) - 1,
+                  );
+                });
+            }
+            boxSlotTable = moveBoxToSlot(boxSlotTable, box, dragToSlot);
+            reflowBoxes(others);
+          }
+        };
+      }
+
+      function Throttler(minIntervalMilliSec) {
+        this.ok = true;
+        this.timer = null;
+        this.minIntervalMilliSec = minIntervalMilliSec;
+        this.canDo = function () {
+          const oldOk = this.ok;
+          this.ok = false;
+          if (this.timer === null) {
+            setTimeout(() => {
+              this.ok = true;
+              this.timer = null;
+            }, this.minIntervalMilliSec);
+          }
+          return oldOk;
+        };
+      }
+
+      const aBox = Array.from(document.querySelectorAll(".box"));
+      const oBoxWrap = document.querySelector(".box-wrap");
+      const dMgr = new DraggableManager();
+      const relocationThrottle = new Throttler(500);
+      const BOX_SLOTS = [];
+      let boxSlotTable = [];
+
+      aBox.forEach((box) =>
+        dMgr.addDraggable(
+          box,
+          boxOnDragStart(box),
+          boxOnDragEnd(box),
+          boxOnDragMove(box),
+        ),
+      );
+      oBoxWrap.style.height = oBoxWrap.offsetHeight + "px";
+      oBoxWrap.style.width = oBoxWrap.offsetWidth + "px";
+      aBox.forEach((box, idx) => {
+        box.style.top = box.offsetTop + "px";
+        box.style.left = box.offsetLeft + "px";
+        BOX_SLOTS.push([box.offsetLeft, box.offsetTop]);
+        boxSlotTable.push(idx);
+        box.dataset.boxId = idx.toString();
+      });
+      aBox.forEach((box) => (box.style.position = "absolute"));
+    </script>
+  </body>
 </html>
