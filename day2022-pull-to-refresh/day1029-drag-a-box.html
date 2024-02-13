@@ -98,76 +98,6 @@
     <li class="box">12</li>
   </ul>
   <script>
-    function DraggableManager() {
-      function Draggable(elem, cbDragStart, cbDragEnd, cbDragMove) {
-        this.elem = elem;
-        this.cbDragStart = cbDragStart;
-        this.cbDragEnd = cbDragEnd;
-        this.cbDragMove = cbDragMove;
-        this.dragging = false;
-        this.lastMousePos = { x: 0, y: 0 };
-        this.dragKey = NaN;
-        this.onDragStart = function (e) {
-          if (!isNaN(this.dragKey) && e.button !== this.dragKey) {
-            return;
-          }
-          if (this.dragging) {
-            return;
-          }
-
-          this.dragKey = e.button;
-          this.dragging = true;
-          this.elem.dataset.dgDragging = this.dragging;
-          this.lastMousePos.x = e.clientX;
-          this.lastMousePos.y = e.clientY;
-          this.cbDragStart && this.cbDragStart();
-        };
-        this.onDragMove = function (e) {
-          if (!this.dragging) {
-            return;
-          }
-
-          const posDiff = {
-            x: e.clientX - this.lastMousePos.x,
-            y: e.clientY - this.lastMousePos.y,
-          };
-          this.lastMousePos.x = e.clientX;
-          this.lastMousePos.y = e.clientY;
-          const newPos = {
-            x: this.elem.offsetLeft,
-            y: this.elem.offsetTop,
-          };
-          newPos.x += posDiff.x;
-          newPos.y += posDiff.y;
-          this.elem.style.top = newPos.y + "px";
-          this.elem.style.left = newPos.x + "px";
-          this.cbDragMove && this.cbDragMove(newPos.x, newPos.y);
-        };
-        this.onDragEnd = function (e) {
-          if (!isNaN(this.dragKey) && e.button !== this.dragKey) {
-            return;
-          }
-          if (!this.dragging) {
-            return;
-          }
-          this.dragKey = NaN;
-          this.dragging = false;
-          this.elem.dataset.dgDragging = this.dragging;
-          this.cbDragEnd && this.cbDragEnd();
-        };
-
-        listenEvent(elem, "mousedown", this.onDragStart.bind(this));
-        listenEvent(elem, "mousemove", this.onDragMove.bind(this), { passive: true });
-        listenEvent(elem, "mouseup", this.onDragEnd.bind(this));
-        listenEvent(elem, "mouseout", this.onDragEnd.bind(this));
-      }
-
-      this.draggableList = [];
-      this.addDraggable = function (...args) {
-        this.draggableList.push(new Draggable(...args));
-      };
-    }
-
     function boxOnDragStart(box) {
       return () => {
         aBox.forEach((box) => box.classList.remove("box__collided"));
@@ -306,12 +236,10 @@
 
     const aBox = Array.from(document.querySelectorAll(".box"));
     const oBoxWrap = document.querySelector(".box-wrap");
-    const dMgr = new DraggableManager();
     const relocationThrottle = new Throttler(500);
     const BOX_SLOTS = [];
     let boxSlotTable = [];
 
-    aBox.forEach((box) => dMgr.addDraggable(box, boxOnDragStart(box), boxOnDragEnd(box), boxOnDragMove(box)));
     oBoxWrap.style.height = oBoxWrap.offsetHeight + "px";
     oBoxWrap.style.width = oBoxWrap.offsetWidth + "px";
     aBox.forEach((box, idx) => {
@@ -322,6 +250,12 @@
       box.dataset.boxId = idx.toString();
     });
     aBox.forEach((box) => (box.style.position = "absolute"));
+  </script>
+
+  <script type="module">
+    import addDraggableEffect from "./js/draggable.js";
+
+    aBox.forEach((box) => addDraggableEffect(box, boxOnDragStart(box), boxOnDragEnd(box), boxOnDragMove(box)));
   </script>
 </body>
 </html>
