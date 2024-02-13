@@ -43,6 +43,8 @@ function Draggable(elem, cbDragStart, cbDragEnd, cbDragMove) {
   if (getComputedStyle(this.elem).position !== "absolute") {
     this.elem.style.position = "relative";
   }
+  this.elem.style.touchAction = "none";
+
   this.cbDragStart = Draggable.chain(cbDragStart);
   this.cbDragEnd = Draggable.chain(cbDragEnd);
   this.cbDragMove = Draggable.pipeMultipleCallbacks(cbDragMove);
