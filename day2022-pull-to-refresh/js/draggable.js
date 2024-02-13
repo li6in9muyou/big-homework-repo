@@ -62,10 +62,8 @@ Draggable.prototype.onDragStart = function (e) {
     return;
   }
 
-  if (typeof this.cbDragStart === "function") {
-    if (this.cbDragStart() === draggableCancelToken) {
-      return;
-    }
+  if (this.cbDragStart && (this.cbDragStart(e) === draggableCancelToken)) {
+    return;
   }
 
   if (this.dragging) {
@@ -78,7 +76,6 @@ Draggable.prototype.onDragStart = function (e) {
   this.elemPos = { x: parseInt(this.elem.style.left) || 0, y: parseInt(this.elem.style.top) || 0 };
   this.lastMousePos.x = e.clientX;
   this.lastMousePos.y = e.clientY;
-  this.cbDragStart && this.cbDragStart(e);
 };
 
 Draggable.prototype.onDragMove = function (e) {
