@@ -50,9 +50,9 @@ function Draggable(elem, cbDragStart, cbDragEnd, cbDragMove) {
   this.lastMousePos = { x: 0, y: 0 };
   this.elemPos = { x: 0, y: 0 };
   this.dragKey = NaN;
-  elem.addEventListener("mousedown", this.onDragStart.bind(this));
-  document.addEventListener("mousemove", this.onDragMove.bind(this));
-  document.addEventListener("mouseup", this.onDragEnd.bind(this));
+  elem.addEventListener("pointerdown", this.onDragStart.bind(this));
+  document.addEventListener("pointermove", this.onDragMove.bind(this));
+  document.addEventListener("pointerup", this.onDragEnd.bind(this));
   elem.addEventListener("drag", e => e.preventDefault());
   elem.addEventListener("dragstart", e => e.preventDefault());
 }
