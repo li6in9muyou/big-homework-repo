@@ -45,3 +45,11 @@ export function getYearMonthString(year, monthIdxStartFromOne) {
     { year: "numeric", month: "numeric" },
   );
 }
+
+export function isOnSameDate(a, b) {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}

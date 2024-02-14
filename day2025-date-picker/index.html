@@ -59,6 +59,7 @@
     import {
       daysInMonth,
       getYearMonthString,
+      isOnSameDate,
       weekDayOfFirstDayInMonthWeekStartFromSunday,
     } from "./js/date-util.js";
 
@@ -78,6 +79,8 @@
         month,
       );
       const dayCnt = daysInMonth(year, month);
+      const today = new Date();
+      const someDayThisMonth = new Date(year, month - 1);
       for (
         let cell = firstDayWeekDay, day = 1;
         cell <= 35 && day <= dayCnt;
@@ -85,55 +88,23 @@
       ) {
         const $d = $dg.children().eq(cell - 1);
         $d.text(day);
+        someDayThisMonth.setDate(day);
+        const wd = someDayThisMonth.getDay();
+        if (wd === 0 || wd === 6) {
+          $d.addClass("day-grid--day__weekend");
+        }
+        if (isOnSameDate(someDayThisMonth, today)) {
+          $d.addClass("day-grid--day__today");
+        }
         day++;
       }
 
       return $m;
     }
 
-    function addTodayStyleToMonthGrid($m) {
-      const year = parseInt($m.attr("data-year"));
-      const month = parseInt($m.attr("data-month"));
-      const t = new Date();
-      const monthToBeRendered = new Date(year, month - 1);
-      const todayIsInThisMonth =
-        t.getFullYear() === monthToBeRendered.getFullYear() &&
-        t.getMonth() === monthToBeRendered.getMonth();
-      if (todayIsInThisMonth) {
-        const today = t.getDate();
-        $m.find(`.day-grid--day:contains(${today})`).addClass(
-          "day-grid--day__today",
-        );
-      }
-      return $m;
-    }
-
-    function addWeekendStyleToMonthGrid($m) {
-      const year = parseInt($m.attr("data-year"));
-      const month = parseInt($m.attr("data-month"));
-      const thisMonth = new Date(year, month - 1, 1);
-      $m.find(".day-grid--day").each(function () {
-        const $d = $(this);
-        const day = $d.text();
-        if (day === "") {
-          return;
-        }
-        thisMonth.setDate(day);
-        const weekDay = thisMonth.getDay();
-        if (weekDay === 0 || weekDay === 6) {
-          $d.addClass("day-grid--day__weekend");
-        }
-      });
-      return $m;
-    }
-
     const $calendarMonthList = $(".calendar--month-list");
     for (let i = 0; i < 12; i++) {
-      $calendarMonthList.append(
-        addWeekendStyleToMonthGrid(
-          addTodayStyleToMonthGrid(createMonthGrid(2024, i + 1)),
-        ),
-      );
+      $calendarMonthList.append(createMonthGrid(2024, i + 1));
     }
   </script>
 </html>
