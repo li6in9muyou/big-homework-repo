@@ -43,7 +43,6 @@ function Draggable(elem, cbDragStart, cbDragEnd, cbDragMove) {
   if (getComputedStyle(this.elem).position !== "absolute") {
     this.elem.style.position = "relative";
   }
-  this.elem.style.touchAction = "none";
 
   this.cbDragStart = Draggable.chain(cbDragStart);
   this.cbDragEnd = Draggable.chain(cbDragEnd);
@@ -52,14 +51,18 @@ function Draggable(elem, cbDragStart, cbDragEnd, cbDragMove) {
   this.lastMousePos = { x: 0, y: 0 };
   this.elemPos = { x: 0, y: 0 };
   this.dragKey = NaN;
-  elem.addEventListener("pointerdown", this.onDragStart.bind(this));
-  document.addEventListener("pointermove", this.onDragMove.bind(this));
-  document.addEventListener("pointerup", this.onDragEnd.bind(this));
+  elem.addEventListener("touchstart", this.onDragStart.bind(this));
+  document.addEventListener("touchmove", this.onDragMove.bind(this));
+  document.addEventListener("touchend", this.onDragEnd.bind(this));
+  document.addEventListener("touchcancel", (e) => {
+    console.log("D touchcancel");
+  });
   elem.addEventListener("drag", e => e.preventDefault());
   elem.addEventListener("dragstart", e => e.preventDefault());
 }
 
 Draggable.prototype.onDragStart = function (e) {
+  console.log("D.onDragStart", e);
   if (!isNaN(this.dragKey) && e.button !== this.dragKey) {
     return;
   }
@@ -76,25 +79,27 @@ Draggable.prototype.onDragStart = function (e) {
   this.dragging = true;
   this.elem.dataset.dgDragging = this.dragging;
   this.elemPos = { x: parseInt(this.elem.style.left) || 0, y: parseInt(this.elem.style.top) || 0 };
-  this.lastMousePos.x = e.clientX;
-  this.lastMousePos.y = e.clientY;
+  this.lastMousePos.x = e.touches[0].clientX;
+  this.lastMousePos.y = e.touches[0].clientY;
 };
 
 Draggable.prototype.onDragMove = function (e) {
+  console.log("D.onDragMove", e);
   if (!this.dragging) {
     return;
   }
 
+  const t = e.touches[0];
   const posDiff = {
-    x: e.clientX - this.lastMousePos.x,
-    y: e.clientY - this.lastMousePos.y,
+    x: t.clientX - this.lastMousePos.x,
+    y: t.clientY - this.lastMousePos.y,
   };
-  this.lastMousePos.x = e.clientX;
-  this.lastMousePos.y = e.clientY;
+  this.lastMousePos.x = t.clientX;
+  this.lastMousePos.y = t.clientY;
   let newPos = { ...this.elemPos };
   newPos.x += posDiff.x;
   newPos.y += posDiff.y;
-
+  console.log("D.onDragMove posDiff", posDiff);
   if (this.cbDragMove) {
     newPos = this.cbDragMove(this.elemPos, newPos, e) ?? newPos;
   }
@@ -105,6 +110,7 @@ Draggable.prototype.onDragMove = function (e) {
 };
 
 Draggable.prototype.onDragEnd = function (e) {
+  console.log("D.onDragEnd", e);
   if (!isNaN(this.dragKey) && e.button !== this.dragKey) {
     return;
   }

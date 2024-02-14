@@ -238,16 +238,33 @@
         ],
         [
           "drag-move",
-          (pos, _, e) => {
-            console.log("drag-move handler e.movementY", e.movementY);
-            if (pos.y > CALLBACK_COMMIT_THRESHOLD && isState(S.pocketRevealed)) {
+          (oldPos, newPos) => {
+            const movementY = newPos.y - oldPos.y;
+            console.log("drag-move handler movementY", movementY);
+            if (oldPos.y > CALLBACK_COMMIT_THRESHOLD && isState(S.pocketRevealed)) {
               send(E.pullDownFarEnough);
+              return;
             }
-            const okState = isState(S.armed) || isState(S.callbackFailed);
-            if (okState && parseInt($productListWrap.css("top")) === 0 && e.movementY > 0) {
-              send(E.pullDown);
-            } else {
-              send(E.scrollDown);
+            if (isState(S.armed)) {
+              if (parseInt($productListWrap.css("top")) === 0) {
+                if (movementY > 0) {
+                  send(E.pullDown);
+                } else {
+                  send(E.scrollDown);
+                }
+              } else {
+                if (movementY > 0) {
+                  send(E.pullUp);
+                } else {
+                  send(E.pullDown);
+                }
+              }
+            } else if (isState(S.callbackFailed)) {
+              if (movementY > 0) {
+                send(E.pullDown);
+              } else {
+                send(E.pullUp);
+              }
             }
           },
         ],
@@ -323,6 +340,7 @@
         ({ data }) => {
           $pullDownMsg.text("继续下拉加载更多数据");
           switch (data.event) {
+            case E.pullUp:
             case E.cancelPull:
             case E.okCallback:
               closePocket();
