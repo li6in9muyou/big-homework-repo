@@ -51,7 +51,7 @@ function Draggable(elem, cbDragStart, cbDragEnd, cbDragMove) {
   this.lastMousePos = { x: 0, y: 0 };
   this.elemPos = { x: 0, y: 0 };
   this.dragKey = NaN;
-  elem.addEventListener("touchstart", this.onDragStart.bind(this));
+  elem.addEventListener("touchstart", this.onDragStart.bind(this), { passive: true });
   document.addEventListener("touchmove", this.onDragMove.bind(this));
   document.addEventListener("touchend", this.onDragEnd.bind(this));
   document.addEventListener("touchcancel", (e) => {
