@@ -134,13 +134,14 @@
 
     let loading;
     const $productListWrap = $(".product-list-wrap");
-    const $productListItems = $(".product");
+    const $productList = $(".product-list");
     for (let i = 0; i < 19; i++) {
-      const $c = $productListItems.eq(0).clone();
+      const $c = $productList.children().eq(0).clone();
       $c.find(".product-rates").text(`0.${i + 1}0%`);
       $c.find(".product-name").text(`很好的产品 ${i + 1}`);
-      $productListItems.parent().append($c);
+      $productList.append($c);
     }
+    const $productListItems = $(".product");
     const $pullDown = $(".pull-down--pocket");
     const $pullDownMsg = $(".pull-down--msg");
     const CALLBACK_COMMIT_THRESHOLD = 2 * $pullDown.outerHeight();
@@ -227,6 +228,7 @@
           "scroll-events",
           (e) => {
             const scrollTop = e.target.scrollTop;
+            console.log("scroll-events handler scrollTop", e.target.scrollTop);
             if (scrollTop === 0) {
               send(E.scrollToTop);
             } else {
@@ -236,12 +238,16 @@
         ],
         [
           "drag-move",
-          pos => {
+          (pos, _, e) => {
+            console.log("drag-move handler e.movementY", e.movementY);
             if (pos.y > CALLBACK_COMMIT_THRESHOLD && isState(S.pocketRevealed)) {
               send(E.pullDownFarEnough);
             }
-            if (isState(S.armed) || isState(S.callbackFailed)) {
+            const okState = isState(S.armed) || isState(S.callbackFailed);
+            if (okState && parseInt($productListWrap.css("top")) === 0 && e.movementY > 0) {
               send(E.pullDown);
+            } else {
+              send(E.scrollDown);
             }
           },
         ],
@@ -304,10 +310,21 @@
               $pullDownMsg.text("欢迎下次光临");
               closePocket();
               break;
+            case S.armed:
+              console.log("enter:S.idle enable touch-action");
+              $productList.css("touch-action", "auto");
+              break;
             default:
               console.warn(`renderer for ${data.entering} receives unexpected event ${data.event}`, data);
               break;
           }
+        },
+      );
+      listenToStateMachine(
+        `leave:${S.idle}`,
+        () => {
+          console.log("leave:S.idle disable touch-action");
+          $productList.css("touch-action", "pan-x pinch-zoom");
         },
       );
       listenToStateMachine(
@@ -364,7 +381,7 @@
       const $scrollable = $(scrollable);
       $scrollable.on("scrollend", this.getHandler("scroll-events"));
       listenToStateMachine("*:*", ({ data, type }) => console.log("bizLogic: state machine event", type, data));
-    })($(".product-list"), () => {
+    })($productList, () => {
       if (Math.random() < 0.4) {
         return rejectAfter(2000, "error: something went wrong");
       }
@@ -388,6 +405,13 @@
         bizLogic.getHandler("drag-move"),
       ],
     );
+
+    $(document).on("pointercancel", e => {
+      console.log("document pointercancel");
+    });
+    $productList.on("scroll", () => {
+      console.log("productList scroll");
+    });
   </script>
 </body>
 </html>
