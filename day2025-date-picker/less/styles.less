@@ -17,6 +17,8 @@
 }
 
 :root[data-theme="dark"] {
+  --color-text-weekend: limegreen;
+
   --color-bg: #030303;
   --color-bg-secondary: #303030;
   --color-text: #ffffff;
@@ -129,6 +131,10 @@ main {
     font-size: 0;
   }
 
+  &--day__weekend {
+    color: var(--color-text-weekend);
+  }
+
   &--day__selected {
     color: var(--color-text-accent);
     outline: solid 2px var(--color-text-accent);
@@ -144,10 +150,17 @@ main {
 
 .calendar {
   &--weekday-bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
     display: flex;
     justify-content: space-around;
     color: var(--color-text-secondary);
     background-color: var(--color-bg-secondary);
     padding: @p-2 0;
+  }
+
+  &--weekday-bar__weekend {
+    color: var(--color-text-weekend);
   }
 }

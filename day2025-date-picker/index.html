@@ -23,13 +23,13 @@
     </main>
     <section class="calendar">
       <ol class="calendar--weekday-bar">
-        <li>日</li>
+        <li class="calendar--weekday-bar__weekend">日</li>
         <li>一</li>
         <li>二</li>
         <li>三</li>
         <li>四</li>
         <li>五</li>
-        <li>六</li>
+        <li class="calendar--weekday-bar__weekend">六</li>
       </ol>
       <div class="calendar--month-list"></div>
     </section>
@@ -109,10 +109,31 @@
       return $m;
     }
 
+    function addWeekendStyleToMonthGrid($m) {
+      const year = parseInt($m.attr("data-year"));
+      const month = parseInt($m.attr("data-month"));
+      const thisMonth = new Date(year, month - 1, 1);
+      $m.find(".day-grid--day").each(function () {
+        const $d = $(this);
+        const day = $d.text();
+        if (day === "") {
+          return;
+        }
+        thisMonth.setDate(day);
+        const weekDay = thisMonth.getDay();
+        if (weekDay === 0 || weekDay === 6) {
+          $d.addClass("day-grid--day__weekend");
+        }
+      });
+      return $m;
+    }
+
     const $calendarMonthList = $(".calendar--month-list");
     for (let i = 0; i < 12; i++) {
       $calendarMonthList.append(
-        addTodayStyleToMonthGrid(createMonthGrid(2024, i + 1)),
+        addWeekendStyleToMonthGrid(
+          addTodayStyleToMonthGrid(createMonthGrid(2024, i + 1)),
+        ),
       );
     }
   </script>
