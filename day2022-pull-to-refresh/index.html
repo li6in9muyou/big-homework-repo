@@ -12,6 +12,10 @@
   <header>
     <i class="btn"><</i>
     <h1>产品签约</h1>
+    <label for="toggle-bad-callback">
+      <input type="checkbox" name="toggle-bad-callback" id="toggle-bad-callback" checked>
+      加载一定失败
+    </label>
   </header>
   <div class="pull-down--pocket">
     <span class="pull-down--msg">松手加载更多数据</span>
@@ -133,6 +137,7 @@
     import { makeClampY, moveOnlyY } from "./js/draggable.js";
 
     let loading;
+    const $toggleBadCb = $("#toggle-bad-callback");
     const $productListWrap = $(".product-list-wrap");
     const $productList = $(".product-list");
     for (let i = 0; i < 19; i++) {
@@ -390,8 +395,8 @@
       const $scrollable = $(scrollable);
       $scrollable.on("scrollend", this.getHandler("scroll-events"));
       listenToStateMachine("*:*", ({ data, type }) => console.log("bizLogic: state machine event", type, data));
-    })($productList, () => {
-      if (Math.random() < 0.4) {
+    })($(".product-list"), () => {
+      if (Math.random() < 0.4 || $toggleBadCb.prop("checked")) {
         return rejectAfter(2000, "error: something went wrong");
       }
       return resolveAfter(2000, [{ name: "新产品", rates: 0.2 + Math.random() * 4 }])
