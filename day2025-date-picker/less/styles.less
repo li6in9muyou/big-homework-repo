@@ -17,17 +17,12 @@
 }
 
 :root[data-theme="dark"] {
-  --color-content-bg: #202020;
-  --color-content-accent: #e52e52;
-  --color-content-bg-primary: #101010;
-  --color-content-bg-accent: #000;
   --color-bg: #030303;
-  --color-bg-header: var(--color-content-bg);
-  --color-text: #fafafa;
-  --color-text-secondary: #a0a0a0;
+  --color-text: #ffffff;
+  --color-text-primary: #ffffff;
   --color-text-accent: crimson;
-  --color-border: #a0a0a0;
-  --color-border-darker: #e9e9e9;
+  --color-text-secondary: #909090;
+
   --swiper-pagination-bullet-size: 2vw;
   --swiper-pagination-bottom: 2vw;
   --swiper-pagination-bullet-inactive-color: var(--color-text-secondary);
@@ -80,5 +75,65 @@ main {
 
   p {
     text-align: center;
+  }
+}
+
+.month {
+  text-align: center;
+
+  h3 {
+    position: relative;
+  }
+
+  h3::after {
+    left: 50%;
+    margin-left: calc(4vw + 2.5 * @font-size-base);
+  }
+
+  h3::before {
+    right: 50%;
+    margin-right: calc(4vw + 2.5 * @font-size-base);
+  }
+
+  h3::after,
+  h3::before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 13vw;
+    height: 1px;
+    background-color: var(--color-text-secondary);
+    top: 50%;
+  }
+}
+
+.day-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+
+  &--day {
+    display: flex;
+    justify-content: center;
+    line-height: 12vw;
+  }
+
+  &--day__disable {
+    color: var(--color-text-secondary);
+  }
+
+  &--day__today {
+    font-size: 0;
+  }
+
+  &--day__selected {
+    color: var(--color-text-accent);
+    outline: solid 2px var(--color-text-accent);
+    outline-style: dashed;
+  }
+
+  &--day__today::after {
+    content: "今天";
+    color: var(--color-text-accent);
+    font-size: initial;
   }
 }
