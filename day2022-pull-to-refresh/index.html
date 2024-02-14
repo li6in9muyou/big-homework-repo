@@ -311,20 +311,11 @@
               closePocket();
               break;
             case S.armed:
-              console.log("enter:S.idle enable touch-action");
-              $productList.css("touch-action", "auto");
               break;
             default:
               console.warn(`renderer for ${data.entering} receives unexpected event ${data.event}`, data);
               break;
           }
-        },
-      );
-      listenToStateMachine(
-        `leave:${S.idle}`,
-        () => {
-          console.log("leave:S.idle disable touch-action");
-          $productList.css("touch-action", "pan-x pinch-zoom");
         },
       );
       listenToStateMachine(
