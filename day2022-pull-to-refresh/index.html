@@ -250,6 +250,7 @@
               send(E.pullDownFarEnough);
               return;
             }
+            // TODO: fix this crap
             if (isState(S.armed)) {
               if (parseInt($productListWrap.css("top")) === 0) {
                 if (movementY > 0) {
@@ -259,9 +260,9 @@
                 }
               } else {
                 if (movementY > 0) {
-                  send(E.pullUp);
-                } else {
                   send(E.pullDown);
+                } else {
+                  send(E.pullUp);
                 }
               }
             } else if (isState(S.callbackFailed)) {
