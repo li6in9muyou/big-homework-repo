@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <title>日期计算器</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet/less" type="text/css" href="less/styles.less" />
+    <link rel="stylesheet" href="vendor/swiper-bundle.css" />
+    <script src="vendor/less.js"></script>
+  </head>
+  <body>
+    <main>
+      <label for="in-date-start">
+        开始日期
+        <input type="date" name="start" id="in-date-start" />
+      </label>
+      <p>相差<span data-diff-in-days>0</span>天</p>
+      <label for="in-date-end">
+        结束日期
+        <input type="date" name="end" id="in-date-end" />
+      </label>
+    </main>
+  </body>
+  <script src="vendor/jquery.js"></script>
+  <script type="module">
+    import { daysBetween } from "./js/date-util.js";
+
+    const $dateStart = $("#in-date-start");
+    const $dateEnd = $("#in-date-end");
+    const $diffInDays = $("[data-diff-in-days]");
+
+    function updateDateDiff() {
+      const startIsSet = $dateStart.val() !== "";
+      const endIsSet = $dateEnd.val() !== "";
+      const bothDatesAreSet = startIsSet && endIsSet;
+      if (!bothDatesAreSet) {
+        return;
+      }
+
+      $diffInDays.text(daysBetween($dateStart.val(), $dateEnd.val()));
+    }
+
+    $dateStart.on("change", updateDateDiff);
+    $dateEnd.on("change", updateDateDiff);
+  </script>
+  <script>
+    function createCalendar() {}
+  </script>
+</html>
