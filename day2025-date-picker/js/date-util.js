@@ -23,17 +23,17 @@ export function weekDayOfFirstDayInMonthWeekStartFromSunday(
   year,
   monthIdxStartFromOne,
 ) {
-  return new Date(parseInt(year), monthIdxStartFromOne - 1, 1).getDay();
+  return new Date(parseInt(year), monthIdxStartFromOne - 1, 1).getDay() + 1;
 }
 
 export function weekDayOfFirstDayInMonthWeekStartFromMonday(
   year,
   monthIdxStartFromOne,
 ) {
-  const i = new Date(parseInt(year), monthIdxStartFromOne - 1, 1).getDay() - 1;
-  const isSunday = i === -1;
+  const i = new Date(parseInt(year), monthIdxStartFromOne - 1, 1).getDay();
+  const isSunday = i === 0;
   if (isSunday) {
-    return 6;
+    return 7;
   } else {
     return i;
   }
