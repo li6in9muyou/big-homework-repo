@@ -21,6 +21,17 @@
         <input type="date" name="end" id="in-date-end" />
       </label>
     </main>
+    <section class="calendar">
+      <ol class="calendar--weekday-bar">
+        <li>日</li>
+        <li>一</li>
+        <li>二</li>
+        <li>三</li>
+        <li>四</li>
+        <li>五</li>
+        <li>六</li>
+      </ol>
+    </section>
   </body>
   <script src="vendor/jquery.js"></script>
   <script type="module">
@@ -97,8 +108,9 @@
       return $m;
     }
 
-    $(document.body).append(createMonthGrid(2024, 1));
-    $(document.body).append(addTodayStyleToMonthGrid(createMonthGrid(2024, 2)));
-    $(document.body).append(createMonthGrid(2024, 3));
+    const $calendar = $(".calendar");
+    $calendar.append(createMonthGrid(2024, 1));
+    $calendar.append(addTodayStyleToMonthGrid(createMonthGrid(2024, 2)));
+    $calendar.append(createMonthGrid(2024, 3));
   </script>
 </html>
