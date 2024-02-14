@@ -395,7 +395,7 @@
       const $scrollable = $(scrollable);
       $scrollable.on("scrollend", this.getHandler("scroll-events"));
       listenToStateMachine("*:*", ({ data, type }) => console.log("bizLogic: state machine event", type, data));
-    })($(".product-list"), () => {
+    })($productList, () => {
       if (Math.random() < 0.4 || $toggleBadCb.prop("checked")) {
         return rejectAfter(2000, "error: something went wrong");
       }
@@ -420,7 +420,7 @@
       ],
     );
 
-    $(document).on("pointercancel", e => {
+    $(document).on("pointercancel", () => {
       console.log("document pointercancel");
     });
     $productList.on("scroll", () => {
