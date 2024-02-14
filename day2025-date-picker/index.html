@@ -31,6 +31,7 @@
         <li>五</li>
         <li>六</li>
       </ol>
+      <div class="calendar--month-list"></div>
     </section>
   </body>
   <script src="vendor/jquery.js"></script>
@@ -108,9 +109,11 @@
       return $m;
     }
 
-    const $calendar = $(".calendar");
-    $calendar.append(createMonthGrid(2024, 1));
-    $calendar.append(addTodayStyleToMonthGrid(createMonthGrid(2024, 2)));
-    $calendar.append(createMonthGrid(2024, 3));
+    const $calendarMonthList = $(".calendar--month-list");
+    for (let i = 0; i < 12; i++) {
+      $calendarMonthList.append(
+        addTodayStyleToMonthGrid(createMonthGrid(2024, i + 1)),
+      );
+    }
   </script>
 </html>
