@@ -21,12 +21,6 @@
         <input type="date" name="end" id="in-date-end" />
       </label>
     </main>
-    <section class="month">
-      <h3>2024年2月</h3>
-      <ul class="day-grid">
-        <li class="day-grid--day"></li>
-      </ul>
-    </section>
   </body>
   <script src="vendor/jquery.js"></script>
   <script type="module">
@@ -50,33 +44,61 @@
     $dateStart.on("change", updateDateDiff);
     $dateEnd.on("change", updateDateDiff);
   </script>
-  <script>
-    function createCalendar() {}
+  <script type="module">
+    import {
+      daysInMonth,
+      getYearMonthString,
+      weekDayOfFirstDayInMonthWeekStartFromSunday,
+    } from "./js/date-util.js";
 
-    const $calendar = $(".day-grid");
-    for (let i = 0; i < 35 - 1; i++) {
-      const $d = $calendar.children(".day-grid--day").eq(0).clone();
-      $d.appendTo($calendar);
-    }
-    const firstDayWeekDay = 4;
-    const today = 14;
-    const lastDay = 29;
-    for (
-      let cell = firstDayWeekDay, day = 1;
-      cell <= 35 && day <= lastDay;
-      cell++
-    ) {
-      const $d = $calendar.children(".day-grid--day").eq(cell - 1);
-      $d.text(day);
-      if (day === today) {
-        $d.addClass("day-grid--day__today");
-      } else if (day > today) {
-        $d.addClass("day-grid--day__disable");
-      } else if (day === 9) {
-        $d.addClass("day-grid--day__selected");
+    function createMonthGrid(year, month) {
+      const $m = $(
+        `<div class='month' data-year='${year}' data-month='${month}'>`,
+      );
+      $m.append($("<h3>").text(getYearMonthString(year, month)));
+      const $dg = $("<ul class='day-grid'>");
+      for (let i = 0; i < 5 * 7; i++) {
+        $dg.append($("<li class='day-grid--day'>"));
+      }
+      $m.append($dg);
+
+      const firstDayWeekDay = weekDayOfFirstDayInMonthWeekStartFromSunday(
+        year,
+        month,
+      );
+      const dayCnt = daysInMonth(year, month);
+      for (
+        let cell = firstDayWeekDay, day = 1;
+        cell <= 35 && day <= dayCnt;
+        cell++
+      ) {
+        const $d = $dg.children().eq(cell - 1);
+        $d.text(day);
+        day++;
       }
 
-      day++;
+      return $m;
     }
+
+    function addTodayStyleToMonthGrid($m) {
+      const year = parseInt($m.attr("data-year"));
+      const month = parseInt($m.attr("data-month"));
+      const t = new Date();
+      const monthToBeRendered = new Date(year, month - 1);
+      const todayIsInThisMonth =
+        t.getFullYear() === monthToBeRendered.getFullYear() &&
+        t.getMonth() === monthToBeRendered.getMonth();
+      if (todayIsInThisMonth) {
+        const today = t.getDate();
+        $m.find(`.day-grid--day:contains(${today})`).addClass(
+          "day-grid--day__today",
+        );
+      }
+      return $m;
+    }
+
+    $(document.body).append(createMonthGrid(2024, 1));
+    $(document.body).append(addTodayStyleToMonthGrid(createMonthGrid(2024, 2)));
+    $(document.body).append(createMonthGrid(2024, 3));
   </script>
 </html>

@@ -14,3 +14,34 @@ export function daysBetween(a, b) {
 
   return Math.abs(aa.getTime() - bb.getTime()) / (24 * 60 * 60 * 1000);
 }
+
+export function daysInMonth(year, monthIdxStartFromOne) {
+  return new Date(parseInt(year), parseInt(monthIdxStartFromOne), 0).getDate();
+}
+
+export function weekDayOfFirstDayInMonthWeekStartFromSunday(
+  year,
+  monthIdxStartFromOne,
+) {
+  return new Date(parseInt(year), monthIdxStartFromOne - 1, 1).getDay();
+}
+
+export function weekDayOfFirstDayInMonthWeekStartFromMonday(
+  year,
+  monthIdxStartFromOne,
+) {
+  const i = new Date(parseInt(year), monthIdxStartFromOne - 1, 1).getDay() - 1;
+  const isSunday = i === -1;
+  if (isSunday) {
+    return 6;
+  } else {
+    return i;
+  }
+}
+
+export function getYearMonthString(year, monthIdxStartFromOne) {
+  return new Date(year, monthIdxStartFromOne - 1).toLocaleDateString(
+    navigator.language ?? "zh-CN",
+    { year: "numeric", month: "numeric" },
+  );
+}
