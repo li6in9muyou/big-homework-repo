@@ -359,14 +359,12 @@ export function drawVelocityPointer(id, { velocity, vPtrJqTable }) {
   vPtrJqTable.get(id).css("transform", `rotate(${Math.atan2(v.x, -v.y)}rad)`);
 }
 
-const EPSILON = 1e-5;
-
 export function applyRoundMinimalVelocityToZero(id, { velocity }) {
   const v = velocity.get(id);
-  if (-EPSILON < v.x && v.x < EPSILON) {
+  if (eq(v.x, 0)) {
     v.x = 0;
   }
-  if (-EPSILON < v.y && v.y < EPSILON) {
+  if (eq(v.y, 0)) {
     v.y = 0;
   }
 }
