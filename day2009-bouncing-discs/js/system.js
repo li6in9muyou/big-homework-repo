@@ -154,7 +154,9 @@ export function queryDiskCollision(
     collideWith,
     timeUntilCollision,
   },
+  { getLogger },
 ) {
+  const book = getLogger("queryDiskCollision:");
   const p = position.get(id);
   const v = velocity.get(id);
   const r = size.get(id).w / 2;
@@ -186,7 +188,7 @@ export function queryDiskCollision(
       if (t >= Infinity) {
         return;
       }
-      console.log(`${id} collide with ${other} after ${t}`);
+      book.log(`${id} collide with ${other} after ${t}`);
 
       const prevT = timeUntilCollision.get(id) ?? Infinity;
       const otherPrevT = timeUntilCollision.get(other) ?? Infinity;
@@ -214,10 +216,7 @@ export function queryDiskCollision(
         collideWith.set(id, other);
         collideWith.set(other, id);
       }
-      console.log(
-        "queryDiskCollision: timeUntilCollision",
-        dumpContext(timeUntilCollision),
-      );
+      book.log("timeUntilCollision", dumpContext(timeUntilCollision));
     });
 }
 
