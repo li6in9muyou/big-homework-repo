@@ -1,5 +1,6 @@
 import { dumpContext } from "./helper.js";
 import {
+  eq,
   gt,
   gte,
   lenSqr,
@@ -13,6 +14,11 @@ const ARENA_TOP = -1;
 const ARENA_RIGHT = -2;
 const ARENA_BOTTOM = -3;
 const ARENA_LEFT = -4;
+const ARENA_TOP_LEFT = -5;
+const ARENA_TOP_RIGHT = -6;
+const ARENA_BOTTOM_RIGHT = -7;
+const ARENA_BOTTOM_LEFT = -8;
+
 function isArena(id) {
   return id < 0;
 }
@@ -85,10 +91,10 @@ export function queryArenaCollision(
     return;
   }
 
-  const hitT = minTWithInZeroAndOne === tToTop && gt(0, v.y);
-  const hitR = minTWithInZeroAndOne === tToRight && gt(v.x, 0);
-  const hitB = minTWithInZeroAndOne === tToBottom && gt(v.y, 0);
-  const hitL = minTWithInZeroAndOne === tToLeft && gt(0, v.x);
+  const hitT = eq(minTWithInZeroAndOne, tToTop) && gt(0, v.y);
+  const hitR = eq(minTWithInZeroAndOne, tToRight) && gt(v.x, 0);
+  const hitB = eq(minTWithInZeroAndOne, tToBottom) && gt(v.y, 0);
+  const hitL = eq(minTWithInZeroAndOne, tToLeft) && gt(0, v.x);
   let nX = 0,
     nY = 0;
   if (hitB) {
@@ -106,6 +112,22 @@ export function queryArenaCollision(
   if (hitR) {
     nX = -1;
     collideWith.set(id, ARENA_RIGHT);
+  }
+  if (hitT && hitL) {
+    collideWith.set(id, ARENA_TOP_LEFT);
+    console.log("disk hit two sides at once");
+  }
+  if (hitT && hitR) {
+    collideWith.set(id, ARENA_TOP_RIGHT);
+    console.log("disk hit two sides at once");
+  }
+  if (hitB && hitL) {
+    collideWith.set(id, ARENA_BOTTOM_LEFT);
+    console.log("disk hit two sides at once");
+  }
+  if (hitB && hitR) {
+    collideWith.set(id, ARENA_BOTTOM_RIGHT);
+    console.log("disk hit two sides at once");
   }
 
   if (hitT || hitR || hitB || hitL) {
@@ -198,15 +220,22 @@ export function queryDiskCollision(
 
 export function applyReflectedVelocityIfCollideWithArena(
   id,
-  { velocity, collideNormal, collideWith },
+  { velocity, collideWith },
 ) {
-  if (!collideNormal.has(id)) {
+  if (!collideWith.has(id)) {
     return;
   }
   const v = velocity.get(id);
   switch (collideWith.get(id)) {
-    case ARENA_BOTTOM:
+    case ARENA_TOP_LEFT:
+    case ARENA_TOP_RIGHT:
+    case ARENA_BOTTOM_LEFT:
+    case ARENA_BOTTOM_RIGHT:
+      v.y *= -1;
+      v.x *= -1;
+      break;
     case ARENA_TOP:
+    case ARENA_BOTTOM:
       v.y *= -1;
       break;
     case ARENA_RIGHT:
@@ -280,12 +309,7 @@ export function applyConservationOfMomentum(
     return;
   }
   const other = collideWith.get(id);
-  if (
-    other === ARENA_TOP ||
-    other === ARENA_RIGHT ||
-    other === ARENA_BOTTOM ||
-    other === ARENA_LEFT
-  ) {
+  if (isArena(other)) {
     return;
   }
   const v1 = velocity.get(id);
