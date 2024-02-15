@@ -2,7 +2,7 @@ import { dumpContext } from "./helper.js";
 import {
   eq,
   gt,
-  gte,
+  isInClosedInterval,
   lenSqr,
   normalized,
   rotate,
@@ -79,36 +79,20 @@ export function queryArenaCollision(
   const possibleHitL = gt(0, v.x);
 
   let minTWithInZeroAndOne = Infinity;
-  if (
-    gte(tToTop, 0) &&
-    tToTop <= 1 &&
-    tToTop < minTWithInZeroAndOne &&
-    possibleHitT
-  ) {
+  const willReachTop = isInClosedInterval(tToTop, 0, 1);
+  if (willReachTop && possibleHitT && tToTop < minTWithInZeroAndOne) {
     minTWithInZeroAndOne = tToTop;
   }
-  if (
-    gte(tToRight, 0) &&
-    tToRight <= 1 &&
-    tToRight < minTWithInZeroAndOne &&
-    possibleHitR
-  ) {
+  const willReachRight = isInClosedInterval(tToRight, 0, 1);
+  if (willReachRight && possibleHitR && tToRight < minTWithInZeroAndOne) {
     minTWithInZeroAndOne = tToRight;
   }
-  if (
-    gte(tToBottom, 0) &&
-    tToBottom <= 1 &&
-    tToBottom < minTWithInZeroAndOne &&
-    possibleHitB
-  ) {
+  const willReachBottom = isInClosedInterval(tToBottom, 0, 1);
+  if (willReachBottom && possibleHitB && tToBottom < minTWithInZeroAndOne) {
     minTWithInZeroAndOne = tToBottom;
   }
-  if (
-    gte(tToLeft, 0) &&
-    tToLeft <= 1 &&
-    tToLeft < minTWithInZeroAndOne &&
-    possibleHitL
-  ) {
+  const willReachLeft = isInClosedInterval(tToLeft, 0, 1);
+  if (willReachLeft && possibleHitL && tToLeft < minTWithInZeroAndOne) {
     minTWithInZeroAndOne = tToLeft;
   }
   if (minTWithInZeroAndOne >= Infinity) {

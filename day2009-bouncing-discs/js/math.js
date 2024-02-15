@@ -39,6 +39,10 @@ export function gte(big, small, epsilon = 1e-4) {
   return gt(big, small, epsilon) || eq(big, small, epsilon);
 }
 
+export function isInClosedInterval(n, lower, upper) {
+  return gte(upper, n) && gte(n, lower);
+}
+
 export function solveLinear(a, b, c) {
   // ax + b = c
 
