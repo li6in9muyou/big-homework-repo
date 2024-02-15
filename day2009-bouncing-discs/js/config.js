@@ -12,11 +12,9 @@ import {
   logReproductionInfo,
   queryArenaCollision,
   queryDiskCollision,
-  warnDiskPenetration,
 } from "./system.js";
 
 const commonLogSuite = [
-  warnDiskPenetration,
   logReproductionInfo,
   logDiskDistance,
   logDiskDynamics,

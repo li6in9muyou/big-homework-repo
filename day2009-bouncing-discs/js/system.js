@@ -450,10 +450,6 @@ export function logTotalMomentum({ mass, velocity, entities, elapsed }) {
   );
 }
 
-export function warnDiskPenetration(...args) {
-  return logDiskDistance(...args);
-}
-
 export function logReproductionInfo({
   elapsed,
   entities,
