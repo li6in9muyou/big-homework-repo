@@ -73,28 +73,52 @@ export function queryArenaCollision(
   const tToRight = solveLinear(v.x, p.x, ARENA_W - w / 2) ?? Infinity;
   const tToBottom = solveLinear(v.y, p.y, ARENA_H - h / 2) ?? Infinity;
   const tToLeft = solveLinear(v.x, p.x, w / 2) ?? Infinity;
+  const possibleHitT = gt(0, v.y);
+  const possibleHitR = gt(v.x, 0);
+  const possibleHitB = gt(v.y, 0);
+  const possibleHitL = gt(0, v.x);
 
   let minTWithInZeroAndOne = Infinity;
-  if (gte(tToTop, 0) && tToTop <= 1 && tToTop < minTWithInZeroAndOne) {
+  if (
+    gte(tToTop, 0) &&
+    tToTop <= 1 &&
+    tToTop < minTWithInZeroAndOne &&
+    possibleHitT
+  ) {
     minTWithInZeroAndOne = tToTop;
   }
-  if (gte(tToRight, 0) && tToRight <= 1 && tToRight < minTWithInZeroAndOne) {
+  if (
+    gte(tToRight, 0) &&
+    tToRight <= 1 &&
+    tToRight < minTWithInZeroAndOne &&
+    possibleHitR
+  ) {
     minTWithInZeroAndOne = tToRight;
   }
-  if (gte(tToBottom, 0) && tToBottom <= 1 && tToBottom < minTWithInZeroAndOne) {
+  if (
+    gte(tToBottom, 0) &&
+    tToBottom <= 1 &&
+    tToBottom < minTWithInZeroAndOne &&
+    possibleHitB
+  ) {
     minTWithInZeroAndOne = tToBottom;
   }
-  if (gte(tToLeft, 0) && tToLeft <= 1 && tToLeft < minTWithInZeroAndOne) {
+  if (
+    gte(tToLeft, 0) &&
+    tToLeft <= 1 &&
+    tToLeft < minTWithInZeroAndOne &&
+    possibleHitL
+  ) {
     minTWithInZeroAndOne = tToLeft;
   }
   if (minTWithInZeroAndOne >= Infinity) {
     return;
   }
 
-  const hitT = eq(minTWithInZeroAndOne, tToTop) && gt(0, v.y);
-  const hitR = eq(minTWithInZeroAndOne, tToRight) && gt(v.x, 0);
-  const hitB = eq(minTWithInZeroAndOne, tToBottom) && gt(v.y, 0);
-  const hitL = eq(minTWithInZeroAndOne, tToLeft) && gt(0, v.x);
+  const hitT = minTWithInZeroAndOne === tToTop;
+  const hitR = minTWithInZeroAndOne === tToRight;
+  const hitB = minTWithInZeroAndOne === tToBottom;
+  const hitL = minTWithInZeroAndOne === tToLeft;
   let nX = 0,
     nY = 0;
   if (hitB) {
