@@ -1,6 +1,7 @@
 import { dumpContext } from "./helper.js";
 import {
   gt,
+  gte,
   lenSqr,
   normalized,
   rotate,
@@ -65,16 +66,16 @@ export function queryArenaCollision(
   const tToLeft = solveLinear(v.x, p.x, w / 2) ?? Infinity;
 
   let minTWithInZeroAndOne = Infinity;
-  if (gt(tToTop, 0) && tToTop <= 1 && tToTop < minTWithInZeroAndOne) {
+  if (gte(tToTop, 0) && tToTop <= 1 && tToTop < minTWithInZeroAndOne) {
     minTWithInZeroAndOne = tToTop;
   }
-  if (gt(tToRight, 0) && tToRight <= 1 && tToRight < minTWithInZeroAndOne) {
+  if (gte(tToRight, 0) && tToRight <= 1 && tToRight < minTWithInZeroAndOne) {
     minTWithInZeroAndOne = tToRight;
   }
-  if (gt(tToBottom, 0) && tToBottom <= 1 && tToBottom < minTWithInZeroAndOne) {
+  if (gte(tToBottom, 0) && tToBottom <= 1 && tToBottom < minTWithInZeroAndOne) {
     minTWithInZeroAndOne = tToBottom;
   }
-  if (gt(tToLeft, 0) && tToLeft <= 1 && tToLeft < minTWithInZeroAndOne) {
+  if (gte(tToLeft, 0) && tToLeft <= 1 && tToLeft < minTWithInZeroAndOne) {
     minTWithInZeroAndOne = tToLeft;
   }
   if (minTWithInZeroAndOne >= Infinity) {
