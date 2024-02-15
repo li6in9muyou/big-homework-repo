@@ -9,17 +9,6 @@
     <script src="vendor/less.js"></script>
   </head>
   <body>
-    <main>
-      <label for="in-date-start">
-        开始日期
-        <input type="date" name="start" id="in-date-start" />
-      </label>
-      <p>相差<span data-diff-in-days>0</span>天</p>
-      <label for="in-date-end">
-        结束日期
-        <input type="date" name="end" id="in-date-end" />
-      </label>
-    </main>
     <section class="calendar">
       <ol class="calendar--weekday-bar">
         <li class="calendar--weekday-bar__weekend">日</li>
@@ -103,8 +92,64 @@
     }
 
     const $calendarMonthList = $(".calendar--month-list");
-    for (let i = 0; i < 12; i++) {
-      $calendarMonthList.append(createMonthGrid(2024, i + 1));
-    }
+    // for (let i = 0; i < 12; i++) {
+    //   $calendarMonthList.append(createMonthGrid(2024, i + 1));
+    // }
+
+    const infiniteScrollEffect = new (function (viewportH, getItem, list) {
+      this.renderedH = 0;
+      this.vpH = viewportH;
+      this.list = list;
+      this.keyFront = 0;
+      this.keyBack = 0;
+
+      while (this.renderedH < 1.5 * this.vpH) {
+        const item = getItem(this.keyBack);
+        $(item).attr("data-inf-scr-key", this.keyBack);
+        this.keyBack += 1;
+        this.list.append(item);
+        this.renderedH += item.outerHeight();
+      }
+
+      document.addEventListener(
+        "scroll",
+        () => {
+          console.log(
+            "whether to append to list",
+            this.renderedH,
+            document.documentElement.scrollTop,
+          );
+          if (
+            this.renderedH - document.documentElement.scrollTop <
+            1.5 * this.vpH
+          ) {
+            const item = getItem(this.keyBack);
+            $(item).attr("data-inf-scr-key", this.keyBack);
+            this.keyBack += 1;
+            this.list.append(item);
+            this.renderedH += item.outerHeight();
+          }
+
+          const minKeyFront = this.keyBack - 7;
+          if (minKeyFront >= 0) {
+            for (let toDelete = 0; toDelete < minKeyFront; toDelete++) {
+              this.list.children(`[data-inf-scr-key=${toDelete}]`).remove();
+              this.keyFront += 1;
+            }
+          }
+        },
+        { passive: true },
+      );
+    })(
+      document.documentElement.clientHeight -
+        $(".calendar--weekday-bar").height(),
+      (key) =>
+        $(
+          `<div style='height:${Math.floor(
+            100 + 200 * Math.random(),
+          )}px;margin:6px;text-align:center;background-color: mediumvioletred;border:solid 2px white;font-size: 90px'>${key}</div>`,
+        ),
+      $calendarMonthList,
+    );
   </script>
 </html>
