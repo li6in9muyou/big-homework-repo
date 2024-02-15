@@ -100,11 +100,10 @@
     </header>
     <main class="arena"></main>
     <script type="module">
+      import { TwoDimElasticCollision } from "./js/config.js";
       import update from "./js/update.js";
-      import {
-        config as CONFIG,
-        init as INIT,
-      } from "./input-state/two-disks-bouncing-against-each-other.js";
+      import { testTwoArenaCollisionInTwoFrames } from "./js/tests.js";
+      const [_, INIT, __] = testTwoArenaCollisionInTwoFrames();
 
       const $arena = $(".arena");
       $arena.innerHeight(300);
@@ -124,7 +123,7 @@
 
       const state = {
         frames: 0,
-        iteration_limit: 7,
+        iteration_limit: 1,
         frames_start: NaN,
       };
 
@@ -138,7 +137,7 @@
         if (state.frames === 0) {
           state.frames_start = performance.now();
         }
-        update(CONTEXT, ...CONFIG);
+        update(CONTEXT, ...TwoDimElasticCollision);
         state.frames++;
 
         if (state.frames > 10) {
