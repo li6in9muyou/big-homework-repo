@@ -3,14 +3,16 @@ export function dumpContext(ctx) {
     const tag = value.toString();
     switch (tag) {
       case "[object Map]":
-        return Array.from(value.entries())
-          .map(([id, v]) => [id, JSON.stringify(v).replaceAll("\"", "")]);
+        return Array.from(value.entries()).map(([id, v]) => [
+          id,
+          JSON.stringify(v).replaceAll('"', ""),
+        ]);
       default:
         return value;
     }
   }
 
-  return JSON.stringify(ctx, replacer, 2).replaceAll("\"", "");
+  return JSON.stringify(ctx, replacer, 2).replaceAll('"', "");
 }
 
 function getRandomColor() {

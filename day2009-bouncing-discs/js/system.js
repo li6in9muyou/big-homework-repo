@@ -1,12 +1,22 @@
 import { dumpContext } from "./helper.js";
-import { gt, lenSqr, normalized, rotate, solveLinear, solveQuadratic } from "./math.js";
+import {
+  gt,
+  lenSqr,
+  normalized,
+  rotate,
+  solveLinear,
+  solveQuadratic,
+} from "./math.js";
 
 const ARENA_TOP = -1;
 const ARENA_RIGHT = -2;
 const ARENA_BOTTOM = -3;
 const ARENA_LEFT = -4;
 
-export function applyKeepMovingIfNoCollision(id, { position, velocity, distanceUntilCollision }) {
+export function applyKeepMovingIfNoCollision(
+  id,
+  { position, velocity, distanceUntilCollision },
+) {
   if (distanceUntilCollision.has(id)) {
     return;
   }
@@ -17,7 +27,10 @@ export function applyKeepMovingIfNoCollision(id, { position, velocity, distanceU
   p.y += v.y;
 }
 
-export function applyMoveToCollidePos(id, { position, distanceUntilCollision }) {
+export function applyMoveToCollidePos(
+  id,
+  { position, distanceUntilCollision },
+) {
   if (!distanceUntilCollision.has(id)) {
     return;
   }
@@ -28,17 +41,20 @@ export function applyMoveToCollidePos(id, { position, distanceUntilCollision }) 
   p.y += d.y;
 }
 
-export function queryArenaCollision(id, {
-  position,
-  size,
-  velocity,
-  collideNormal,
-  distanceUntilCollision,
-  collideWith,
-  timeUntilCollision,
-  ARENA_W,
-  ARENA_H,
-}) {
+export function queryArenaCollision(
+  id,
+  {
+    position,
+    size,
+    velocity,
+    collideNormal,
+    distanceUntilCollision,
+    collideWith,
+    timeUntilCollision,
+    ARENA_W,
+    ARENA_H,
+  },
+) {
   const p = position.get(id);
   const { w, h } = size.get(id);
   const v = velocity.get(id);
@@ -69,7 +85,8 @@ export function queryArenaCollision(id, {
   const hitR = minTWithInZeroAndOne === tToRight && gt(v.x, 0);
   const hitB = minTWithInZeroAndOne === tToBottom && gt(v.y, 0);
   const hitL = minTWithInZeroAndOne === tToLeft && gt(0, v.x);
-  let nX = 0, nY = 0;
+  let nX = 0,
+    nY = 0;
   if (hitB) {
     nY = -1;
     collideWith.set(id, ARENA_BOTTOM);
@@ -89,10 +106,14 @@ export function queryArenaCollision(id, {
 
   if (hitT || hitR || hitB || hitL) {
     timeUntilCollision.set(id, minTWithInZeroAndOne);
-    distanceUntilCollision.set(id,
-      { x: v.x * minTWithInZeroAndOne, y: v.y * minTWithInZeroAndOne });
+    distanceUntilCollision.set(id, {
+      x: v.x * minTWithInZeroAndOne,
+      y: v.y * minTWithInZeroAndOne,
+    });
     collideNormal.set(id, normalized(nX, nY));
-    console.log(`${id} collide with ${collideWith.get(id)} after ${minTWithInZeroAndOne}`);
+    console.log(
+      `${id} collide with ${collideWith.get(id)} after ${minTWithInZeroAndOne}`,
+    );
   }
 }
 
@@ -106,7 +127,8 @@ export function queryDiskCollision(
     distanceUntilCollision,
     collideWith,
     timeUntilCollision,
-  }) {
+  },
+) {
   const p = position.get(id);
   const v = velocity.get(id);
   const r = size.get(id).w / 2;
@@ -150,9 +172,15 @@ export function queryDiskCollision(
         timeUntilCollision.set(id, t);
         collideNormal.set(id, normalized(p.x - otherPos.x, p.y - otherPos.y));
 
-        distanceUntilCollision.set(other, { x: otherVelocity.x * t, y: otherVelocity.y * t });
+        distanceUntilCollision.set(other, {
+          x: otherVelocity.x * t,
+          y: otherVelocity.y * t,
+        });
         timeUntilCollision.set(other, t);
-        collideNormal.set(other, normalized(otherPos.x - p.x, otherPos.y - p.y));
+        collideNormal.set(
+          other,
+          normalized(otherPos.x - p.x, otherPos.y - p.y),
+        );
 
         const prevOther = collideWith.get(id);
         collideWith.delete(id);
@@ -164,7 +192,10 @@ export function queryDiskCollision(
     });
 }
 
-export function applyReflectedVelocityIfCollideWithArena(id, { velocity, collideNormal, collideWith }) {
+export function applyReflectedVelocityIfCollideWithArena(
+  id,
+  { velocity, collideNormal, collideWith },
+) {
   if (!collideNormal.has(id)) {
     return;
   }
@@ -187,7 +218,7 @@ export function applyEnergyLoss(id, { velocity, collideNormal }) {
   const v = velocity.get(id);
   if (collideNormal.has(id)) {
     v.x = Math.sign(v.x) * Math.sqrt((1 - ENERGY_LOSS_FACTOR) * v.x * v.x);
-    v.y = Math.sign(v.y) * Math.sqrt(((1 - ENERGY_LOSS_FACTOR)) * v.y * v.y);
+    v.y = Math.sign(v.y) * Math.sqrt((1 - ENERGY_LOSS_FACTOR) * v.y * v.y);
   }
 }
 
@@ -232,24 +263,33 @@ export function drawOrangeDisk(id, { position, size, $arena }) {
 
   const p = position.get(id);
   domBall.css({
-    left: (p.x - s.w / 2) + "px",
-    top: (p.y - s.h / 2) + "px",
+    left: p.x - s.w / 2 + "px",
+    top: p.y - s.h / 2 + "px",
   });
 }
 
-export function applyConservationOfMomentum(id, { mass, velocity, collideWith, position }) {
+export function applyConservationOfMomentum(
+  id,
+  { mass, velocity, collideWith, position },
+) {
   if (!collideWith.has(id)) {
     return;
   }
   const other = collideWith.get(id);
-  if (other === ARENA_TOP || other === ARENA_RIGHT || other === ARENA_BOTTOM || other === ARENA_LEFT) {
+  if (
+    other === ARENA_TOP ||
+    other === ARENA_RIGHT ||
+    other === ARENA_BOTTOM ||
+    other === ARENA_LEFT
+  ) {
     return;
   }
   const v1 = velocity.get(id);
   const v2 = velocity.get(other);
   const p1 = position.get(id);
   const p2 = position.get(other);
-  const alreadyApplied = 0 > (v1.x - v2.x) * (p2.x - p1.x) + (v1.y - v2.y) * (p2.y - p1.y);
+  const alreadyApplied =
+    0 > (v1.x - v2.x) * (p2.x - p1.x) + (v1.y - v2.y) * (p2.y - p1.y);
   if (alreadyApplied) {
     return;
   }
@@ -259,8 +299,16 @@ export function applyConservationOfMomentum(id, { mass, velocity, collideWith, p
   const theta = -Math.atan2(p2.y - p1.y, p2.x - p1.x);
   const _v1 = rotate(v1.x, v1.y, theta);
   const _v2 = rotate(v2.x, v2.y, theta);
-  const u1 = rotate(_v1[0] * (m1 - m2) / (m1 + m2) + _v2[0] * 2 * m2 / (m1 + m2), _v1[1], -theta);
-  const u2 = rotate(_v2[0] * (m2 - m1) / (m1 + m2) + _v1[0] * 2 * m1 / (m1 + m2), _v2[1], -theta);
+  const u1 = rotate(
+    (_v1[0] * (m1 - m2)) / (m1 + m2) + (_v2[0] * 2 * m2) / (m1 + m2),
+    _v1[1],
+    -theta,
+  );
+  const u2 = rotate(
+    (_v2[0] * (m2 - m1)) / (m1 + m2) + (_v1[0] * 2 * m1) / (m1 + m2),
+    _v2[1],
+    -theta,
+  );
 
   v1.x = u1[0];
   v1.y = u1[1];
@@ -295,7 +343,10 @@ export function applyRoundMinimalVelocityToZero(id, { velocity }) {
 const DISK_CNT_LIMIT = 15;
 let prevElapsed = NaN;
 
-export function applySpawnDisk(id, { elapsed, entities, velocity, position, size, mass, ARENA_W, ARENA_H }) {
+export function applySpawnDisk(
+  id,
+  { elapsed, entities, velocity, position, size, mass, ARENA_W, ARENA_H },
+) {
   if (elapsed === prevElapsed) {
     return;
   }
@@ -321,51 +372,61 @@ export function queryIfShouldPause(predicate) {
   };
 }
 
-export function applySeparateOverlappedDisks(_, { entities, position, velocity, size }) {
-  entities.forEach(id => {
-    entities.filter(other => other !== id).forEach((other) => {
-      const p1 = position.get(id);
-      const p2 = position.get(other);
-      const r1 = size.get(id);
-      const r2 = size.get(id);
-      const distance = Math.sqrt(lenSqr(p1.x - p2.x, p1.y - p2.y));
-      const overlappedDist = r1 + r2 - distance;
-      if (overlappedDist > 0) {
-        const displacement = overlappedDist / 2;
-        const v1 = velocity.get(id);
-        const theta1 = Math.atan2(v1.y, v1.x);
-        const disp1X = displacement * Math.cos(theta1);
-        const disp1Y = displacement * Math.sin(theta1);
-        p1.x += disp1X;
-        p1.y += disp1Y;
+export function applySeparateOverlappedDisks(
+  _,
+  { entities, position, velocity, size },
+) {
+  entities.forEach((id) => {
+    entities
+      .filter((other) => other !== id)
+      .forEach((other) => {
+        const p1 = position.get(id);
+        const p2 = position.get(other);
+        const r1 = size.get(id);
+        const r2 = size.get(id);
+        const distance = Math.sqrt(lenSqr(p1.x - p2.x, p1.y - p2.y));
+        const overlappedDist = r1 + r2 - distance;
+        if (overlappedDist > 0) {
+          const displacement = overlappedDist / 2;
+          const v1 = velocity.get(id);
+          const theta1 = Math.atan2(v1.y, v1.x);
+          const disp1X = displacement * Math.cos(theta1);
+          const disp1Y = displacement * Math.sin(theta1);
+          p1.x += disp1X;
+          p1.y += disp1Y;
 
-        const v2 = velocity.get(id);
-        const theta2 = Math.atan2(v2.y, v2.x);
-        const disp2X = displacement * Math.cos(theta2);
-        const disp2Y = displacement * Math.sin(theta2);
-        p2.x += disp2X;
-        p2.y += disp2Y;
-      }
-    });
+          const v2 = velocity.get(id);
+          const theta2 = Math.atan2(v2.y, v2.x);
+          const disp2X = displacement * Math.cos(theta2);
+          const disp2Y = displacement * Math.sin(theta2);
+          p2.x += disp2X;
+          p2.y += disp2Y;
+        }
+      });
   });
 }
 
 export function logTotalMomentum({ mass, velocity, entities, elapsed }) {
-  const totalMomentum = entities.reduce((mv, id) => {
-    const v = velocity.get(id);
-    const m = mass.get(id);
-    mv.x += m * v.x;
-    mv.y += m * v.y;
-    return mv;
-  }, { x: 0, y: 0 });
-  console.log(`${elapsed} total momentum: x ${totalMomentum.x} y ${totalMomentum.y}`);
+  const totalMomentum = entities.reduce(
+    (mv, id) => {
+      const v = velocity.get(id);
+      const m = mass.get(id);
+      mv.x += m * v.x;
+      mv.y += m * v.y;
+      return mv;
+    },
+    { x: 0, y: 0 },
+  );
+  console.log(
+    `${elapsed} total momentum: x ${totalMomentum.x} y ${totalMomentum.y}`,
+  );
 }
 
 export function warnDiskPenetration({ position, size, entities }) {
   for (const id of entities) {
     const penetrateInto = entities
-      .filter(e => e !== id)
-      .find(e => {
+      .filter((e) => e !== id)
+      .find((e) => {
         const p1 = position.get(id);
         const r1 = size.get(id).w / 2;
         const p2 = position.get(e);
@@ -378,16 +439,27 @@ export function warnDiskPenetration({ position, size, entities }) {
   }
 }
 
-export function logReproductionInfo({ entities, mass, position, size, velocity, ARENA_W, ARENA_H }) {
-  console.log("reproduction info:\n" + dumpContext({
-    entities,
-    position,
-    size,
-    velocity,
-    mass,
-    ARENA_W,
-    ARENA_H,
-  }));
+export function logReproductionInfo({
+  entities,
+  mass,
+  position,
+  size,
+  velocity,
+  ARENA_W,
+  ARENA_H,
+}) {
+  console.log(
+    "reproduction info:\n" +
+      dumpContext({
+        entities,
+        position,
+        size,
+        velocity,
+        mass,
+        ARENA_W,
+        ARENA_H,
+      }),
+  );
 }
 
 export function logDiskDynamics({ entities, position, velocity }) {

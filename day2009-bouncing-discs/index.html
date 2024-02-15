@@ -1,178 +1,184 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Bouncing dicks</title>
-  <script src="vendor/jquery.js"></script>
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      background-color: #101010;
-      overflow: hidden;
-      color: #fff;
-    }
-
-    body {
-      display: flex;
-      flex-direction: column;
-    }
-
-    label {
-      cursor: pointer;
-    }
-
-    .arena {
-      position: relative;
-      flex-grow: 0;
-      margin: 6px auto;
-      border: solid 5px antiquewhite;
-      box-sizing: content-box;
-    }
-
-    .disk {
-      position: absolute;
-      border-radius: 100%;
-      border: solid 1px crimson;
-      box-sizing: border-box;
-    }
-
-    .disk > .velocity-pointer {
-      position: absolute;
-      width: 6px;
-      background-color: crimson;
-      height: 50%;
-      left: 0;
-      right: 0;
-      margin: auto;
-      top: -1px;
-      transform-origin: bottom;
-    }
-
-    header {
-      padding: 6px;
-      font-size: 24px;
-      font-family: Consolas, monospace;
-      display: flex;
-      flex-direction: column;
-    }
-
-    header > p {
-      margin: 0;
-    }
-
-    header button {
-      font-size: 1.2rem;
-    }
-
-    .gravity-control {
-      display: none;
-      align-items: center;
-    }
-
-    .gravity-control > input[type='checkbox'] {
-      width: 24px;
-      height: 24px;
-      margin: 0 8px 0 0;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <p>
-      <span>iteration:</span>
-      <span id="iteration">0</span>
-    </p>
-    <p>
-      <span>FPS:</span>
-      <span id="fps">0</span>
-    </p>
-    <p>
-      <button data-step>Step</button>
-      <button data-step-multiple>200 Step</button>
-    </p>
-    <p class="gravity-control">
-      <input type="checkbox" name="toggleGravity" id="toggleGravity">
-      <label for="toggleGravity">
-        toggle gravity
-      </label>
-    </p>
-  </header>
-  <main class="arena">
-  </main>
-  <script type="module">
-    import update from "./js/update.js";
-    import { config as CONFIG, init as INIT } from "./input-state/two-disks-bouncing-against-each-other.js";
-
-    const $arena = $(".arena");
-    $arena.innerHeight(300);
-    $arena.innerWidth(300);
-    const ARENA_W = $arena.innerHeight();
-    const ARENA_H = $arena.innerWidth();
-    const CONTEXT = { ARENA_W, ARENA_H, ...INIT($arena.innerWidth(), $arena.innerHeight()), $arena };
-
-    const $iteration = $("#iteration");
-    const $fps = $("#fps");
-    const $header = $("header");
-
-    const state = {
-      frames: 0,
-      iteration_limit: 7,
-      frames_start: NaN,
-    };
-
-    function isSimulating(s) {
-      return s.iteration_limit > CONTEXT.elapsed;
-    }
-
-    function simulate() {
-      CONTEXT.elapsed++;
-
-      if (state.frames === 0) {
-        state.frames_start = performance.now();
-      }
-      update(CONTEXT, ...CONFIG);
-      state.frames++;
-
-      if (state.frames > 10) {
-        const cost = performance.now() - state.frames_start;
-        $fps.text(Math.floor(1000 / (cost / 10)));
-        state.frames = 0;
+  <head>
+    <meta charset="UTF-8" />
+    <title>Bouncing dicks</title>
+    <script src="vendor/jquery.js"></script>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #101010;
+        overflow: hidden;
+        color: #fff;
       }
 
-      $iteration.text(
-        CONTEXT.elapsed.toString().padStart(4, "0")
-        + "/"
-        + state.iteration_limit.toString().padStart(4, "0"),
-      );
-      if (CONTEXT.elapsed < state.iteration_limit) {
-        requestAnimationFrame(simulate);
-      } else {
-        console.info("update halts");
-        $header.css("background-color", "#3a3a3a");
+      body {
+        display: flex;
+        flex-direction: column;
       }
-    }
 
-    const $btnStep = $("[data-step]");
-
-    $arena.on("click", () => $btnStep.click());
-    $btnStep.on("click", () => {
-      if (!isSimulating(state)) {
-        state.iteration_limit += 1;
-        simulate();
+      label {
+        cursor: pointer;
       }
-    });
-    $("[data-step-multiple]").on("click", (e) => {
-      if (!isSimulating(state)) {
-        state.iteration_limit += parseInt($(e.target).text().match(/\d+/)[0]);
-        simulate();
-      }
-    });
 
-    $header.css("background-color", "limegreen");
-    state.frames_start = performance.now();
-    simulate();
-  </script>
-</body>
+      .arena {
+        position: relative;
+        flex-grow: 0;
+        margin: 6px auto;
+        border: solid 5px antiquewhite;
+        box-sizing: content-box;
+      }
+
+      .disk {
+        position: absolute;
+        border-radius: 100%;
+        border: solid 1px crimson;
+        box-sizing: border-box;
+      }
+
+      .disk > .velocity-pointer {
+        position: absolute;
+        width: 6px;
+        background-color: crimson;
+        height: 50%;
+        left: 0;
+        right: 0;
+        margin: auto;
+        top: -1px;
+        transform-origin: bottom;
+      }
+
+      header {
+        padding: 6px;
+        font-size: 24px;
+        font-family: Consolas, monospace;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header > p {
+        margin: 0;
+      }
+
+      header button {
+        font-size: 1.2rem;
+      }
+
+      .gravity-control {
+        display: none;
+        align-items: center;
+      }
+
+      .gravity-control > input[type="checkbox"] {
+        width: 24px;
+        height: 24px;
+        margin: 0 8px 0 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <p>
+        <span>iteration:</span>
+        <span id="iteration">0</span>
+      </p>
+      <p>
+        <span>FPS:</span>
+        <span id="fps">0</span>
+      </p>
+      <p>
+        <button data-step>Step</button>
+        <button data-step-multiple>200 Step</button>
+      </p>
+      <p class="gravity-control">
+        <input type="checkbox" name="toggleGravity" id="toggleGravity" />
+        <label for="toggleGravity"> toggle gravity </label>
+      </p>
+    </header>
+    <main class="arena"></main>
+    <script type="module">
+      import update from "./js/update.js";
+      import {
+        config as CONFIG,
+        init as INIT,
+      } from "./input-state/two-disks-bouncing-against-each-other.js";
+
+      const $arena = $(".arena");
+      $arena.innerHeight(300);
+      $arena.innerWidth(300);
+      const ARENA_W = $arena.innerHeight();
+      const ARENA_H = $arena.innerWidth();
+      const CONTEXT = {
+        ARENA_W,
+        ARENA_H,
+        ...INIT($arena.innerWidth(), $arena.innerHeight()),
+        $arena,
+      };
+
+      const $iteration = $("#iteration");
+      const $fps = $("#fps");
+      const $header = $("header");
+
+      const state = {
+        frames: 0,
+        iteration_limit: 7,
+        frames_start: NaN,
+      };
+
+      function isSimulating(s) {
+        return s.iteration_limit > CONTEXT.elapsed;
+      }
+
+      function simulate() {
+        CONTEXT.elapsed++;
+
+        if (state.frames === 0) {
+          state.frames_start = performance.now();
+        }
+        update(CONTEXT, ...CONFIG);
+        state.frames++;
+
+        if (state.frames > 10) {
+          const cost = performance.now() - state.frames_start;
+          $fps.text(Math.floor(1000 / (cost / 10)));
+          state.frames = 0;
+        }
+
+        $iteration.text(
+          CONTEXT.elapsed.toString().padStart(4, "0") +
+            "/" +
+            state.iteration_limit.toString().padStart(4, "0"),
+        );
+        if (CONTEXT.elapsed < state.iteration_limit) {
+          requestAnimationFrame(simulate);
+        } else {
+          console.info("update halts");
+          $header.css("background-color", "#3a3a3a");
+        }
+      }
+
+      const $btnStep = $("[data-step]");
+
+      $arena.on("click", () => $btnStep.click());
+      $btnStep.on("click", () => {
+        if (!isSimulating(state)) {
+          state.iteration_limit += 1;
+          simulate();
+        }
+      });
+      $("[data-step-multiple]").on("click", (e) => {
+        if (!isSimulating(state)) {
+          state.iteration_limit += parseInt($(e.target).text().match(/\d+/)[0]);
+          simulate();
+        }
+      });
+
+      $header.css("background-color", "limegreen");
+      state.frames_start = performance.now();
+      simulate();
+    </script>
+  </body>
 </html>

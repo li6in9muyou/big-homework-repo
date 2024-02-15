@@ -23,10 +23,7 @@ const commonLogSuite = [
 ];
 
 export const TwoDimElasticCollision = [
-  [
-    queryArenaCollision,
-    queryDiskCollision,
-  ],
+  [queryArenaCollision, queryDiskCollision],
   new Set([
     applyReflectedVelocityIfCollideWithArena,
     applyConservationOfMomentum,
@@ -37,12 +34,14 @@ export const TwoDimElasticCollision = [
   commonLogSuite,
 ];
 
-export const TwoDimElasticCollisionNoDraw = TwoDimElasticCollision.toSpliced(2, 1, []);
+export const TwoDimElasticCollisionNoDraw = TwoDimElasticCollision.toSpliced(
+  2,
+  1,
+  [],
+);
 
 export const SingleDiskBouncing = [
-  [
-    queryArenaCollision,
-  ],
+  [queryArenaCollision],
   new Set([
     applyReflectedVelocityIfCollideWithArena,
     applyConservationOfMomentum,

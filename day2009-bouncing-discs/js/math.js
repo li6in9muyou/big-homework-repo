@@ -16,7 +16,10 @@ export function add(x1, y1, x2, y2) {
 
 export function normalized(x, y) {
   const len = Math.sqrt(x * x + y * y);
-  console.assert(Math.abs(len) > 1e-5, "error: can not normalize a zero length vector");
+  console.assert(
+    Math.abs(len) > 1e-5,
+    "error: can not normalize a zero length vector",
+  );
   return [x / len, y / len];
 }
 
@@ -60,5 +63,8 @@ export function solveQuadratic(a, b, c) {
 }
 
 export function rotate(x, y, theta) {
-  return [x * Math.cos(theta) - y * Math.sin(theta), x * Math.sin(theta) + y * Math.cos(theta)];
+  return [
+    x * Math.cos(theta) - y * Math.sin(theta),
+    x * Math.sin(theta) + y * Math.cos(theta),
+  ];
 }
