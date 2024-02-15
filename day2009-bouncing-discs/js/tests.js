@@ -118,15 +118,24 @@ export function testTouchingDisksOfDifferentVelocityCanSeparate() {
       position,
       velocity,
     }) => {
+      let dCenter;
       switch (elapsed) {
+        case 1:
+          // collide
+          dCenter = Math.abs(position.get(1000).y - position.get(1001).y);
+          return eq(dCenter, 60);
         case 2:
-        case 3:
-          const dCenter = Math.abs(position.get(1000).y - position.get(1001).y);
+          // separate
+          dCenter = Math.abs(position.get(1000).y - position.get(1001).y);
           return (
             gt(dCenter, 60) &&
             gt(velocity.get(1000).y, 0) &&
             gt(velocity.get(1001).y, 0)
           );
+        case 3:
+          // separate
+          dCenter = Math.abs(position.get(1000).y - position.get(1001).y);
+          return gt(dCenter, 60);
         default:
           return true;
       }
