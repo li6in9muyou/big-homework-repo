@@ -18,7 +18,7 @@
         testDiskCollideWithArenaAtTimeZero,
         testDiskHitArenaCorner,
         testRoundingErrorIsManageable,
-        testTouchingDisksOfDifferentVelocityCanSeparate,
+        testPushAnotherDisk,
         testTwoArenaCollisionInTwoFrames,
       } from "./js/tests.js";
       import update from "./js/update.js";
@@ -45,9 +45,7 @@
 
       simulateUntilAssertionFails(testDiskBouncingAgainstWallHorizontal);
       simulateUntilAssertionFails(testDiskBouncingAgainstWall);
-      simulateUntilAssertionFails(
-        testTouchingDisksOfDifferentVelocityCanSeparate,
-      );
+      simulateUntilAssertionFails(testPushAnotherDisk);
       simulateUntilAssertionFails(testTwoArenaCollisionInTwoFrames);
       simulateUntilAssertionFails(testRoundingErrorIsManageable);
       simulateUntilAssertionFails(testDiskHitArenaCorner);

@@ -89,7 +89,7 @@ function createStateFromDiskDynamics(ps) {
   };
 }
 
-export function testTouchingDisksOfDifferentVelocityCanSeparate() {
+export function testPushAnotherDisk() {
   const init = () =>
     createStateFromDiskDynamics({
       entities: [1000, 1001],
