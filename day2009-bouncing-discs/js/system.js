@@ -214,7 +214,10 @@ export function queryDiskCollision(
         collideWith.set(id, other);
         collideWith.set(other, id);
       }
-      console.log("timeUntilCollision", dumpContext(timeUntilCollision));
+      console.log(
+        "queryDiskCollision: timeUntilCollision",
+        dumpContext(timeUntilCollision),
+      );
     });
 }
 
@@ -450,24 +453,12 @@ export function logTotalMomentum({ mass, velocity, entities, elapsed }) {
   );
 }
 
-export function warnDiskPenetration({ position, size, entities }) {
-  for (const id of entities) {
-    const penetrateInto = entities
-      .filter((e) => e !== id)
-      .find((e) => {
-        const p1 = position.get(id);
-        const r1 = size.get(id).w / 2;
-        const p2 = position.get(e);
-        const r2 = size.get(e).w / 2;
-        return lenSqr(p1.x - p2.x, p1.y - p2.y) < (r1 + r2) * (r1 + r2);
-      });
-    if (penetrateInto !== undefined) {
-      console.warn(`penetration found between ${id} ${penetrateInto}`);
-    }
-  }
+export function warnDiskPenetration(...args) {
+  return logDiskDistance(...args);
 }
 
 export function logReproductionInfo({
+  elapsed,
   entities,
   mass,
   position,
@@ -476,6 +467,7 @@ export function logReproductionInfo({
   ARENA_W,
   ARENA_H,
 }) {
+  console.groupCollapsed(`iteration ${elapsed} reproduction info`);
   console.log(
     "reproduction info:\n" +
       dumpContext({
@@ -488,6 +480,7 @@ export function logReproductionInfo({
         ARENA_H,
       }),
   );
+  console.groupEnd();
 }
 
 export function logDiskDynamics({ entities, position, velocity }) {
@@ -499,7 +492,7 @@ export function logDiskDynamics({ entities, position, velocity }) {
 }
 
 export function logDiskDistance({ entities, position, size }) {
-  console.group("disk distances");
+  console.groupCollapsed("disk distances");
   for (let i = 0; i < entities.length - 1; i++) {
     const id = entities[i];
     for (let j = i + 1; j < entities.length; j++) {
@@ -507,8 +500,14 @@ export function logDiskDistance({ entities, position, size }) {
       const p1 = position.get(id);
       const p2 = position.get(other);
       const dCenter = Math.sqrt(lenSqr(p1.x - p2.x, p1.y - p2.y));
-      const dPerimeter = dCenter - size.get(id).w / 2 - size.get(other).w / 2;
-      console.log(`${id} ${other} dCenter ${dCenter} dPerimeter ${dPerimeter}`);
+      const radiusSum = size.get(id).w / 2 + size.get(other).w / 2;
+      const dPerimeter = dCenter - radiusSum;
+      console.log(
+        `${id} ${other} dCenter ${dCenter} dPerimeter ${dPerimeter} radiusSum ${radiusSum}`,
+      );
+      if (gt(radiusSum, dCenter)) {
+        console.warn(`penetration found between ${id} ${other}`);
+      }
     }
   }
   console.groupEnd();
