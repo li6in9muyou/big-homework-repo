@@ -13,6 +13,9 @@ const ARENA_TOP = -1;
 const ARENA_RIGHT = -2;
 const ARENA_BOTTOM = -3;
 const ARENA_LEFT = -4;
+function isArena(id) {
+  return id < 0;
+}
 
 export function applyKeepMovingIfNoCollision(
   id,
