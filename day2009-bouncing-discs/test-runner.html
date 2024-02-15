@@ -12,7 +12,6 @@
   </head>
   <body>
     <script type="module">
-      import { dumpContext } from "./js/helper.js";
       import {
         testDiskBouncingAgainstWall,
         testDiskBouncingAgainstWallHorizontal,
@@ -23,73 +22,11 @@
       } from "./js/tests.js";
       import update from "./js/update.js";
 
-      {
-        const [CONFIG, init, asserts] = testDiskBouncingAgainstWall();
+      function simulateUntilAssertionFails(test) {
+        const [CONFIG, init, asserts] = test();
         const CONTEXT = init();
 
-        console.log(dumpContext(CONTEXT));
-        for (let i = 0; i < 5; i++) {
-          update(CONTEXT, ...CONFIG);
-          CONTEXT.elapsed += 1;
-          console.log(`====== at the end of ${CONTEXT.elapsed} iteration`);
-          console.log(dumpContext(CONTEXT));
-          asserts.forEach((a) => a(CONTEXT));
-        }
-      }
-
-      {
-        const [CONFIG, init, asserts] = testDiskBouncingAgainstWallHorizontal();
-        const CONTEXT = init();
-
-        console.log(dumpContext(CONTEXT));
-        for (let i = 0; i < 5; i++) {
-          update(CONTEXT, ...CONFIG);
-          CONTEXT.elapsed += 1;
-          console.log(`====== at the end of ${CONTEXT.elapsed} iteration`);
-          console.log(dumpContext(CONTEXT));
-          asserts.forEach((a) => a(CONTEXT));
-        }
-      }
-
-      {
-        const [CONFIG, init, asserts] =
-          testTouchingDisksOfDifferentVelocityCanSeparate();
-        const CONTEXT = init();
-
-        for (let i = 0; i < 5; i++) {
-          update(CONTEXT, ...CONFIG);
-          CONTEXT.elapsed += 1;
-          const failed = asserts
-            .map((a) => a(CONTEXT))
-            .some((r) => !!r === false);
-          if (failed) {
-            console.error("test halted after failed assertion");
-            break;
-          }
-        }
-      }
-
-      {
-        const [CONFIG, init, asserts] = testTwoArenaCollisionInTwoFrames();
-        const CONTEXT = init();
-
-        for (let i = 0; i < 5; i++) {
-          update(CONTEXT, ...CONFIG);
-          CONTEXT.elapsed += 1;
-          const failed = asserts
-            .map((a) => a(CONTEXT))
-            .some((r) => !!r === false);
-          if (failed) {
-            console.error("test halted after failed assertion");
-            break;
-          }
-        }
-      }
-
-      {
-        const [CONFIG, init, asserts] = testRoundingErrorIsManageable();
-        const CONTEXT = init();
-
+        console.groupCollapsed(`${test.name}`);
         for (let i = 0; i < 100; i++) {
           update(CONTEXT, ...CONFIG);
           CONTEXT.elapsed += 1;
@@ -97,28 +34,22 @@
             .map((a) => a(CONTEXT))
             .some((r) => !!r === false);
           if (failed) {
+            console.groupEnd();
             console.error("test halted after failed assertion");
-            break;
+            return;
           }
         }
+        console.groupEnd();
       }
 
-      {
-        const [CONFIG, init, asserts] = testDiskHitArenaCorner();
-        const CONTEXT = init();
-
-        for (let i = 0; i < 4; i++) {
-          update(CONTEXT, ...CONFIG);
-          CONTEXT.elapsed += 1;
-          const failed = asserts
-            .map((a) => a(CONTEXT))
-            .some((r) => !!r === false);
-          if (failed) {
-            console.error("test halted after failed assertion");
-            break;
-          }
-        }
-      }
+      simulateUntilAssertionFails(testDiskBouncingAgainstWallHorizontal);
+      simulateUntilAssertionFails(testDiskBouncingAgainstWall);
+      simulateUntilAssertionFails(
+        testTouchingDisksOfDifferentVelocityCanSeparate,
+      );
+      simulateUntilAssertionFails(testTwoArenaCollisionInTwoFrames);
+      simulateUntilAssertionFails(testRoundingErrorIsManageable);
+      simulateUntilAssertionFails(testDiskHitArenaCorner);
     </script>
   </body>
 </html>
