@@ -171,6 +171,34 @@ export function testTwoArenaCollisionInTwoFrames() {
   return [TwoDimElasticCollisionNoDraw, init, asserts];
 }
 
+export function testDiskCollideWithArenaAtTimeZero() {
+  const init = () =>
+    createStateFromDiskDynamics({
+      entities: [1000],
+      position: [[1000, { x: 200, y: 280 }]],
+      size: [[1000, { w: 40, h: 40 }]],
+      velocity: [[1000, { x: -100, y: 100 }]],
+      mass: [[1000, 40]],
+      ARENA_W: 300,
+      ARENA_H: 300,
+    });
+  const asserts = [
+    it("should bounce off arena wall", ({ elapsed, position, velocity }) => {
+      const v = velocity.get(1000);
+      const p = position.get(1000);
+      switch (elapsed) {
+        case 1:
+          return gt(0, v.x);
+        case 2:
+          return gt(0, v.x) && gt(280, p.y);
+        default:
+          return true;
+      }
+    }),
+  ];
+  return [TwoDimElasticCollisionNoDraw, init, asserts];
+}
+
 export function testRoundingErrorIsManageable() {
   const ARENA_W = 300;
   const ARENA_H = 300;
