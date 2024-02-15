@@ -28,8 +28,8 @@
 
         console.groupCollapsed(`${test.name}`);
         for (let i = 0; i < 100; i++) {
-          update(CONTEXT, ...CONFIG);
           CONTEXT.elapsed += 1;
+          update(CONTEXT, ...CONFIG);
           const failed = asserts
             .map((a) => a(CONTEXT))
             .some((r) => !!r === false);
