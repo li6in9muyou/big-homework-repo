@@ -229,7 +229,7 @@
       }
 
       function findClosestElement(me, others) {
-        let collidedBox = others[0];
+        let collidedBox = others[0] ?? null;
         let minCenterDistSqr = Number.MAX_SAFE_INTEGER;
         for (const other of others) {
           const t1 = me.offsetTop;
