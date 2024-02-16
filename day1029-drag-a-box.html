@@ -56,10 +56,6 @@
         transition: none;
       }
 
-      .box__collided {
-        background-color: crimson;
-      }
-
       .box-wrap {
         position: relative;
         display: flex;
@@ -98,10 +94,10 @@
           e.dataTransfer.beingDragged = box;
           aBox.forEach((box) => {
             const pos = box.getBoundingClientRect();
-            posBeforeDragStart.set(box, [
-              pos.x + pos.width / 2,
-              pos.y + pos.height / 2,
-            ]);
+            posBeforeDragStart.set(box, {
+              x: pos.x + pos.width / 2,
+              y: pos.y + pos.height / 2,
+            });
           });
         };
       }
@@ -116,45 +112,8 @@
         return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
       }
 
-      function findClosestElementFromPoint(x, y, elements) {
-        let closest = elements[0] ?? null;
-        let minCenterDistSqr = Infinity;
-        const c1X = x;
-        const c1Y = y;
-        for (const element of elements) {
-          const r = element.getBoundingClientRect();
-          const c2X = r.x + r.width / 2;
-          const c2Y = r.y + r.height / 2;
-          const centerDistanceSqr =
-            (c1X - c2X) * (c1X - c2X) + (c1Y - c2Y) * (c1Y - c2Y);
-          if (centerDistanceSqr < minCenterDistSqr) {
-            minCenterDistSqr = centerDistanceSqr;
-            closest = element;
-          }
-        }
-        return closest;
-      }
-
-      function Throttler(minIntervalMilliSec) {
-        this.ok = true;
-        this.timer = null;
-        this.minIntervalMilliSec = minIntervalMilliSec;
-        this.canDo = function () {
-          const oldOk = this.ok;
-          this.ok = false;
-          if (this.timer === null) {
-            setTimeout(() => {
-              this.ok = true;
-              this.timer = null;
-            }, this.minIntervalMilliSec);
-          }
-          return oldOk;
-        };
-      }
-
       const aBox = Array.from(document.querySelectorAll(".box"));
       const oBoxWrap = document.querySelector(".box-wrap");
-      const relocationThrottle = new Throttler(500);
       aBox.forEach((box) => {
         box.setAttribute("draggable", "true");
         box.addEventListener("dragstart", boxOnDragStart(box));
@@ -164,37 +123,33 @@
         e.preventDefault();
         e.dataTransfer.dropEffect = "move";
         const beingDragged = oBoxWrap.querySelector(".box.box__what-if");
-        const boxToTheRightAndBelow = aBox
-          .filter((other) => other !== beingDragged)
-          .filter((other) => {
-            const r = other.getBoundingClientRect();
-            const cX = r.x + r.width / 2;
-            const cY = r.y + r.height / 2;
-            return cX >= e.clientX && cY >= e.clientY;
-          });
-        console.log(
-          "possible insertAfterThis candidates",
-          boxToTheRightAndBelow.map((b) => b.textContent),
-        );
-        const insertBeforeThis = Array.from(
+        const { insert: closest, center: pos } = Array.from(
           posBeforeDragStart.entries(),
         ).reduce(
-          (ans, [other, pos]) => {
-            const d = distance(e.clientX, e.clientY, ...pos);
+          (ans, [other, center]) => {
+            const d = distance(e.clientX, e.clientY, center.x, center.y);
             if (ans.distance > d) {
               ans.insert = other;
               ans.distance = d;
+              ans.center = center;
             }
             return ans;
           },
           {
             insert: null,
             distance: Infinity,
+            center: null,
           },
-        ).insert;
-        if (insertBeforeThis !== null) {
-          console.log("insert after this", insertBeforeThis.textContent);
-          oBoxWrap.insertBefore(beingDragged, insertBeforeThis);
+        );
+        if (closest !== null) {
+          let where;
+          if (pos.x >= e.clientX) {
+            where = "beforebegin";
+          } else {
+            where = "afterend";
+          }
+          console.log("insertAdjacentElement", where, closest.textContent);
+          closest.insertAdjacentElement(where, beingDragged);
         }
       });
     </script>
