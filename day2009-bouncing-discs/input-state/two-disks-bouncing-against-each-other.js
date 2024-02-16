@@ -1,52 +1,16 @@
-import { dumpContext } from "../js/helper.js";
-import {
-  applyConservationOfMomentum,
-  applyKeepMovingIfNoCollision,
-  applyMoveToCollidePos,
-  applyReflectedVelocityIfCollideWithArena,
-  drawOrangeDisk,
-  drawVelocityPointer,
-  queryArenaCollision,
-  queryDiskCollision,
-  warnDiskPenetration,
-} from "../js/system.js";
+import { TwoDimElasticCollision } from "../js/config.js";
 
-export const config = [
-  [
-    queryArenaCollision,
-    queryDiskCollision,
-  ],
-  new Set([
-    applyReflectedVelocityIfCollideWithArena,
-    applyConservationOfMomentum,
-    applyMoveToCollidePos,
-    applyKeepMovingIfNoCollision,
-  ]),
-  [drawOrangeDisk, drawVelocityPointer],
-  [
-    warnDiskPenetration, ({ position, velocity, elapsed }) => {
-    console.debug("^^^^" + elapsed);
-    console.debug(dumpContext(position));
-    console.debug(dumpContext(velocity));
-    console.debug("$$$$" + elapsed);
-  },
-    ({ position, size }) => {
-      console.log("distance: center to center", Math.abs(position.get(1000).y - position.get(1001).y));
-      console.log("distance: perimeter to perimeter",
-        Math.abs(position.get(1000).y - position.get(1001).y) - size.get(1000).w / 2 - size.get(1001).w / 2);
-    },
-  ],
-];
+export const config = TwoDimElasticCollision;
 
 export const init = (ARENA_W, ARENA_H) => ({
   entities: [1000, 1001],
   velocity: new Map([
-    [1000, { x: 0, y: 40 }],
-    [1001, { x: 0, y: -40 }],
+    [1000, { x: 20, y: 20 }],
+    [1001, { x: -20, y: -20 }],
   ]),
   position: new Map([
-    [1000, { x: ARENA_W / 2, y: 380 }],
-    [1001, { x: ARENA_W / 2, y: 489 }],
+    [1000, { x: 20, y: 20 }],
+    [1001, { x: ARENA_W - 40, y: ARENA_H - 40 }],
   ]),
   size: new Map([
     [1000, { w: 40, h: 40 }],
