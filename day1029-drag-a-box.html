@@ -272,7 +272,7 @@
           const dragTo = findCollidedBox(box, others);
           markCollidedBox(dragTo);
 
-          if (dragTo !== null && relocationThrottle.canDo()) {
+          if (dragTo !== null) {
             const dragToSlot = boxSlotTable[+dragTo.dataset.boxId];
             const origSlot = boxSlotTable[+box.dataset.boxId];
             if (origSlot > dragToSlot) {
@@ -308,27 +308,9 @@
         };
       }
 
-      function Throttler(minIntervalMilliSec) {
-        this.ok = true;
-        this.timer = null;
-        this.minIntervalMilliSec = minIntervalMilliSec;
-        this.canDo = function () {
-          const oldOk = this.ok;
-          this.ok = false;
-          if (this.timer === null) {
-            setTimeout(() => {
-              this.ok = true;
-              this.timer = null;
-            }, this.minIntervalMilliSec);
-          }
-          return oldOk;
-        };
-      }
-
       const aBox = Array.from(document.querySelectorAll(".box"));
       const oBoxWrap = document.querySelector(".box-wrap");
       const dMgr = new DraggableManager();
-      const relocationThrottle = new Throttler(500);
       const BOX_SLOTS = [];
       let boxSlotTable = [];
 
