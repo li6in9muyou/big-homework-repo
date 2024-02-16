@@ -37,11 +37,16 @@
         background-color: #eedc5b;
         border-radius: 8rem;
         cursor: move;
-        transition: 300ms ease-in-out;
+        transition: opacity 300ms ease-in-out;
         font-size: 64rem;
         line-height: 125rem;
         text-align: center;
         user-select: none;
+      }
+
+      .box__what-if {
+        border: dashed 4px #5d6eee;
+        opacity: 0.5;
       }
 
       .box__lifted {
@@ -86,77 +91,35 @@
     </ul>
     <script>
       function boxOnDragStart(box) {
-        return () => {
-          aBox.forEach((box) => box.classList.remove("box__collided"));
-          box.classList.toggle("box__lifted");
+        return (e) => {
+          box.classList.add("box__what-if");
+          e.dataTransfer.beingDragged = box;
         };
       }
 
       function boxOnDragEnd(box) {
         return () => {
-          boxOnDragStart(box)();
-          reflowBoxes(aBox);
+          box.classList.remove("box__what-if");
         };
       }
 
-      function findCollidedElements(me, others) {
-        return others.filter((other) => {
-          const t1 = me.offsetTop;
-          const t2 = other.offsetTop;
-          const l1 = me.offsetLeft;
-          const l2 = other.offsetLeft;
-          const r1 = l1 + me.offsetWidth;
-          const r2 = l2 + other.offsetWidth;
-          const b1 = t1 + me.offsetHeight;
-          const b2 = t2 + other.offsetHeight;
-          return !(t1 > b2 || r1 < l2 || b1 < t2 || l1 > r2);
-        });
-      }
-
-      function findClosestElement(me, others) {
-        let collidedBox = others[0];
-        let minCenterDistSqr = Number.MAX_SAFE_INTEGER;
-        for (const other of others) {
-          const t1 = me.offsetTop;
-          const t2 = other.offsetTop;
-          const l1 = me.offsetLeft;
-          const l2 = other.offsetLeft;
-          const r1 = l1 + me.offsetWidth;
-          const r2 = l2 + other.offsetWidth;
-          const b1 = t1 + me.offsetHeight;
-          const b2 = t2 + other.offsetHeight;
-          const c1X = (l1 + r1) / 2;
-          const c1Y = (t1 + b1) / 2;
-          const c2X = (l2 + r2) / 2;
-          const c2Y = (t2 + b2) / 2;
+      function findClosestElementFromPoint(x, y, elements) {
+        let closest = elements[0] ?? null;
+        let minCenterDistSqr = Infinity;
+        const c1X = x;
+        const c1Y = y;
+        for (const element of elements) {
+          const r = element.getBoundingClientRect();
+          const c2X = r.x + r.width / 2;
+          const c2Y = r.y + r.height / 2;
           const centerDistanceSqr =
             (c1X - c2X) * (c1X - c2X) + (c1Y - c2Y) * (c1Y - c2Y);
           if (centerDistanceSqr < minCenterDistSqr) {
             minCenterDistSqr = centerDistanceSqr;
-            collidedBox = other;
+            closest = element;
           }
         }
-        return collidedBox;
-      }
-
-      function findCollidedBox(me, others) {
-        return findClosestElement(me, findCollidedElements(me, others));
-      }
-
-      function boxOnDragMove(box) {
-        function markCollidedBox(bb) {
-          aBox.forEach((other) => other.classList.remove("box__collided"));
-          if (bb === null) {
-            return;
-          }
-          bb.classList.add("box__collided");
-        }
-
-        return () => {
-          const others = aBox.filter((b) => b !== box);
-          const dragTo = findCollidedBox(box, others);
-          markCollidedBox(dragTo);
-        };
+        return closest;
       }
 
       function Throttler(minIntervalMilliSec) {
@@ -179,6 +142,37 @@
       const aBox = Array.from(document.querySelectorAll(".box"));
       const oBoxWrap = document.querySelector(".box-wrap");
       const relocationThrottle = new Throttler(500);
+      aBox.forEach((box) => {
+        box.setAttribute("draggable", "true");
+        box.addEventListener("dragstart", boxOnDragStart(box));
+        box.addEventListener("dragend", boxOnDragEnd(box));
+      });
+      oBoxWrap.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        const beingDragged = oBoxWrap.querySelector(".box.box__what-if");
+        const boxToTheRightAndBelow = aBox
+          .filter((other) => other !== beingDragged)
+          .filter((other) => {
+            const r = other.getBoundingClientRect();
+            const cX = r.x + r.width / 2;
+            const cY = r.y + r.height / 2;
+            return cX >= e.clientX && cY >= e.clientY;
+          });
+        console.log(
+          "possible insertAfterThis candidates",
+          boxToTheRightAndBelow.map((b) => b.textContent),
+        );
+        const insertBeforeThis = findClosestElementFromPoint(
+          e.clientX,
+          e.clientY,
+          boxToTheRightAndBelow,
+        );
+        if (insertBeforeThis !== null) {
+          console.log("insert after this", insertBeforeThis.textContent);
+          oBoxWrap.insertBefore(beingDragged, insertBeforeThis);
+        }
+      });
     </script>
   </body>
 </html>
