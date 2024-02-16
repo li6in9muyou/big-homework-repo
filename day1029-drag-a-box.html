@@ -90,10 +90,19 @@
       <li class="box">12</li>
     </ul>
     <script>
+      const posBeforeDragStart = new Map();
+
       function boxOnDragStart(box) {
         return (e) => {
           box.classList.add("box__what-if");
           e.dataTransfer.beingDragged = box;
+          aBox.forEach((box) => {
+            const pos = box.getBoundingClientRect();
+            posBeforeDragStart.set(box, [
+              pos.x + pos.width / 2,
+              pos.y + pos.height / 2,
+            ]);
+          });
         };
       }
 
@@ -101,6 +110,10 @@
         return () => {
           box.classList.remove("box__what-if");
         };
+      }
+
+      function distance(x1, y1, x2, y2) {
+        return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
       }
 
       function findClosestElementFromPoint(x, y, elements) {
@@ -163,11 +176,22 @@
           "possible insertAfterThis candidates",
           boxToTheRightAndBelow.map((b) => b.textContent),
         );
-        const insertBeforeThis = findClosestElementFromPoint(
-          e.clientX,
-          e.clientY,
-          boxToTheRightAndBelow,
-        );
+        const insertBeforeThis = Array.from(
+          posBeforeDragStart.entries(),
+        ).reduce(
+          (ans, [other, pos]) => {
+            const d = distance(e.clientX, e.clientY, ...pos);
+            if (ans.distance > d) {
+              ans.insert = other;
+              ans.distance = d;
+            }
+            return ans;
+          },
+          {
+            insert: null,
+            distance: Infinity,
+          },
+        ).insert;
         if (insertBeforeThis !== null) {
           console.log("insert after this", insertBeforeThis.textContent);
           oBoxWrap.insertBefore(beingDragged, insertBeforeThis);
