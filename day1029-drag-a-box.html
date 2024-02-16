@@ -49,11 +49,11 @@
         opacity: 0.5;
       }
 
-      .box__lifted {
-        transform: scale(1.05);
-        box-shadow: 3px 3px 6px #222;
+      .box__drag-feedback {
         z-index: 100;
-        transition: none;
+        transform-origin: center;
+        position: fixed;
+        box-shadow: 3px 3px 6px #222;
       }
 
       .box-wrap {
@@ -91,8 +91,23 @@
 
       function boxOnDragStart(box) {
         return (e) => {
+          e.dataTransfer.setDragImage(document.createElement("div"), 0, 0);
+
+          const dragFeedback = box.cloneNode(true);
+          dragFeedback.classList.add("box__drag-feedback");
+          dragFeedback.style.transform = `translate(${-e.offsetX}px,${-e.offsetY}px) scale(1.1) rotateZ(10deg)`;
+          dragFeedback.style.transformOrigin = `${e.offsetX}px ${e.offsetY}px`;
+          dragFeedback.style.top = e.clientY + "px";
+          dragFeedback.style.left = e.clientX + "px";
+
+          // put drag feedback element below e.target, otherwise drag immediately ends
+          dragFeedback.style.zIndex = -1;
+
+          dragFeedback.dataset.dragFeedback = "";
+          oBoxWrap.appendChild(dragFeedback);
+
           box.classList.add("box__what-if");
-          e.dataTransfer.beingDragged = box;
+          box.dataset.dragging = "";
           aBox.forEach((box) => {
             const pos = box.getBoundingClientRect();
             posBeforeDragStart.set(box, {
@@ -106,6 +121,8 @@
       function boxOnDragEnd(box) {
         return () => {
           box.classList.remove("box__what-if");
+          delete box.dataset.dragging;
+          document.querySelector("[data-drag-feedback]").remove();
         };
       }
 
@@ -123,7 +140,7 @@
       oBoxWrap.addEventListener("dragover", (e) => {
         e.preventDefault();
         e.dataTransfer.dropEffect = "move";
-        const beingDragged = oBoxWrap.querySelector(".box.box__what-if");
+        const beingDragged = oBoxWrap.querySelector(".box[data-dragging]");
         const { insert: closest, center: pos } = Array.from(
           posBeforeDragStart.entries(),
         ).reduce(
@@ -152,6 +169,11 @@
           console.log("insertAdjacentElement", where, closest.textContent);
           closest.insertAdjacentElement(where, beingDragged);
         }
+
+        const dragFeedBack = document.querySelector("[data-drag-feedback]");
+        dragFeedBack.style.zIndex = "";
+        dragFeedBack.style.top = `${e.clientY}px`;
+        dragFeedBack.style.left = `${e.clientX}px`;
       });
     </script>
   </body>
