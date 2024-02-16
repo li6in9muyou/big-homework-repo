@@ -192,6 +192,18 @@
         return boxSlotTable[+box.dataset.boxId];
       }
 
+      function getSlotOccupant(slotId) {
+        console.log(`getSlotOccupant slotId ${slotId}`, boxSlotTable);
+        let boxId = Infinity;
+        for (let sId = 0; sId < boxSlotTable.length; sId++) {
+          if (slotId === sId) {
+            boxId = boxSlotTable[sId];
+            break;
+          }
+        }
+        return document.querySelector(`[data-box-id='${boxId}']`);
+      }
+
       function reflowBoxes(boxes) {
         boxes.forEach((box) => {
           const boxSlotId = getSlotId(box);
@@ -214,32 +226,36 @@
         };
       }
 
-      function findCollidedElements(me, others) {
-        return others.filter((other) => {
-          const t1 = me.offsetTop;
-          const t2 = other.offsetTop;
-          const l1 = me.offsetLeft;
-          const l2 = other.offsetLeft;
-          const r1 = l1 + me.offsetWidth;
-          const r2 = l2 + other.offsetWidth;
-          const b1 = t1 + me.offsetHeight;
-          const b2 = t2 + other.offsetHeight;
-          return !(t1 > b2 || r1 < l2 || b1 < t2 || l1 > r2);
-        });
+      function findCollidedSlots(me) {
+        return BOX_SLOTS.map((pos, idx) => [idx, pos])
+          .filter(([_, pos]) => {
+            const [sX, sY] = pos;
+            const t1 = me.offsetTop;
+            const t2 = sY;
+            const l1 = me.offsetLeft;
+            const l2 = sX;
+            const r1 = l1 + me.offsetWidth;
+            const r2 = l2 + me.offsetWidth;
+            const b1 = t1 + me.offsetHeight;
+            const b2 = t2 + me.offsetHeight;
+            return !(t1 > b2 || r1 < l2 || b1 < t2 || l1 > r2);
+          })
+          .map(([idx, _]) => idx);
       }
 
-      function findClosestElement(me, others) {
-        let collidedBox = others[0] ?? null;
+      function findClosestSlots(me, slots) {
+        let closest = slots[0] ?? null;
         let minCenterDistSqr = Number.MAX_SAFE_INTEGER;
-        for (const other of others) {
+        for (const slot of slots) {
+          const [sX, sY] = BOX_SLOTS[slot];
           const t1 = me.offsetTop;
-          const t2 = other.offsetTop;
+          const t2 = sY;
           const l1 = me.offsetLeft;
-          const l2 = other.offsetLeft;
+          const l2 = sX;
           const r1 = l1 + me.offsetWidth;
-          const r2 = l2 + other.offsetWidth;
+          const r2 = l2 + me.offsetWidth;
           const b1 = t1 + me.offsetHeight;
-          const b2 = t2 + other.offsetHeight;
+          const b2 = t2 + me.offsetHeight;
           const c1X = (l1 + r1) / 2;
           const c1Y = (t1 + b1) / 2;
           const c2X = (l2 + r2) / 2;
@@ -248,14 +264,10 @@
             (c1X - c2X) * (c1X - c2X) + (c1Y - c2Y) * (c1Y - c2Y);
           if (centerDistanceSqr < minCenterDistSqr) {
             minCenterDistSqr = centerDistanceSqr;
-            collidedBox = other;
+            closest = slot;
           }
         }
-        return collidedBox;
-      }
-
-      function findCollidedBox(me, others) {
-        return findClosestElement(me, findCollidedElements(me, others));
+        return closest;
       }
 
       function boxOnDragMove(box) {
@@ -269,11 +281,13 @@
 
         return () => {
           const others = aBox.filter((b) => b !== box);
-          const dragTo = findCollidedBox(box, others);
-          markCollidedBox(dragTo);
+          const dragToSlot = findClosestSlots(box, findCollidedSlots(box));
+          if (getSlotId(box) === dragToSlot) {
+            return;
+          }
 
-          if (dragTo !== null) {
-            const dragToSlot = boxSlotTable[+dragTo.dataset.boxId];
+          markCollidedBox(getSlotOccupant(dragToSlot));
+          if (dragToSlot !== null) {
             const origSlot = boxSlotTable[+box.dataset.boxId];
             if (origSlot > dragToSlot) {
               others
@@ -304,6 +318,8 @@
             }
             boxSlotTable = moveBoxToSlot(boxSlotTable, box, dragToSlot);
             reflowBoxes(others);
+          } else {
+            aBox.forEach((other) => other.classList.remove("box__collided"));
           }
         };
       }
