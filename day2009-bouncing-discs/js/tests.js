@@ -316,3 +316,15 @@ export function testDiskHitArenaCorner() {
   ];
   return [TwoDimElasticCollisionNoDraw, init, asserts];
 }
+
+export default [
+  testDiskBouncingAgainstWall,
+  testDiskBouncingAgainstWallHorizontal,
+  testDiskCollideWithArenaAtTimeZero,
+  testDiskHitArenaCorner,
+  testRoundingErrorIsManageable,
+  testPushAnotherDisk,
+  testTwoArenaCollisionInTwoFrames,
+  testCollisionIsNeverMissed,
+  testRoundingErrorIsManageable2,
+];

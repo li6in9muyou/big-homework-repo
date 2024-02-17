@@ -12,20 +12,10 @@
   </head>
   <body>
     <script type="module">
-      import {
-        testDiskBouncingAgainstWall,
-        testDiskBouncingAgainstWallHorizontal,
-        testDiskCollideWithArenaAtTimeZero,
-        testDiskHitArenaCorner,
-        testRoundingErrorIsManageable,
-        testPushAnotherDisk,
-        testTwoArenaCollisionInTwoFrames,
-        testCollisionIsNeverMissed,
-        testRoundingErrorIsManageable2,
-      } from "./js/tests.js";
+      import AllTests from "./js/tests.js";
       import update from "./js/update.js";
 
-      function simulateUntilAssertionFails(test) {
+      AllTests.forEach((test) => {
         const [CONFIG, init, asserts] = test();
         const CONTEXT = init();
 
@@ -43,17 +33,7 @@
           }
         }
         console.groupEnd();
-      }
-
-      simulateUntilAssertionFails(testDiskBouncingAgainstWallHorizontal);
-      simulateUntilAssertionFails(testDiskBouncingAgainstWall);
-      simulateUntilAssertionFails(testPushAnotherDisk);
-      simulateUntilAssertionFails(testTwoArenaCollisionInTwoFrames);
-      simulateUntilAssertionFails(testRoundingErrorIsManageable);
-      simulateUntilAssertionFails(testRoundingErrorIsManageable2);
-      simulateUntilAssertionFails(testDiskHitArenaCorner);
-      simulateUntilAssertionFails(testDiskCollideWithArenaAtTimeZero);
-      simulateUntilAssertionFails(testCollisionIsNeverMissed);
+      });
     </script>
   </body>
 </html>
