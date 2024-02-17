@@ -216,6 +216,39 @@ export function testRoundingErrorIsManageable() {
   return [TwoDimElasticCollisionNoDraw, init, asserts];
 }
 
+export function testCollisionIsNeverMissed() {
+  const init = () =>
+    createStateFromDiskDynamics({
+      entities: [1000, 1001],
+      position: [
+        [1000, { x: 50, y: 20 }],
+        [1001, { x: 50, y: 97.33528575999992 }],
+      ],
+      size: [
+        [1000, { w: 40, h: 40 }],
+        [1001, { w: 80, h: 80 }],
+      ],
+      velocity: [
+        [1000, { x: 0, y: 2.214487040000016 }],
+        [1001, { x: 0, y: -40.29607936 }],
+      ],
+      mass: [
+        [1000, 40],
+        [1001, 160],
+      ],
+      ARENA_W: 100,
+      ARENA_H: 500,
+    });
+  const asserts = [
+    it("two disks should never swap places", ({ position }) => {
+      const p1 = position.get(1000);
+      const p2 = position.get(1001);
+      return gt(p2.y, p1.y);
+    }),
+  ];
+  return [TwoDimElasticCollisionNoDraw, init, asserts];
+}
+
 export function testDiskHitArenaCorner() {
   const init = () =>
     createStateFromDiskDynamics({
