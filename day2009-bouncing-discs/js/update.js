@@ -11,7 +11,6 @@ export default function update(ctx, queries, appliers, drawers, debuggers) {
     drawers.forEach((system) => system(id, ctx, { getLogger }));
   }
   debuggers.forEach((system) => system(ctx, { getLogger }));
-  ctx.needQueryAgain[0] = false;
   ctx.collideNormal.clear();
   ctx.distanceUntilCollision.clear();
   ctx.timeUntilCollision.clear();

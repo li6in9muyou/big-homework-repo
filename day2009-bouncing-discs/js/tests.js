@@ -203,7 +203,6 @@ export function testRoundingErrorIsManageable() {
       timeUntilCollision: new Map(),
       collideWith: new Map(),
       vPtrJqTable: new Map(),
-      needQueryAgain: [true],
       ARENA_W,
       ARENA_H,
     });
