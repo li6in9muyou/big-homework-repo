@@ -132,7 +132,7 @@ export function testTwoArenaCollisionInTwoFrames() {
       ARENA_H: 300,
     });
   const asserts = [
-    it("should collide with arena twice", ({ elapsed, position, velocity }) => {
+    it("should collide with arena twice", ({ elapsed, position }) => {
       const p = position.get(1000);
       switch (elapsed) {
         case 1:
