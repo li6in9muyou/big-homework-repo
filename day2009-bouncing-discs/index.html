@@ -11,7 +11,6 @@
         margin: 0;
         padding: 0;
         background-color: #101010;
-        overflow: hidden;
         color: #fff;
       }
 
@@ -20,11 +19,15 @@
         flex-direction: column;
       }
 
-      label {
+      .arena-container label {
         cursor: pointer;
       }
 
-      .arena {
+      .arena-container {
+        padding-bottom: 40px;
+      }
+
+      .arena-container > .arena {
         position: relative;
         flex-grow: 0;
         margin: 6px auto;
@@ -32,14 +35,14 @@
         box-sizing: content-box;
       }
 
-      .disk {
+      .arena > .disk {
         position: absolute;
         border-radius: 100%;
         border: solid 1px crimson;
         box-sizing: border-box;
       }
 
-      .disk > .velocity-pointer {
+      .arena > .disk > .velocity-pointer {
         position: absolute;
         width: 6px;
         background-color: crimson;
@@ -51,133 +54,155 @@
         transform-origin: bottom;
       }
 
-      header {
+      .arena-container > header {
         padding: 6px;
         font-size: 24px;
         font-family: Consolas, monospace;
         display: flex;
         flex-direction: column;
+        max-width: fit-content;
+        margin: 0 auto;
+        overflow-wrap: break-word;
       }
 
-      header > p {
+      .arena-container > header > p {
         margin: 0;
       }
 
-      header button {
+      .arena-container > header > h2 {
+        margin: 0;
+        font-size: 1.2em;
+        padding-bottom: 8px;
+      }
+
+      .arena-container > header button {
         font-size: 1.2rem;
       }
 
-      .gravity-control {
+      .arena-container > header > .gravity-control {
         display: none;
         align-items: center;
       }
 
-      .gravity-control > input[type="checkbox"] {
-        width: 24px;
+      .arena-container > header > .gravity-control > input[type="checkbox"] {
         height: 24px;
         margin: 0 8px 0 0;
       }
     </style>
   </head>
   <body>
-    <header>
-      <p>
-        <span>iteration:</span>
-        <span id="iteration">0</span>
-      </p>
-      <p>
-        <span>FPS:</span>
-        <span id="fps">0</span>
-      </p>
-      <p>
-        <button data-step>Step</button>
-        <button data-step-multiple>200 Step</button>
-      </p>
-      <p class="gravity-control">
-        <input type="checkbox" name="toggleGravity" id="toggleGravity" />
-        <label for="toggleGravity"> toggle gravity </label>
-      </p>
-    </header>
-    <main class="arena"></main>
     <script type="module">
       import { TwoDimElasticCollision } from "./js/config.js";
       import update from "./js/update.js";
-      import { testTwoArenaCollisionInTwoFrames } from "./js/tests.js";
-      const [_, INIT, __] = testTwoArenaCollisionInTwoFrames();
+      import {
+        testDiskBouncingAgainstWallHorizontal,
+        testDiskCollideWithArenaAtTimeZero,
+        testTwoArenaCollisionInTwoFrames,
+      } from "./js/tests.js";
 
-      const $arena = $(".arena");
-      $arena.innerHeight(300);
-      $arena.innerWidth(300);
-      const ARENA_W = $arena.innerHeight();
-      const ARENA_H = $arena.innerWidth();
-      const CONTEXT = {
-        ARENA_W,
-        ARENA_H,
-        ...INIT($arena.innerWidth(), $arena.innerHeight()),
-        $arena,
-      };
+      function createArenaFromTest(testFn) {
+        const [_, INIT, __] = testFn();
+        const $arenaContainer = $(`
+          <section class="arena-container">
+            <header>
+              <h2 class="arena-title">${testFn.name}</h2>
+              <p>
+                <span>iteration:</span>
+                <span id="iteration">0</span>
+              </p>
+              <p>
+                <span>FPS:</span>
+                <span id="fps">0</span>
+              </p>
+              <p>
+                <button data-step="1">Step</button>
+                <button data-step="200">200 Steps</button>
+                <button data-step="1000">1000 Steps</button>
+              </p>
+              <p class="gravity-control">
+                <input type="checkbox" name="toggleGravity" id="toggleGravity" />
+                <label for="toggleGravity"> toggle gravity </label>
+              </p>
+            </header>
+          </section>`);
+        const $arena = $("<div class='arena'></div>");
+        const CONTEXT = {
+          ARENA_W: 300,
+          ARENA_H: 300,
+          ...INIT($arena.innerWidth(), $arena.innerHeight()),
+          $arena,
+        };
+        $arena.innerHeight(CONTEXT.ARENA_H);
+        $arena.innerWidth(CONTEXT.ARENA_W);
 
-      const $iteration = $("#iteration");
-      const $fps = $("#fps");
-      const $header = $("header");
+        const $iteration = $arenaContainer.find("#iteration");
+        const $fps = $arenaContainer.find("#fps");
+        const $header = $arenaContainer.find("header");
 
-      const state = {
-        frames: 0,
-        iteration_limit: 1,
-        frames_start: NaN,
-      };
+        const state = {
+          frames: 0,
+          iteration_limit: 1,
+          frames_start: NaN,
+        };
 
-      function isSimulating(s) {
-        return s.iteration_limit > CONTEXT.elapsed;
-      }
-
-      function simulate() {
-        CONTEXT.elapsed++;
-
-        if (state.frames === 0) {
-          state.frames_start = performance.now();
+        function isSimulating(s) {
+          return s.iteration_limit > CONTEXT.elapsed;
         }
-        update(CONTEXT, ...TwoDimElasticCollision);
-        state.frames++;
 
-        if (state.frames > 10) {
-          const cost = performance.now() - state.frames_start;
-          $fps.text(Math.floor(1000 / (cost / 10)));
-          state.frames = 0;
+        function simulate() {
+          CONTEXT.elapsed++;
+
+          if (state.frames === 0) {
+            state.frames_start = performance.now();
+          }
+          update(CONTEXT, ...TwoDimElasticCollision);
+          state.frames++;
+
+          if (state.frames > 10) {
+            const cost = performance.now() - state.frames_start;
+            $fps.text(Math.floor(1000 / (cost / 10)));
+            state.frames = 0;
+          }
+
+          $iteration.text(
+            CONTEXT.elapsed.toString().padStart(4, "0") +
+              "/" +
+              state.iteration_limit.toString().padStart(4, "0"),
+          );
+          if (CONTEXT.elapsed < state.iteration_limit) {
+            requestAnimationFrame(simulate);
+          } else {
+            console.info("update halts");
+            $header.css("background-color", "#3a3a3a");
+          }
         }
 
-        $iteration.text(
-          CONTEXT.elapsed.toString().padStart(4, "0") +
-            "/" +
-            state.iteration_limit.toString().padStart(4, "0"),
+        $arenaContainer.find("[data-step]").on("click", (e) => {
+          if (!isSimulating(state)) {
+            state.iteration_limit += parseInt(e.target.dataset.step);
+            simulate();
+          }
+        });
+        $arena.on("click", () =>
+          $arenaContainer.find("[data-step='1']").click(),
         );
-        if (CONTEXT.elapsed < state.iteration_limit) {
-          requestAnimationFrame(simulate);
-        } else {
-          console.info("update halts");
-          $header.css("background-color", "#3a3a3a");
-        }
+
+        $header.css("background-color", "limegreen");
+        state.frames_start = performance.now();
+        simulate();
+
+        return $arenaContainer.append($arena);
       }
 
-      const $btnStep = $("[data-step]");
-
-      $arena.on("click", () => $btnStep.click());
-      $btnStep.on("click", () => {
-        if (!isSimulating(state)) {
-          state.iteration_limit += 1;
-          simulate();
-        }
-      });
-      $("[data-step-multiple]").on("click", (e) => {
-        if (!isSimulating(state)) {
-          state.iteration_limit += parseInt($(e.target).text().match(/\d+/)[0]);
-          simulate();
-        }
-      });
-
-      $header.css("background-color", "limegreen");
-      state.frames_start = performance.now();
-      simulate();
+      $(document.body).append(
+        createArenaFromTest(testTwoArenaCollisionInTwoFrames),
+      );
+      $(document.body).append(
+        createArenaFromTest(testDiskBouncingAgainstWallHorizontal),
+      );
+      $(document.body).append(
+        createArenaFromTest(testDiskCollideWithArenaAtTimeZero),
+      );
     </script>
   </body>
 </html>

@@ -292,11 +292,16 @@ const BALL_POOL = new Map();
 export function drawOrangeDisk(id, { position, size, $arena }) {
   const s = size.get(id);
 
-  let domBall = BALL_POOL.get(id);
+  if (!BALL_POOL.has($arena)) {
+    BALL_POOL.set($arena, new Map());
+  }
+  const poolOfThisArena = BALL_POOL.get($arena);
+
+  let domBall = poolOfThisArena.get(id);
   if (domBall === undefined) {
     domBall = $("<div>").addClass("disk").attr("data-id", id);
     $arena.append(domBall);
-    BALL_POOL.set(id, domBall);
+    poolOfThisArena.set(id, domBall);
     domBall.css({
       height: s.h + "px",
       width: s.w + "px",
@@ -354,16 +359,23 @@ export function applyConservationOfMomentum(
   v2.y = u2[1];
 }
 
-export function drawVelocityPointer(id, { velocity, vPtrJqTable }) {
-  if (!vPtrJqTable.has(id)) {
-    const disk = $(`[data-id="${id}"]`);
-    const ptr = $("<div class='velocity-pointer'></div>");
+const VELOCITY_POINTER_POOL = new Map();
+
+export function drawVelocityPointer(id, { velocity, $arena }) {
+  if (!VELOCITY_POINTER_POOL.has($arena)) {
+    VELOCITY_POINTER_POOL.set($arena, new Map());
+  }
+  const ptrPool = VELOCITY_POINTER_POOL.get($arena);
+  const disk = BALL_POOL.get($arena).get(id);
+  let ptr = ptrPool.get(id);
+  if (ptr === undefined) {
+    ptr = $("<div class='velocity-pointer'></div>");
     disk.append(ptr);
-    vPtrJqTable.set(id, ptr);
+    ptrPool.set(id, ptr);
   }
 
   const v = velocity.get(id);
-  vPtrJqTable.get(id).css("transform", `rotate(${Math.atan2(v.x, -v.y)}rad)`);
+  ptr.css("transform", `rotate(${Math.atan2(v.x, -v.y)}rad)`);
 }
 
 export function applyRoundMinimalVelocityToZero(id, { velocity }) {
