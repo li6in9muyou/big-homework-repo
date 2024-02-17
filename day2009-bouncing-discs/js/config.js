@@ -54,3 +54,28 @@ export const SingleDiskBouncing = [
 ];
 
 export const SingleDiskBouncingNoDraw = SingleDiskBouncing.toSpliced(2, 1, []);
+
+export function createStateFromDiskDynamics(ps) {
+  function toMap(a) {
+    if (!(a instanceof Map)) {
+      return new Map(a);
+    } else {
+      return a;
+    }
+  }
+
+  ps.position = toMap(ps.position);
+  ps.size = toMap(ps.size);
+  ps.velocity = toMap(ps.velocity);
+  ps.mass = toMap(ps.mass);
+  return {
+    elapsed: 0,
+    collideNormal: new Map(),
+    distanceUntilCollision: new Map(),
+    timeUntilCollision: new Map(),
+    collideWith: new Map(),
+    vPtrJqTable: new Map(),
+    needQueryAgain: [true],
+    ...ps,
+  };
+}
