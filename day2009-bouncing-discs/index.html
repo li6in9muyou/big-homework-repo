@@ -95,8 +95,12 @@
       import { TwoDimElasticCollision } from "./js/config.js";
       import update from "./js/update.js";
       import {
+        testDiskBouncingAgainstWall,
         testDiskBouncingAgainstWallHorizontal,
         testDiskCollideWithArenaAtTimeZero,
+        testDiskHitArenaCorner,
+        testPushAnotherDisk,
+        testRoundingErrorIsManageable,
         testTwoArenaCollisionInTwoFrames,
       } from "./js/tests.js";
 
@@ -203,6 +207,12 @@
       $(document.body).append(
         createArenaFromTest(testDiskCollideWithArenaAtTimeZero),
       );
+      $(document.body).append(createArenaFromTest(testDiskHitArenaCorner));
+      $(document.body).append(createArenaFromTest(testDiskBouncingAgainstWall));
+      $(document.body).append(
+        createArenaFromTest(testRoundingErrorIsManageable),
+      );
+      $(document.body).append(createArenaFromTest(testPushAnotherDisk));
     </script>
   </body>
 </html>
