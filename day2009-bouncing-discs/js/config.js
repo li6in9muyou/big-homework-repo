@@ -14,46 +14,80 @@ import {
   queryDiskCollision,
 } from "./system.js";
 
-const commonLogSuite = [
+export const commonLogSuite = [
   logReproductionInfo,
   logDiskDistance,
   logDiskDynamics,
   logElapsed,
 ];
 
-export const TwoDimElasticCollision = [
-  [queryArenaCollision, queryDiskCollision],
-  new Set([
-    applyReflectedVelocityIfCollideWithArena,
-    applyConservationOfMomentum,
-    applyMoveToCollidePos,
-    applyKeepMovingIfNoCollision,
-    applyRoundMinimalVelocityToZero,
-  ]),
-  [drawOrangeDisk, drawVelocityPointer],
-  commonLogSuite,
+export const arenaCollision = [queryArenaCollision];
+export const arenaAndDiskCollision = [queryArenaCollision, queryDiskCollision];
+
+export const domDrawer = [drawOrangeDisk, drawVelocityPointer];
+
+export const twoDimElastic = [
+  applyReflectedVelocityIfCollideWithArena,
+  applyConservationOfMomentum,
+  applyMoveToCollidePos,
+  applyKeepMovingIfNoCollision,
+  applyRoundMinimalVelocityToZero,
 ];
 
-export const TwoDimElasticCollisionNoDraw = TwoDimElasticCollision.toSpliced(
-  2,
-  1,
-  [],
-);
+export function buildConfig() {
+  const queries = new Set();
+  const systems = new Set();
+  const drawers = new Set();
+  const debuggers = new Set();
+  const configBuilder = {
+    query(q) {
+      q.forEach((qq) => queries.add(qq));
+      return configBuilder;
+    },
+    system(s) {
+      s.forEach((ss) => systems.add(ss));
+      return configBuilder;
+    },
+    drawer(d) {
+      d.forEach((dd) => drawers.add(dd));
+      return configBuilder;
+    },
+    debug(b) {
+      b.forEach((bb) => debuggers.add(bb));
+      return configBuilder;
+    },
+    build() {
+      return [queries, systems, drawers, debuggers];
+    },
+  };
+  return configBuilder;
+}
 
-export const SingleDiskBouncing = [
-  [queryArenaCollision],
-  new Set([
-    applyReflectedVelocityIfCollideWithArena,
-    applyConservationOfMomentum,
-    applyMoveToCollidePos,
-    applyKeepMovingIfNoCollision,
-    applyRoundMinimalVelocityToZero,
-  ]),
-  [drawOrangeDisk, drawVelocityPointer],
-  commonLogSuite,
-];
+export const TwoDimElasticCollision = buildConfig()
+  .query(arenaAndDiskCollision)
+  .system(twoDimElastic)
+  .drawer(domDrawer)
+  .debug(commonLogSuite)
+  .build();
 
-export const SingleDiskBouncingNoDraw = SingleDiskBouncing.toSpliced(2, 1, []);
+export const TwoDimElasticCollisionNoDraw = buildConfig()
+  .query(arenaAndDiskCollision)
+  .system(twoDimElastic)
+  .debug(commonLogSuite)
+  .build();
+
+export const SingleDiskBouncing = buildConfig()
+  .query(arenaCollision)
+  .system(twoDimElastic)
+  .drawer(domDrawer)
+  .debug(commonLogSuite)
+  .build();
+
+export const SingleDiskBouncingNoDraw = buildConfig()
+  .query(arenaCollision)
+  .system(twoDimElastic)
+  .debug(commonLogSuite)
+  .build();
 
 export function createStateFromDiskDynamics(ps) {
   function toMap(a) {
