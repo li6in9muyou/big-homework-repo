@@ -287,21 +287,13 @@ export function applyStopFalling(id, { position, velocity, size, ARENA_H }) {
   }
 }
 
-const BALL_POOL = new Map();
-
-export function drawOrangeDisk(id, { position, size, $arena }) {
+export function drawOrangeDisk(id, { position, size, $arena, domTableDisk }) {
   const s = size.get(id);
-
-  if (!BALL_POOL.has($arena)) {
-    BALL_POOL.set($arena, new Map());
-  }
-  const poolOfThisArena = BALL_POOL.get($arena);
-
-  let domBall = poolOfThisArena.get(id);
+  let domBall = domTableDisk.get(id);
   if (domBall === undefined) {
     domBall = $("<div>").addClass("disk").attr("data-id", id);
     $arena.append(domBall);
-    poolOfThisArena.set(id, domBall);
+    domTableDisk.set(id, domBall);
     domBall.css({
       height: s.h + "px",
       width: s.w + "px",
@@ -359,19 +351,15 @@ export function applyConservationOfMomentum(
   v2.y = u2[1];
 }
 
-const VELOCITY_POINTER_POOL = new Map();
-
-export function drawVelocityPointer(id, { velocity, $arena }) {
-  if (!VELOCITY_POINTER_POOL.has($arena)) {
-    VELOCITY_POINTER_POOL.set($arena, new Map());
-  }
-  const ptrPool = VELOCITY_POINTER_POOL.get($arena);
-  const disk = BALL_POOL.get($arena).get(id);
-  let ptr = ptrPool.get(id);
+export function drawVelocityPointer(
+  id,
+  { velocity, domTableVelocityPointer, domTableDisk },
+) {
+  let ptr = domTableVelocityPointer.get(id);
   if (ptr === undefined) {
     ptr = $("<div class='velocity-pointer'></div>");
-    disk.append(ptr);
-    ptrPool.set(id, ptr);
+    domTableDisk.get(id).append(ptr);
+    domTableVelocityPointer.set(id, ptr);
   }
 
   const v = velocity.get(id);

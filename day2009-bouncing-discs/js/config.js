@@ -74,8 +74,8 @@ export function createStateFromDiskDynamics(ps) {
     distanceUntilCollision: new Map(),
     timeUntilCollision: new Map(),
     collideWith: new Map(),
-    vPtrJqTable: new Map(),
-    needQueryAgain: [true],
+    domTableDisk: new Map(),
+    domTableVelocityPointer: new Map(),
     ...ps,
   };
 }
