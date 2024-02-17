@@ -176,13 +176,13 @@ export function testDiskCollideWithArenaAtTimeZero() {
 }
 
 export function testRoundingErrorIsManageable() {
-  const ARENA_W = 300;
-  const ARENA_H = 300;
+  const ARENA_W = 100;
+  const ARENA_H = 500;
   const init = () =>
     createStateFromDiskDynamics({
       entities: [1000, 1001],
       velocity: new Map([
-        [1000, { x: 0, y: 40 }],
+        [1000, { x: 0, y: 10 }],
         [1001, { x: 0, y: -40 }],
       ]),
       position: new Map([
@@ -205,6 +205,39 @@ export function testRoundingErrorIsManageable() {
       vPtrJqTable: new Map(),
       ARENA_W,
       ARENA_H,
+    });
+  const asserts = [
+    it("should not have v.x", ({ velocity }) => {
+      const p1 = velocity.get(1000);
+      const p2 = velocity.get(1001);
+      return eq(p1.x, 0) && eq(p2.x, 0);
+    }),
+  ];
+  return [TwoDimElasticCollisionNoDraw, init, asserts];
+}
+
+export function testRoundingErrorIsManageable2() {
+  const init = () =>
+    createStateFromDiskDynamics({
+      entities: [1000, 1001],
+      position: [
+        [1000, { x: 208.99995354296826, y: 599.6223999995648 }],
+        [1001, { x: 209.0000118061715, y: 660.7698155849632 }],
+      ],
+      size: [
+        [1000, { w: 40, h: 40 }],
+        [1001, { w: 80, h: 80 }],
+      ],
+      velocity: [
+        [1000, { x: 0, y: 82.80319999993782 }],
+        [1001, { x: 0, y: 16.908799999968934 }],
+      ],
+      mass: [
+        [1000, 40],
+        [1001, 160],
+      ],
+      ARENA_W: 418,
+      ARENA_H: 889,
     });
   const asserts = [
     it("should not have v.x", ({ velocity }) => {

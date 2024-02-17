@@ -21,6 +21,7 @@
         testPushAnotherDisk,
         testTwoArenaCollisionInTwoFrames,
         testCollisionIsNeverMissed,
+        testRoundingErrorIsManageable2,
       } from "./js/tests.js";
       import update from "./js/update.js";
 
@@ -49,6 +50,7 @@
       simulateUntilAssertionFails(testPushAnotherDisk);
       simulateUntilAssertionFails(testTwoArenaCollisionInTwoFrames);
       simulateUntilAssertionFails(testRoundingErrorIsManageable);
+      simulateUntilAssertionFails(testRoundingErrorIsManageable2);
       simulateUntilAssertionFails(testDiskHitArenaCorner);
       simulateUntilAssertionFails(testDiskCollideWithArenaAtTimeZero);
       simulateUntilAssertionFails(testCollisionIsNeverMissed);
