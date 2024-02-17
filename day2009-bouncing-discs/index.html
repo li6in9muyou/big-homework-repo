@@ -94,7 +94,11 @@
   </head>
   <body>
     <script type="module">
-      import { TwoDimElasticCollision } from "./js/config.js";
+      import {
+        buildConfig,
+        domDrawer,
+        TwoDimElasticCollision,
+      } from "./js/config.js";
       import update from "./js/update.js";
       import {
         testDiskBouncingAgainstWall,
@@ -107,7 +111,7 @@
       } from "./js/tests.js";
 
       function createArenaFromTest(testFn) {
-        const [_, INIT, __] = testFn();
+        const [CONFIG, INIT, _] = testFn();
         const $arenaContainer = $(`
           <section class="arena-container">
             <header>
@@ -161,7 +165,10 @@
           if (state.frames === 0) {
             state.frames_start = performance.now();
           }
-          update(CONTEXT, ...TwoDimElasticCollision);
+          update(
+            CONTEXT,
+            ...buildConfig.from(CONFIG).drawer(domDrawer).build(),
+          );
           state.frames++;
 
           if (state.frames > 10) {

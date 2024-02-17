@@ -63,6 +63,15 @@ export function buildConfig() {
   return configBuilder;
 }
 
+buildConfig.from = function (config) {
+  const [queries, systems, drawers, debuggers] = config;
+  return buildConfig()
+    .query(queries)
+    .system(systems)
+    .drawer(drawers)
+    .debug(debuggers);
+};
+
 export const TwoDimElasticCollision = buildConfig()
   .query(arenaAndDiskCollision)
   .system(twoDimElastic)
