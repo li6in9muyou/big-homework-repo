@@ -110,7 +110,12 @@ export default function addInfiniteScrollEffect(list, getItem, options) {
         const key = getNextKey();
 
         const loading = this.getLoading(key);
+        // todo: what if getItem throws or fails
         const item = this.getItem(key);
+        console.assert(
+          !!item,
+          `infinite-scroll: invalid item !!item = false, key = ${key}`,
+        );
         const waitGetItem = Promise.resolve(item);
         loadingPlaceholders.set(key, loading);
         batchGetItem.set(key, waitGetItem);
