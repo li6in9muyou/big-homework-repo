@@ -53,9 +53,7 @@
     } from "./js/date-util.js";
 
     function createMonthGrid(year, month) {
-      const $m = $(
-        `<div class='month' data-year='${year}' data-month='${month}'>`,
-      );
+      const $m = $(`<div class='month'>`);
       $m.append($("<h3>").text(getYearMonthString(year, month)));
       const $dg = $("<ul class='day-grid'>");
       for (let i = 0; i < 5 * 7; i++) {
@@ -70,6 +68,8 @@
       const dayCnt = daysInMonth(year, month);
       const today = new Date();
       const someDayThisMonth = new Date(year, month - 1);
+      $m.attr("data-year", someDayThisMonth.getFullYear());
+      $m.attr("data-month", someDayThisMonth.getMonth() + 1);
       for (
         let cell = firstDayWeekDay, day = 1;
         cell <= 35 && day <= dayCnt;
