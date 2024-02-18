@@ -51,14 +51,14 @@
       isOnSameDate,
       weekDayOfFirstDayInMonthWeekStartFromSunday,
     } from "./js/date-util.js";
+    import addInfiniteScrollEffect from "./js/infinite-scroll.js";
 
     function createMonthGrid(year, month) {
-      const $m = $(
-        `<div class='month' data-year='${year}' data-month='${month}'>`,
-      );
+      const $m = $(`<div class='month'>`);
       $m.append($("<h3>").text(getYearMonthString(year, month)));
       const $dg = $("<ul class='day-grid'>");
-      for (let i = 0; i < 5 * 7; i++) {
+      const maxWeeksOneMonthCanSpanAcross = 6;
+      for (let i = 0; i < maxWeeksOneMonthCanSpanAcross * 7; i++) {
         $dg.append($("<li class='day-grid--day'>"));
       }
       $m.append($dg);
@@ -70,9 +70,11 @@
       const dayCnt = daysInMonth(year, month);
       const today = new Date();
       const someDayThisMonth = new Date(year, month - 1);
+      $m.attr("data-year", someDayThisMonth.getFullYear());
+      $m.attr("data-month", someDayThisMonth.getMonth() + 1);
       for (
         let cell = firstDayWeekDay, day = 1;
-        cell <= 35 && day <= dayCnt;
+        cell <= maxWeeksOneMonthCanSpanAcross * 7 && day <= dayCnt;
         cell++
       ) {
         const $d = $dg.children().eq(cell - 1);
@@ -92,64 +94,18 @@
     }
 
     const $calendarMonthList = $(".calendar--month-list");
-    // for (let i = 0; i < 12; i++) {
-    //   $calendarMonthList.append(createMonthGrid(2024, i + 1));
-    // }
-
-    const infiniteScrollEffect = new (function (viewportH, getItem, list) {
-      this.renderedH = 0;
-      this.vpH = viewportH;
-      this.list = list;
-      this.keyFront = 0;
-      this.keyBack = 0;
-
-      while (this.renderedH < 1.5 * this.vpH) {
-        const item = getItem(this.keyBack);
-        $(item).attr("data-inf-scr-key", this.keyBack);
-        this.keyBack += 1;
-        this.list.append(item);
-        this.renderedH += item.outerHeight();
-      }
-
-      document.addEventListener(
-        "scroll",
-        () => {
-          console.log(
-            "whether to append to list",
-            this.renderedH,
-            document.documentElement.scrollTop,
-          );
-          if (
-            this.renderedH - document.documentElement.scrollTop <
-            1.5 * this.vpH
-          ) {
-            const item = getItem(this.keyBack);
-            $(item).attr("data-inf-scr-key", this.keyBack);
-            this.keyBack += 1;
-            this.list.append(item);
-            this.renderedH += item.outerHeight();
-          }
-
-          const minKeyFront = this.keyBack - 7;
-          if (minKeyFront >= 0) {
-            for (let toDelete = 0; toDelete < minKeyFront; toDelete++) {
-              this.list.children(`[data-inf-scr-key=${toDelete}]`).remove();
-              this.keyFront += 1;
-            }
-          }
-        },
-        { passive: true },
-      );
-    })(
-      document.documentElement.clientHeight -
-        $(".calendar--weekday-bar").height(),
-      (key) =>
-        $(
-          `<div style='height:${Math.floor(
-            100 + 200 * Math.random(),
-          )}px;margin:6px;text-align:center;background-color: mediumvioletred;border:solid 2px white;font-size: 90px'>${key}</div>`,
-        ),
+    addInfiniteScrollEffect(
       $calendarMonthList,
+      (monthIdx) => createMonthGrid(2024, monthIdx + 1),
+      {
+        initLen: 12,
+        preload: 6,
+        maxLen: 24,
+      },
+    );
+    $(".calendar--weekday-bar").css(
+      "width",
+      $calendarMonthList.children(".month").eq(0).width(),
     );
   </script>
 </html>

@@ -150,7 +150,8 @@ main {
 
 .calendar {
   &--weekday-bar {
-    position: sticky;
+    position: absolute;
+    left: 0;
     top: 0;
     z-index: 10;
     display: flex;
@@ -162,5 +163,10 @@ main {
 
   &--weekday-bar__weekend {
     color: var(--color-text-weekend);
+  }
+
+  &--month-list {
+    height: 100vh;
+    overflow-y: auto;
   }
 }
