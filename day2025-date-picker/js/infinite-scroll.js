@@ -110,23 +110,31 @@ export default function addInfiniteScrollEffect(list, getItem, options) {
         const key = getNextKey();
 
         const loading = this.getLoading(key);
-        const waitGetItem = Promise.resolve(this.getItem(key));
+        const item = this.getItem(key);
+        const waitGetItem = Promise.resolve(item);
         loadingPlaceholders.set(key, loading);
         batchGetItem.set(key, waitGetItem);
 
-        waitGetItem
-          .then((item) => $(item))
-          .then(($item) => {
-            allItemLoaded.done();
-            $item.attr("data-ifs-key", key);
-            return $item;
-          })
-          .then(($item) => {
-            $item.insertAfter(loading);
-            loading.remove();
-            return $item;
-          });
-        listModifier(loading);
+        const ifHaveToWaitGetItem = typeof item.then === "function";
+        if (ifHaveToWaitGetItem) {
+          waitGetItem
+            .then((item) => $(item))
+            .then(($item) => {
+              allItemLoaded.done();
+              $item.attr("data-ifs-key", key);
+              return $item;
+            })
+            .then(($item) => {
+              $item.insertAfter(loading);
+              loading.remove();
+              return $item;
+            });
+          listModifier(loading);
+        } else {
+          allItemLoaded.done();
+          $(item).attr("data-ifs-key", key);
+          listModifier(item);
+        }
       }
 
       const w = allItemLoaded.wait();
