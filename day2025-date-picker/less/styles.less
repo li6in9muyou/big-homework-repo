@@ -125,7 +125,10 @@ main {
     line-height: 12vw;
   }
 
-  &--day__disable {
+  &--day__disable,
+  &--day__disable&--day__today,
+  &--day__disable&--day__today&--day__today::after,
+  &--day__disable&--day__weekend {
     color: var(--color-text-secondary);
   }
 
