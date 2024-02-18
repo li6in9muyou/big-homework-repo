@@ -57,7 +57,8 @@
       const $m = $(`<div class='month'>`);
       $m.append($("<h3>").text(getYearMonthString(year, month)));
       const $dg = $("<ul class='day-grid'>");
-      for (let i = 0; i < 5 * 7; i++) {
+      const maxWeeksOneMonthCanSpanAcross = 6;
+      for (let i = 0; i < maxWeeksOneMonthCanSpanAcross * 7; i++) {
         $dg.append($("<li class='day-grid--day'>"));
       }
       $m.append($dg);
@@ -73,7 +74,7 @@
       $m.attr("data-month", someDayThisMonth.getMonth() + 1);
       for (
         let cell = firstDayWeekDay, day = 1;
-        cell <= 35 && day <= dayCnt;
+        cell <= maxWeeksOneMonthCanSpanAcross * 7 && day <= dayCnt;
         cell++
       ) {
         const $d = $dg.children().eq(cell - 1);
