@@ -9,6 +9,15 @@
     <script src="vendor/less.js"></script>
   </head>
   <body>
+    <label for="in-date-start" class="input-date">
+      开始日期
+      <input type="date" name="start" id="in-date-start" />
+    </label>
+    <p>相差<span data-diff-in-days>0</span>天</p>
+    <label for="in-date-end" class="input-date">
+      结束日期
+      <input type="date" name="end" id="in-date-end" />
+    </label>
     <section class="calendar">
       <ol class="calendar--weekday-bar">
         <li class="calendar--weekday-bar__weekend">日</li>
@@ -43,6 +52,10 @@
 
     $dateStart.on("change", updateDateDiff);
     $dateEnd.on("change", updateDateDiff);
+    $(".input-date > input[type=date]").on("change", (e) => {
+      const $date = $(e.target);
+      $date.closest(".input-date").text($date.val());
+    });
   </script>
   <script type="module">
     import {
@@ -107,5 +120,24 @@
       "width",
       $calendarMonthList.children(".month").eq(0).width(),
     );
+    const $calendar = $(".calendar");
+    $calendar.css("width", `${$calendar.width()}px`);
+    $calendar.css("left", "100vw");
+    $(".input-date").on("click", () => {
+      console.log("input date click");
+      $calendar.animate({ left: "0vw" });
+    });
+    $calendarMonthList.on("click", ".day-grid--day", (e) => {
+      const $day = $(e.target);
+      const $month = $day.closest(".month");
+      const date = new Date(
+        +$month.attr("data-year"),
+        +$month.attr("data-month") - 1,
+        +$day.text(),
+      );
+      console.log("day click", $day.text(), date);
+      $day.toggleClass("day-grid--day__selected");
+      setTimeout(() => $calendar.animate({ left: "100vw" }), 500);
+    });
   </script>
 </html>

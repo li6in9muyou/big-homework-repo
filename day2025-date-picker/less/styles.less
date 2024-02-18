@@ -66,6 +66,8 @@ body {
   color: var(--color-text);
   margin: 0;
   font-size: 1 * @rem;
+  position: relative;
+  overflow-x: hidden;
 }
 
 main {
@@ -149,6 +151,13 @@ main {
 }
 
 .calendar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 10;
+  background-color: var(--color-bg);
+
   &--weekday-bar {
     position: absolute;
     left: 0;
@@ -168,5 +177,17 @@ main {
   &--month-list {
     height: 100vh;
     overflow-y: auto;
+  }
+}
+
+.input-date {
+  border: solid 2px var(--color-text-secondary);
+  padding: 6px;
+  cursor: pointer;
+  text-decoration: underline;
+  display: inline-block;
+
+  input[type="date"] {
+    display: none;
   }
 }
