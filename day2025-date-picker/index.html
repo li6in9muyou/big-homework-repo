@@ -66,7 +66,14 @@
     } from "./js/date-util.js";
     import addInfiniteScrollEffect from "./js/infinite-scroll.js";
 
-    function createMonthGrid(year, month) {
+    /**
+     * @param {number} year
+     * @param {number} month
+     * @param {(dayElement: jQuery, date: Date) => void} hookAfterCreateOneDay
+     *
+     * @return void
+     */
+    function createMonthGrid(year, month, hookAfterCreateOneDay) {
       const $m = $(`<div class='month'>`);
       $m.append($("<h3>").text(getYearMonthString(year, month)));
       const $dg = $("<ul class='day-grid'>");
@@ -100,6 +107,7 @@
         if (isOnSameDate(someDayThisMonth, today)) {
           $d.addClass("day-grid--day__today");
         }
+        hookAfterCreateOneDay($d, someDayThisMonth);
         day++;
       }
 
@@ -107,37 +115,125 @@
     }
 
     const $calendarMonthList = $(".calendar--month-list");
-    addInfiniteScrollEffect(
-      $calendarMonthList,
-      (monthIdx) => createMonthGrid(2024, monthIdx + 1),
-      {
-        initLen: 12,
-        preload: 6,
-        maxLen: 24,
-      },
-    );
-    $(".calendar--weekday-bar").css(
-      "width",
-      $calendarMonthList.children(".month").eq(0).width(),
-    );
     const $calendar = $(".calendar");
     $calendar.css("width", `${$calendar.width()}px`);
     $calendar.css("left", "100vw");
-    $(".input-date").on("click", () => {
+    const today = new Date();
+
+    $(".input-date").on("click", (e) => {
+      const $dateInput = $(e.target).children("input[type=date]");
       console.log("input date click");
-      $calendar.animate({ left: "0vw" });
-    });
-    $calendarMonthList.on("click", ".day-grid--day", (e) => {
-      const $day = $(e.target);
-      const $month = $day.closest(".month");
-      const date = new Date(
-        +$month.attr("data-year"),
-        +$month.attr("data-month") - 1,
-        +$day.text(),
+
+      let isDefaultSelected;
+      if ($dateInput.val() !== "") {
+        console.log($dateInput.val(), "will be selected");
+        isDefaultSelected = (d) => isOnSameDate(new Date($dateInput.val()), d);
+      } else {
+        isDefaultSelected = () => false;
+      }
+
+      const close = showCalendar(
+        new Date(2024, 2 - 1),
+        (date, selected) => {
+          console.log("calendar on change", date, selected);
+        },
+        (date) => isOnSameDate(today, date),
+        isDefaultSelected,
+        (d) => d <= today,
       );
-      console.log("day click", $day.text(), date);
-      $day.toggleClass("day-grid--day__selected");
-      setTimeout(() => $calendar.animate({ left: "100vw" }), 500);
     });
+
+    /**
+     * @param {Date} yearAndMonth
+     * @param {(day: Date, selected: boolean) => void} onChange
+     * @param {(yearMonthDate: Date) => boolean} isToday
+     * @param {(yearMonthDate: Date) => boolean} isDefaultSelected
+     * @param {(yearMonthDate: Date) => boolean} canSelect
+     *
+     * @return closeCalendar: () => void
+     */
+    function showCalendar(
+      yearAndMonth,
+      onChange = () => {},
+      isToday = () => true,
+      isDefaultSelected = () => false,
+      canSelect = () => true,
+    ) {
+      function chain(...fnList) {
+        return (...args) => fnList.reduce((_, fn) => fn(...args), undefined);
+      }
+
+      const addAfterEffects = chain(
+        ($d, date) => {
+          if (isToday(date)) {
+            $d.addClass("day-grid--day__today");
+          }
+        },
+        ($d, date) => {
+          if (!canSelect(date)) {
+            $d.addClass("day-grid--day__disable");
+          }
+        },
+        ($d, date) => {
+          if (isDefaultSelected(date)) {
+            $d.attr("data-calendar-selected", true);
+            $d.addClass("day-grid--day__selected");
+          }
+        },
+      );
+
+      const monthListNotInitialized =
+        $calendarMonthList.children().length === 0;
+      if (monthListNotInitialized) {
+        const initYear = yearAndMonth.getFullYear();
+        const initMonth = yearAndMonth.getMonth() + 1;
+        addInfiniteScrollEffect(
+          $calendarMonthList,
+          (key) => {
+            // + 1 is magic to make initMonth the first full visible month grid
+            return createMonthGrid(
+              initYear,
+              initMonth + key + 1,
+              addAfterEffects,
+            );
+          },
+          {
+            initLen: 12,
+            preload: 6,
+            maxLen: 24,
+          },
+        );
+
+        $(".calendar--weekday-bar").css(
+          "width",
+          $calendarMonthList.children(".month").eq(0).width(),
+        );
+
+        $calendarMonthList.on("click", ".day-grid--day", (e) => {
+          const $day = $(e.target);
+          const $month = $day.closest(".month");
+          const date = new Date(
+            +$month.attr("data-year"),
+            +$month.attr("data-month") - 1,
+            +$day.text(),
+          );
+          console.log("day click", $day.text(), date);
+
+          const previousIsUnselected =
+            $day.attr("data-calendar-selected") === undefined;
+          if (previousIsUnselected) {
+            $day.add("day-grid--day__selected");
+            $day.attr("data-calendar-selected", "ok");
+          } else {
+            $day.remove("day-grid--day__selected");
+            $day.attr("data-calendar-selected", undefined);
+          }
+          onChange(date, !previousIsUnselected);
+        });
+      }
+
+      $calendar.animate({ left: "0vw" });
+      return () => $calendar.animate({ left: "100vw" });
+    }
   </script>
 </html>
