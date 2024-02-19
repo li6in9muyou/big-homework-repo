@@ -258,8 +258,14 @@
           "width",
           $calendarMonthList.children(".month").eq(0).width(),
         );
+      } else {
+        walkMonthGrid(addAfterEffects);
+      }
 
-        $calendarMonthList.on("click", ".day-grid--day", (e) => {
+      $calendarMonthList.on(
+        "click.thisCalendarSession",
+        ".day-grid--day",
+        (e) => {
           const $day = $(e.target);
           const $month = $day.closest(".month");
           const date = new Date(
@@ -292,13 +298,14 @@
               );
               break;
           }
-        });
-      } else {
-        walkMonthGrid(addAfterEffects);
-      }
+        },
+      );
 
       $calendar.animate({ left: "0vw" });
-      return () => $calendar.animate({ left: "100vw" });
+      return () => {
+        $calendar.animate({ left: "100vw" });
+        $calendarMonthList.off("click.thisCalendarSession");
+      };
     }
   </script>
 </html>
