@@ -13,7 +13,7 @@
       开始日期
       <input type="date" name="start" id="in-date-start" />
     </label>
-    <p>相差<span data-diff-in-days>0</span>天</p>
+    <p>共有<span data-diff-in-days>??</span>天</p>
     <label for="in-date-end" class="input-date">
       结束日期
       <input type="date" name="end" id="in-date-end" />
@@ -33,7 +33,7 @@
   </body>
   <script src="vendor/jquery.js"></script>
   <script type="module">
-    import { daysBetween } from "./js/date-util.js";
+    import { daysBetweenInclusive } from "./js/date-util.js";
 
     const $dateStart = $("#in-date-start");
     const $dateEnd = $("#in-date-end");
@@ -47,7 +47,7 @@
         return;
       }
 
-      $diffInDays.text(daysBetween($dateStart.val(), $dateEnd.val()));
+      $diffInDays.text(daysBetweenInclusive($dateStart.val(), $dateEnd.val()));
     }
 
     $dateStart.on("change", updateDateDiff);
