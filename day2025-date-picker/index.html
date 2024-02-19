@@ -109,7 +109,7 @@
       return $m;
     }
 
-    function walkMonthGrid(walker) {
+    function forEachRenderedDay(modifier) {
       $calendarMonthList.children(".month").each((idx, elem) => {
         const $month = $(elem);
         const year = parseInt($month.attr("data-year"));
@@ -122,7 +122,7 @@
             return;
           }
           someDayThisMonth.setDate(date);
-          walker($day, someDayThisMonth);
+          modifier($day, someDayThisMonth);
         });
       });
     }
@@ -262,7 +262,7 @@
           $calendarMonthList.children(".month").eq(0).width(),
         );
       } else {
-        walkMonthGrid(addAfterEffects);
+        forEachRenderedDay(addAfterEffects);
       }
 
       $calendarMonthList.on(
