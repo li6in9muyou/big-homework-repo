@@ -114,6 +114,26 @@
       return $m;
     }
 
+    function walkMonthGrid(walker) {
+      $calendarMonthList.children(".month").each((idx, elem) => {
+        const $month = $(elem);
+        const year = parseInt($month.attr("data-year"));
+        const month = parseInt($month.attr("data-month"));
+        const someDayThisMonth = new Date(year, month - 1);
+        $month.find(".day-grid--day").each((i, d) => {
+          const $day = $(d);
+          const date = $day.text();
+          if (date === "") {
+            return;
+          }
+          someDayThisMonth.setDate(date);
+          walker($day, someDayThisMonth);
+        });
+      });
+    }
+
+    const $dateStart = $("#in-date-start");
+    const $dateEnd = $("#in-date-end");
     const $calendarMonthList = $(".calendar--month-list");
     const $calendar = $(".calendar");
     $calendar.css("width", `${$calendar.width()}px`);
@@ -121,8 +141,12 @@
     const today = new Date();
 
     $(".input-date").on("click", (e) => {
+      if (e.eventPhase !== 2) {
+        e.stopPropagation();
+        return;
+      }
       const $dateInput = $(e.target).children("input[type=date]");
-      console.log("input date click");
+      console.log("input date click", $dateInput, $dateInput[0], e.target);
 
       let isDefaultSelected;
       if ($dateInput.val() !== "") {
@@ -132,14 +156,39 @@
         isDefaultSelected = () => false;
       }
 
+      function setDateInputToDate($input, d) {
+        $input.val(
+          new Date(d.getTime() - d.getTimezoneOffset() * 60 * 1000)
+            .toISOString()
+            .slice(0, 10),
+        );
+      }
+
+      const start = new Date($dateStart.val());
+      const end = new Date($dateEnd.val());
+      const startIsValid = !Number.isNaN(start.getTime());
+      const endIsValid = !Number.isNaN(end.getTime());
+      const bothAreInvalid = !startIsValid && !endIsValid;
+      const bothAreValid = startIsValid && endIsValid;
       const close = showCalendar(
         new Date(2024, 2 - 1),
         (date, selected) => {
           console.log("calendar on change", date, selected);
+          setDateInputToDate($dateInput, date);
+          setTimeout(close, 300);
         },
         (date) => isOnSameDate(today, date),
         isDefaultSelected,
-        (d) => d <= today,
+        (d) => {
+          if (bothAreInvalid || bothAreValid) {
+            return true;
+          }
+          if ($dateInput.attr("name") === "start") {
+            return endIsValid ? d < end : true;
+          } else if ($dateInput.attr("name") === "end") {
+            return startIsValid ? start < d : true;
+          }
+        },
       );
     });
 
@@ -172,11 +221,12 @@
         ($d, date) => {
           if (!canSelect(date)) {
             $d.addClass("day-grid--day__disable");
+            $d.attr("data-calendar-selected", "disable");
           }
         },
         ($d, date) => {
           if (isDefaultSelected(date)) {
-            $d.attr("data-calendar-selected", true);
+            $d.attr("data-calendar-selected", "ok");
             $d.addClass("day-grid--day__selected");
           }
         },
@@ -219,17 +269,32 @@
           );
           console.log("day click", $day.text(), date);
 
-          const previousIsUnselected =
-            $day.attr("data-calendar-selected") === undefined;
-          if (previousIsUnselected) {
-            $day.add("day-grid--day__selected");
-            $day.attr("data-calendar-selected", "ok");
-          } else {
-            $day.remove("day-grid--day__selected");
-            $day.attr("data-calendar-selected", undefined);
+          const previouslySelectState = $day.attr("data-calendar-selected");
+          switch (previouslySelectState) {
+            case "disable":
+              break;
+            case undefined:
+            case "no":
+              $day.addClass("day-grid--day__selected");
+              $day.attr("data-calendar-selected", "ok");
+              onChange(date, true);
+              break;
+            case "ok":
+              $day.removeClass("day-grid--day__selected");
+              $day.attr("data-calendar-selected", "no");
+              onChange(date, false);
+              break;
+            default:
+              console.error(
+                "calendar: when toggling day selected state, receives invalid select state",
+                previouslySelectState,
+                $day[0],
+              );
+              break;
           }
-          onChange(date, !previousIsUnselected);
         });
+      } else {
+        walkMonthGrid(addAfterEffects);
       }
 
       $calendar.animate({ left: "0vw" });
