@@ -115,10 +115,12 @@ main {
   }
 }
 
+@calendar-x-spacing: 8px;
+
 .day-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
+  gap: @calendar-x-spacing;
 
   &--day {
     display: flex;
@@ -171,7 +173,8 @@ main {
     justify-content: space-around;
     color: var(--color-text-secondary);
     background-color: var(--color-bg-secondary);
-    padding: @p-2 0;
+    padding: @p-2;
+    gap: @calendar-x-spacing;
   }
 
   &--weekday-bar__weekend {

@@ -248,10 +248,7 @@
           },
         );
 
-        $(".calendar--weekday-bar").css(
-          "width",
-          $calendarMonthList.children(".month").eq(0).width(),
-        );
+        $(".calendar--weekday-bar").css("width", $calendarMonthList.width());
       } else {
         forEachRenderedDay(additionalRenderer);
       }
