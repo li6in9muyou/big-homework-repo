@@ -163,53 +163,20 @@
       const endIsValid = !Number.isNaN(end.getTime());
       const bothAreInvalid = !startIsValid && !endIsValid;
       const bothAreValid = startIsValid && endIsValid;
-      const close = showCalendar(
-        new Date(2024, 2 - 1),
-        (date, selected) => {
-          console.log("calendar on change", date, selected);
-          setDateInputToDate($dateInput, date);
-          setTimeout(close, 300);
-          updateDateDiff();
-        },
-        (date) => isOnSameDate(today, date),
-        (everyDay) =>
-          validDatesInDateInput.some((d) => isOnSameDate(d, everyDay)),
-        (d) => {
-          if (bothAreInvalid || bothAreValid) {
-            return true;
-          }
-          if ($dateInput.attr("name") === "start") {
-            return endIsValid ? d < end : true;
-          } else if ($dateInput.attr("name") === "end") {
-            return startIsValid ? start < d : true;
-          }
-        },
-      );
-    });
-
-    /**
-     * @param {Date} yearAndMonth
-     * @param {(day: Date, selected: boolean) => void} onChange
-     * @param {(yearMonthDate: Date) => boolean} isToday
-     * @param {(yearMonthDate: Date) => boolean} isDefaultSelected
-     * @param {(yearMonthDate: Date) => boolean} canSelect
-     *
-     * @return closeCalendar: () => void
-     */
-    function showCalendar(
-      yearAndMonth,
-      onChange = () => {},
-      isToday = () => true,
-      isDefaultSelected = () => false,
-      canSelect = () => true,
-    ) {
-      function chain(...fnList) {
-        return (...args) => fnList.reduce((_, fn) => fn(...args), undefined);
+      function canSelect(d) {
+        if (bothAreInvalid || bothAreValid) {
+          return true;
+        }
+        if ($dateInput.attr("name") === "start") {
+          return endIsValid ? d < end : true;
+        } else if ($dateInput.attr("name") === "end") {
+          return startIsValid ? start < d : true;
+        }
       }
 
-      const addAfterEffects = chain(
+      const renderers = [
         ($d, date) => {
-          if (isToday(date)) {
+          if (isOnSameDate(today, date)) {
             $d.addClass("day-grid--day__today");
           } else {
             $d.removeClass("day-grid--day__today");
@@ -225,7 +192,7 @@
           }
         },
         ($d, date) => {
-          if (isDefaultSelected(date)) {
+          if (validDatesInDateInput.some((d) => isOnSameDate(d, date))) {
             $d.attr("data-calendar-selected", "ok");
             $d.addClass("day-grid--day__selected");
           } else {
@@ -233,8 +200,32 @@
             $d.removeClass("day-grid--day__selected");
           }
         },
-      );
+      ];
 
+      const close = showCalendar(
+        new Date(2024, 2 - 1),
+        (date, selected) => {
+          console.log("calendar on change", date, selected);
+          setDateInputToDate($dateInput, date);
+          setTimeout(close, 300);
+          updateDateDiff();
+        },
+        (...args) => renderers.reduce((_, fn) => fn(...args), undefined),
+      );
+    });
+
+    /**
+     * @param {Date} yearAndMonth
+     * @param {(day: Date, selected: boolean) => void} onChange
+     * @param {($d: jQuery, date: Date) => void} additionalRenderer
+     *
+     * @return closeCalendar: () => void
+     */
+    function showCalendar(
+      yearAndMonth,
+      onChange = () => {},
+      additionalRenderer = () => {},
+    ) {
       const monthListNotInitialized =
         $calendarMonthList.children().length === 0;
       if (monthListNotInitialized) {
@@ -247,7 +238,7 @@
             return createMonthGrid(
               initYear,
               initMonth + key + 1,
-              addAfterEffects,
+              additionalRenderer,
             );
           },
           {
@@ -262,7 +253,7 @@
           $calendarMonthList.children(".month").eq(0).width(),
         );
       } else {
-        forEachRenderedDay(addAfterEffects);
+        forEachRenderedDay(additionalRenderer);
       }
 
       $calendarMonthList.on(
