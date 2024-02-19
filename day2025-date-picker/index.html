@@ -141,13 +141,13 @@
       const $dateInput = $(e.target).children("input[type=date]");
       console.log("input date click", $dateInput, $dateInput[0], e.target);
 
-      let isDefaultSelected;
-      if ($dateInput.val() !== "") {
-        console.log($dateInput.val(), "will be selected");
-        isDefaultSelected = (d) => isOnSameDate(new Date($dateInput.val()), d);
-      } else {
-        isDefaultSelected = () => false;
-      }
+      const validDatesInDateInput = [$dateStart, $dateEnd]
+        .map((i) => new Date(i.val()))
+        .filter((v) => !Number.isNaN(v.getTime()));
+      console.log(
+        "opening calendar validDatesInDateInput",
+        validDatesInDateInput,
+      );
 
       function setDateInputToDate($input, d) {
         $input.val(
@@ -172,7 +172,8 @@
           updateDateDiff();
         },
         (date) => isOnSameDate(today, date),
-        isDefaultSelected,
+        (everyDay) =>
+          validDatesInDateInput.some((d) => isOnSameDate(d, everyDay)),
         (d) => {
           if (bothAreInvalid || bothAreValid) {
             return true;
@@ -210,18 +211,26 @@
         ($d, date) => {
           if (isToday(date)) {
             $d.addClass("day-grid--day__today");
+          } else {
+            $d.removeClass("day-grid--day__today");
           }
         },
         ($d, date) => {
           if (!canSelect(date)) {
             $d.addClass("day-grid--day__disable");
             $d.attr("data-calendar-selected", "disable");
+          } else {
+            $d.removeClass("day-grid--day__disable");
+            $d.attr("data-calendar-selected", "no");
           }
         },
         ($d, date) => {
           if (isDefaultSelected(date)) {
             $d.attr("data-calendar-selected", "ok");
             $d.addClass("day-grid--day__selected");
+          } else {
+            $d.attr("data-calendar-selected", "no");
+            $d.removeClass("day-grid--day__selected");
           }
         },
       );
