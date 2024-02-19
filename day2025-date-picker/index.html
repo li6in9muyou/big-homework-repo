@@ -141,14 +141,6 @@
       const $dateInput = $(e.target).children("input[type=date]");
       console.log("input date click", $dateInput, $dateInput[0], e.target);
 
-      const validDatesInDateInput = [$dateStart, $dateEnd]
-        .map((i) => new Date(i.val()))
-        .filter((v) => !Number.isNaN(v.getTime()));
-      console.log(
-        "opening calendar validDatesInDateInput",
-        validDatesInDateInput,
-      );
-
       function setDateInputToDate($input, d) {
         $input.val(
           new Date(d.getTime() - d.getTimezoneOffset() * 60 * 1000)
@@ -192,7 +184,12 @@
           }
         },
         ($d, date) => {
-          if (validDatesInDateInput.some((d) => isOnSameDate(d, date))) {
+          if (
+            [$dateStart, $dateEnd]
+              .map((i) => new Date(i.val()))
+              .filter((v) => !Number.isNaN(v.getTime()))
+              .some((d) => isOnSameDate(d, date))
+          ) {
             $d.attr("data-calendar-selected", "ok");
             $d.addClass("day-grid--day__selected");
           } else {
