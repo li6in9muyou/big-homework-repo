@@ -121,7 +121,7 @@
           if (date === "") {
             return;
           }
-          someDayThisMonth.setDate(date);
+          someDayThisMonth.setDate(+date);
           modifier($day, someDayThisMonth);
         });
       });
