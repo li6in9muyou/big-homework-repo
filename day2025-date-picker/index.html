@@ -52,12 +52,7 @@
 
     $dateStart.on("change", updateDateDiff);
     $dateEnd.on("change", updateDateDiff);
-    $(".input-date > input[type=date]").on("change", (e) => {
-      const $date = $(e.target);
-      $date.closest(".input-date").text($date.val());
-    });
-  </script>
-  <script type="module">
+
     import {
       daysInMonth,
       getYearMonthString,
@@ -132,8 +127,6 @@
       });
     }
 
-    const $dateStart = $("#in-date-start");
-    const $dateEnd = $("#in-date-end");
     const $calendarMonthList = $(".calendar--month-list");
     const $calendar = $(".calendar");
     $calendar.css("width", `${$calendar.width()}px`);
@@ -176,6 +169,7 @@
           console.log("calendar on change", date, selected);
           setDateInputToDate($dateInput, date);
           setTimeout(close, 300);
+          updateDateDiff();
         },
         (date) => isOnSameDate(today, date),
         isDefaultSelected,
