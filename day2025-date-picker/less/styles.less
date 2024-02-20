@@ -66,6 +66,10 @@ body {
   color: var(--color-text);
   margin: 0;
   font-size: 1 * @rem;
+  position: relative;
+  overflow-x: hidden;
+  text-align: center;
+  padding-top: clamp(0px, 100vw, 45vh);
 }
 
 main {
@@ -113,9 +117,12 @@ main {
   }
 }
 
+@calendar-x-spacing: 8px;
+
 .day-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  gap: @calendar-x-spacing;
 
   &--day {
     display: flex;
@@ -123,7 +130,10 @@ main {
     line-height: 12vw;
   }
 
-  &--day__disable {
+  &--day__disable,
+  &--day__disable&--day__today,
+  &--day__disable&--day__today&--day__today::after,
+  &--day__disable&--day__weekend {
     color: var(--color-text-secondary);
   }
 
@@ -149,6 +159,13 @@ main {
 }
 
 .calendar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 10;
+  background-color: var(--color-bg);
+
   &--weekday-bar {
     position: absolute;
     left: 0;
@@ -158,7 +175,8 @@ main {
     justify-content: space-around;
     color: var(--color-text-secondary);
     background-color: var(--color-bg-secondary);
-    padding: @p-2 0;
+    padding: @p-2;
+    gap: @calendar-x-spacing;
   }
 
   &--weekday-bar__weekend {
@@ -168,5 +186,18 @@ main {
   &--month-list {
     height: 100vh;
     overflow-y: auto;
+    padding: 0 @p-2;
   }
+}
+
+:root {
+  touch-action: pan-y pinch-zoom double-tap-zoom;
+}
+
+.input-date {
+  border: solid 2px var(--color-text-secondary);
+  padding: 6px;
+  cursor: pointer;
+  text-decoration: underline;
+  display: inline-block;
 }

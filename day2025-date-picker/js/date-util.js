@@ -15,6 +15,10 @@ export function daysBetween(a, b) {
   return Math.abs(aa.getTime() - bb.getTime()) / (24 * 60 * 60 * 1000);
 }
 
+export function daysBetweenInclusive(a, b) {
+  return daysBetween(a, b) + 1;
+}
+
 export function daysInMonth(year, monthIdxStartFromOne) {
   return new Date(parseInt(year), parseInt(monthIdxStartFromOne), 0).getDate();
 }
@@ -52,4 +56,10 @@ export function isOnSameDate(a, b) {
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate()
   );
+}
+
+export function toStdDateString(d) {
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60 * 1000)
+    .toISOString()
+    .slice(0, 10);
 }

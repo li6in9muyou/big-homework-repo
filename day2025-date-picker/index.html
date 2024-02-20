@@ -9,6 +9,15 @@
     <script src="vendor/less.js"></script>
   </head>
   <body>
+    <label for="in-date-start" class="input-date">
+      开始日期
+      <input type="date" name="start" id="in-date-start" />
+    </label>
+    <p>共有<span data-diff-in-days>??</span>天</p>
+    <label for="in-date-end" class="input-date">
+      结束日期
+      <input type="date" name="end" id="in-date-end" />
+    </label>
     <section class="calendar">
       <ol class="calendar--weekday-bar">
         <li class="calendar--weekday-bar__weekend">日</li>
@@ -24,7 +33,7 @@
   </body>
   <script src="vendor/jquery.js"></script>
   <script type="module">
-    import { daysBetween } from "./js/date-util.js";
+    import { daysBetweenInclusive, toStdDateString } from "./js/date-util.js";
 
     const $dateStart = $("#in-date-start");
     const $dateEnd = $("#in-date-end");
@@ -38,13 +47,12 @@
         return;
       }
 
-      $diffInDays.text(daysBetween($dateStart.val(), $dateEnd.val()));
+      $diffInDays.text(daysBetweenInclusive($dateStart.val(), $dateEnd.val()));
     }
 
     $dateStart.on("change", updateDateDiff);
     $dateEnd.on("change", updateDateDiff);
-  </script>
-  <script type="module">
+
     import {
       daysInMonth,
       getYearMonthString,
@@ -53,7 +61,14 @@
     } from "./js/date-util.js";
     import addInfiniteScrollEffect from "./js/infinite-scroll.js";
 
-    function createMonthGrid(year, month) {
+    /**
+     * @param {number} year
+     * @param {number} month
+     * @param {(dayElement: jQuery, date: Date) => void} hookAfterCreateOneDay
+     *
+     * @return jQuery
+     */
+    function createMonthGrid(year, month, hookAfterCreateOneDay) {
       const $m = $(`<div class='month'>`);
       $m.append($("<h3>").text(getYearMonthString(year, month)));
       const $dg = $("<ul class='day-grid'>");
@@ -87,25 +102,213 @@
         if (isOnSameDate(someDayThisMonth, today)) {
           $d.addClass("day-grid--day__today");
         }
+        hookAfterCreateOneDay($d, someDayThisMonth);
         day++;
       }
 
       return $m;
     }
 
+    function forEachRenderedDay(modifier) {
+      $calendarMonthList.children(".month").each((idx, elem) => {
+        const $month = $(elem);
+        const year = parseInt($month.attr("data-year"));
+        const month = parseInt($month.attr("data-month"));
+        const someDayThisMonth = new Date(year, month - 1);
+        $month.find(".day-grid--day").each((i, d) => {
+          const $day = $(d);
+          const date = $day.text();
+          if (date === "") {
+            return;
+          }
+          someDayThisMonth.setDate(+date);
+          modifier($day, someDayThisMonth);
+        });
+      });
+    }
+
     const $calendarMonthList = $(".calendar--month-list");
-    addInfiniteScrollEffect(
-      $calendarMonthList,
-      (monthIdx) => createMonthGrid(2024, monthIdx + 1),
-      {
-        initLen: 12,
-        preload: 6,
-        maxLen: 24,
-      },
-    );
-    $(".calendar--weekday-bar").css(
-      "width",
-      $calendarMonthList.children(".month").eq(0).width(),
-    );
+    const $calendar = $(".calendar");
+    $calendar.css("width", `${$calendar.width()}px`);
+    $calendar.css("left", "100vw");
+    const today = new Date();
+
+    $(".input-date").on("click", (e) => {
+      if (e.eventPhase !== 2) {
+        e.stopPropagation();
+        return;
+      }
+      const $dateInput = $(e.target).children("input[type=date]");
+      console.log("input date click", $dateInput, $dateInput[0], e.target);
+
+      const start = new Date($dateStart.val());
+      const end = new Date($dateEnd.val());
+      const startIsValid = !Number.isNaN(start.getTime());
+      const endIsValid = !Number.isNaN(end.getTime());
+      const bothAreInvalid = !startIsValid && !endIsValid;
+      const bothAreValid = startIsValid && endIsValid;
+      function canSelect(d) {
+        if (bothAreInvalid || bothAreValid) {
+          return true;
+        }
+        if ($dateInput.attr("name") === "start") {
+          return endIsValid ? d < end : true;
+        } else if ($dateInput.attr("name") === "end") {
+          return startIsValid ? start < d : true;
+        }
+      }
+
+      const selectedDayDateStr = new Set(
+        [$dateStart, $dateEnd]
+          .map((i) => i.val())
+          .filter((v) => !Number.isNaN(Date.parse(v))),
+      );
+      console.log("opening calendar selectedDayDateStr", selectedDayDateStr);
+
+      const renderers = [
+        ($d, date) => {
+          if (isOnSameDate(today, date)) {
+            $d.addClass("day-grid--day__today");
+          } else {
+            $d.removeClass("day-grid--day__today");
+          }
+        },
+        ($d, date) => {
+          if (!canSelect(date)) {
+            $d.addClass("day-grid--day__disable");
+            $d.attr("data-calendar-selected", "disable");
+          } else {
+            $d.removeClass("day-grid--day__disable");
+            $d.attr("data-calendar-selected", "no");
+          }
+        },
+        ($d, date) => {
+          if (
+            Array.from(selectedDayDateStr)
+              .map((ds) => new Date(ds))
+              .some((d) => isOnSameDate(d, date))
+          ) {
+            $d.attr("data-calendar-selected", "ok");
+            $d.addClass("day-grid--day__selected");
+          } else {
+            $d.removeClass("day-grid--day__selected");
+          }
+        },
+        updateDateDiff,
+      ];
+
+      const close = showCalendar(new Date(2024, 2 - 1), onClick, (...args) =>
+        renderers.reduce((_, fn) => fn(...args), undefined),
+      );
+
+      function onClick($day, date, selected) {
+        console.log("calendar on change", date, selected);
+        const selectThisDay = toStdDateString(date);
+        const previouslySelectState = $day.attr("data-calendar-selected");
+        switch (previouslySelectState) {
+          case "disable":
+            return false;
+          case undefined:
+          case "no":
+            selectedDayDateStr.delete($dateInput.val());
+            $dateInput.val(selectThisDay);
+            selectedDayDateStr.add(selectThisDay);
+            setTimeout(close, 300);
+            return true;
+          case "ok":
+            selectedDayDateStr.delete(selectThisDay);
+            $dateInput.val("");
+            setTimeout(close, 300);
+            return true;
+          default:
+            console.error(
+              "calendar: when toggling day selected state, receives invalid select state",
+              previouslySelectState,
+              $day[0],
+            );
+            return false;
+        }
+      }
+    });
+
+    const calendarState = new (function () {
+      this.renderers = () => {};
+      this.setRenderContext = (initYear, initMonth, renderers) => {
+        this.renderers = renderers;
+        this.initYear = initYear;
+        this.initMonth = initMonth;
+      };
+      this.createMonthGridByKey = (key) => {
+        return createMonthGrid(
+          this.initYear,
+          // + 1 is magic to make initMonth the first full visible month grid
+          this.initMonth + key + 1,
+          this.renderers,
+        );
+      };
+    })();
+
+    /**
+     * @param {Date} yearAndMonth
+     * @param {($day: jQuery, day: Date, $month: jQuery) => dirty: boolean} onClickDay
+     * @param {($d: jQuery, date: Date) => void} additionalRenderer
+     *
+     * @return closeCalendar: () => void
+     */
+    function showCalendar(
+      yearAndMonth,
+      onClickDay = () => {},
+      additionalRenderer = () => {},
+    ) {
+      const initYear = yearAndMonth.getFullYear();
+      const initMonth = yearAndMonth.getMonth() + 1;
+      calendarState.setRenderContext(initYear, initMonth, additionalRenderer);
+
+      const monthListNotInitialized =
+        $calendarMonthList.children().length === 0;
+      if (monthListNotInitialized) {
+        addInfiniteScrollEffect(
+          $calendarMonthList,
+          calendarState.createMonthGridByKey,
+          {
+            initLen: 12,
+            preload: 6,
+            maxLen: 24,
+          },
+        );
+
+        $(".calendar--weekday-bar").css(
+          "width",
+          $calendarMonthList[0].clientWidth,
+        );
+      } else {
+        forEachRenderedDay(additionalRenderer);
+      }
+
+      $calendarMonthList.on(
+        "click.thisCalendarSession",
+        ".day-grid--day",
+        (e) => {
+          const $day = $(e.target);
+          const $month = $day.closest(".month");
+          const date = new Date(
+            +$month.attr("data-year"),
+            +$month.attr("data-month") - 1,
+            +$day.text(),
+          );
+          console.log("day click", $day.text(), date);
+          const dirty = onClickDay($day, date, $month);
+          if (dirty === true) {
+            forEachRenderedDay(additionalRenderer);
+          }
+        },
+      );
+
+      $calendar.animate({ left: "0vw" });
+      return () => {
+        $calendar.animate({ left: "100vw" });
+        $calendarMonthList.off("click.thisCalendarSession");
+      };
+    }
   </script>
 </html>
