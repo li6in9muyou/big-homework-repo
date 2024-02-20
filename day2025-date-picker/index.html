@@ -141,13 +141,6 @@
       const $dateInput = $(e.target).children("input[type=date]");
       console.log("input date click", $dateInput, $dateInput[0], e.target);
 
-      const selectedDayDateStr = new Set(
-        [$dateStart, $dateEnd]
-          .map((i) => i.val())
-          .filter((v) => !Number.isNaN(Date.parse(v))),
-      );
-      console.log("opening calendar selectedDayDateStr", selectedDayDateStr);
-
       const start = new Date($dateStart.val());
       const end = new Date($dateEnd.val());
       const startIsValid = !Number.isNaN(start.getTime());
@@ -164,6 +157,13 @@
           return startIsValid ? start < d : true;
         }
       }
+
+      const selectedDayDateStr = new Set(
+        [$dateStart, $dateEnd]
+          .map((i) => i.val())
+          .filter((v) => !Number.isNaN(Date.parse(v))),
+      );
+      console.log("opening calendar selectedDayDateStr", selectedDayDateStr);
 
       const renderers = [
         ($d, date) => {
