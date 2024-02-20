@@ -232,6 +232,23 @@
       }
     });
 
+    const calendarState = new (function () {
+      this.renderers = () => {};
+      this.setRenderContext = (initYear, initMonth, renderers) => {
+        this.renderers = renderers;
+        this.initYear = initYear;
+        this.initMonth = initMonth;
+      };
+      this.createMonthGridByKey = (key) => {
+        return createMonthGrid(
+          this.initYear,
+          // + 1 is magic to make initMonth the first full visible month grid
+          this.initMonth + key + 1,
+          this.renderers,
+        );
+      };
+    })();
+
     /**
      * @param {Date} yearAndMonth
      * @param {($day: jQuery, day: Date, $month: jQuery) => void} onClickDay
@@ -244,21 +261,16 @@
       onClickDay = () => {},
       additionalRenderer = () => {},
     ) {
+      const initYear = yearAndMonth.getFullYear();
+      const initMonth = yearAndMonth.getMonth() + 1;
+      calendarState.setRenderContext(initYear, initMonth, additionalRenderer);
+
       const monthListNotInitialized =
         $calendarMonthList.children().length === 0;
       if (monthListNotInitialized) {
-        const initYear = yearAndMonth.getFullYear();
-        const initMonth = yearAndMonth.getMonth() + 1;
         addInfiniteScrollEffect(
           $calendarMonthList,
-          (key) => {
-            // + 1 is magic to make initMonth the first full visible month grid
-            return createMonthGrid(
-              initYear,
-              initMonth + key + 1,
-              additionalRenderer,
-            );
-          },
+          calendarState.createMonthGridByKey,
           {
             initLen: 12,
             preload: 6,
