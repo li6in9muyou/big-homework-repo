@@ -33,7 +33,7 @@
   </body>
   <script src="vendor/jquery.js"></script>
   <script type="module">
-    import { daysBetweenInclusive } from "./js/date-util.js";
+    import { daysBetweenInclusive, toStdDateString } from "./js/date-util.js";
 
     const $dateStart = $("#in-date-start");
     const $dateEnd = $("#in-date-end");
@@ -149,14 +149,6 @@
         validDatesInDateInput,
       );
 
-      function setDateInputToDate($input, d) {
-        $input.val(
-          new Date(d.getTime() - d.getTimezoneOffset() * 60 * 1000)
-            .toISOString()
-            .slice(0, 10),
-        );
-      }
-
       const start = new Date($dateStart.val());
       const end = new Date($dateEnd.val());
       const startIsValid = !Number.isNaN(start.getTime());
@@ -208,7 +200,7 @@
 
       function onClick($day, date, selected) {
         console.log("calendar on change", date, selected);
-        setDateInputToDate($dateInput, date);
+        $dateInput.val(toStdDateString(date));
         setTimeout(close, 300);
         updateDateDiff();
         const previouslySelectState = $day.attr("data-calendar-selected");

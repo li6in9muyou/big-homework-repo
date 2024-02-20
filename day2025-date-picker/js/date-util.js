@@ -57,3 +57,9 @@ export function isOnSameDate(a, b) {
     a.getDate() === b.getDate()
   );
 }
+
+export function toStdDateString(d) {
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60 * 1000)
+    .toISOString()
+    .slice(0, 10);
+}
