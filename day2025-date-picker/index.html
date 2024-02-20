@@ -203,7 +203,6 @@
 
       function onClick($day, date, selected) {
         console.log("calendar on change", date, selected);
-        setTimeout(close, 300);
         updateDateDiff();
         const selectThisDay = toStdDateString(date);
         const previouslySelectState = $day.attr("data-calendar-selected");
@@ -215,10 +214,12 @@
             selectedDayDateStr.delete($dateInput.val());
             $dateInput.val(selectThisDay);
             selectedDayDateStr.add(selectThisDay);
+            setTimeout(close, 300);
             break;
           case "ok":
             selectedDayDateStr.delete(selectThisDay);
             $dateInput.val("");
+            setTimeout(close, 300);
             break;
           default:
             console.error(
