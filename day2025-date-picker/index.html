@@ -266,7 +266,10 @@
           },
         );
 
-        $(".calendar--weekday-bar").css("width", $calendarMonthList.width());
+        $(".calendar--weekday-bar").css(
+          "width",
+          $calendarMonthList[0].clientWidth,
+        );
       } else {
         forEachRenderedDay(additionalRenderer);
       }
