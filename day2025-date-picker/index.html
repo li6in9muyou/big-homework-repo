@@ -141,13 +141,12 @@
       const $dateInput = $(e.target).children("input[type=date]");
       console.log("input date click", $dateInput, $dateInput[0], e.target);
 
-      const validDatesInDateInput = [$dateStart, $dateEnd]
-        .map((i) => new Date(i.val()))
-        .filter((v) => !Number.isNaN(v.getTime()));
-      console.log(
-        "opening calendar validDatesInDateInput",
-        validDatesInDateInput,
+      const selectedDayDateStr = new Set(
+        [$dateStart, $dateEnd]
+          .map((i) => i.val())
+          .filter((v) => !Number.isNaN(Date.parse(v))),
       );
+      console.log("opening calendar selectedDayDateStr", selectedDayDateStr);
 
       const start = new Date($dateStart.val());
       const end = new Date($dateEnd.val());
@@ -184,7 +183,11 @@
           }
         },
         ($d, date) => {
-          if (validDatesInDateInput.some((d) => isOnSameDate(d, date))) {
+          if (
+            Array.from(selectedDayDateStr)
+              .map((ds) => new Date(ds))
+              .some((d) => isOnSameDate(d, date))
+          ) {
             $d.attr("data-calendar-selected", "ok");
             $d.addClass("day-grid--day__selected");
           } else {
@@ -200,9 +203,9 @@
 
       function onClick($day, date, selected) {
         console.log("calendar on change", date, selected);
-        $dateInput.val(toStdDateString(date));
         setTimeout(close, 300);
         updateDateDiff();
+        const selectThisDay = toStdDateString(date);
         const previouslySelectState = $day.attr("data-calendar-selected");
         switch (previouslySelectState) {
           case "disable":
@@ -211,10 +214,15 @@
           case "no":
             $day.addClass("day-grid--day__selected");
             $day.attr("data-calendar-selected", "ok");
+            selectedDayDateStr.delete($dateInput.val());
+            $dateInput.val(selectThisDay);
+            selectedDayDateStr.add(selectThisDay);
             break;
           case "ok":
             $day.removeClass("day-grid--day__selected");
             $day.attr("data-calendar-selected", "no");
+            selectedDayDateStr.delete(selectThisDay);
+            $dateInput.val("");
             break;
           default:
             console.error(
