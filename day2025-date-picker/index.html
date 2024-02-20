@@ -212,15 +212,11 @@
             break;
           case undefined:
           case "no":
-            $day.addClass("day-grid--day__selected");
-            $day.attr("data-calendar-selected", "ok");
             selectedDayDateStr.delete($dateInput.val());
             $dateInput.val(selectThisDay);
             selectedDayDateStr.add(selectThisDay);
             break;
           case "ok":
-            $day.removeClass("day-grid--day__selected");
-            $day.attr("data-calendar-selected", "no");
             selectedDayDateStr.delete(selectThisDay);
             $dateInput.val("");
             break;
