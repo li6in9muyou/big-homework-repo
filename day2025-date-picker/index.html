@@ -194,6 +194,7 @@
             $d.removeClass("day-grid--day__selected");
           }
         },
+        updateDateDiff,
       ];
 
       const close = showCalendar(new Date(2024, 2 - 1), onClick, (...args) =>
@@ -202,7 +203,6 @@
 
       function onClick($day, date, selected) {
         console.log("calendar on change", date, selected);
-        updateDateDiff();
         const selectThisDay = toStdDateString(date);
         const previouslySelectState = $day.attr("data-calendar-selected");
         switch (previouslySelectState) {
