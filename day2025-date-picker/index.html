@@ -199,37 +199,37 @@
         },
       ];
 
-      const close = showCalendar(
-        new Date(2024, 2 - 1),
-        ($day, date, selected) => {
-          console.log("calendar on change", date, selected);
-          setDateInputToDate($dateInput, date);
-          setTimeout(close, 300);
-          updateDateDiff();
-          const previouslySelectState = $day.attr("data-calendar-selected");
-          switch (previouslySelectState) {
-            case "disable":
-              break;
-            case undefined:
-            case "no":
-              $day.addClass("day-grid--day__selected");
-              $day.attr("data-calendar-selected", "ok");
-              break;
-            case "ok":
-              $day.removeClass("day-grid--day__selected");
-              $day.attr("data-calendar-selected", "no");
-              break;
-            default:
-              console.error(
-                "calendar: when toggling day selected state, receives invalid select state",
-                previouslySelectState,
-                $day[0],
-              );
-              break;
-          }
-        },
-        (...args) => renderers.reduce((_, fn) => fn(...args), undefined),
+      const close = showCalendar(new Date(2024, 2 - 1), onClick, (...args) =>
+        renderers.reduce((_, fn) => fn(...args), undefined),
       );
+
+      function onClick($day, date, selected) {
+        console.log("calendar on change", date, selected);
+        setDateInputToDate($dateInput, date);
+        setTimeout(close, 300);
+        updateDateDiff();
+        const previouslySelectState = $day.attr("data-calendar-selected");
+        switch (previouslySelectState) {
+          case "disable":
+            break;
+          case undefined:
+          case "no":
+            $day.addClass("day-grid--day__selected");
+            $day.attr("data-calendar-selected", "ok");
+            break;
+          case "ok":
+            $day.removeClass("day-grid--day__selected");
+            $day.attr("data-calendar-selected", "no");
+            break;
+          default:
+            console.error(
+              "calendar: when toggling day selected state, receives invalid select state",
+              previouslySelectState,
+              $day[0],
+            );
+            break;
+        }
+      }
     });
 
     /**
