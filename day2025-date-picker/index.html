@@ -207,26 +207,26 @@
         const previouslySelectState = $day.attr("data-calendar-selected");
         switch (previouslySelectState) {
           case "disable":
-            break;
+            return false;
           case undefined:
           case "no":
             selectedDayDateStr.delete($dateInput.val());
             $dateInput.val(selectThisDay);
             selectedDayDateStr.add(selectThisDay);
             setTimeout(close, 300);
-            break;
+            return true;
           case "ok":
             selectedDayDateStr.delete(selectThisDay);
             $dateInput.val("");
             setTimeout(close, 300);
-            break;
+            return true;
           default:
             console.error(
               "calendar: when toggling day selected state, receives invalid select state",
               previouslySelectState,
               $day[0],
             );
-            break;
+            return false;
         }
       }
     });
@@ -250,7 +250,7 @@
 
     /**
      * @param {Date} yearAndMonth
-     * @param {($day: jQuery, day: Date, $month: jQuery) => void} onClickDay
+     * @param {($day: jQuery, day: Date, $month: jQuery) => dirty: boolean} onClickDay
      * @param {($d: jQuery, date: Date) => void} additionalRenderer
      *
      * @return closeCalendar: () => void
@@ -297,8 +297,10 @@
             +$day.text(),
           );
           console.log("day click", $day.text(), date);
-          onClickDay($day, date, $month);
-          forEachRenderedDay(additionalRenderer);
+          const dirty = onClickDay($day, date, $month);
+          if (dirty === true) {
+            forEachRenderedDay(additionalRenderer);
+          }
         },
       );
 
