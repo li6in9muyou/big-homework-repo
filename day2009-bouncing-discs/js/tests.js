@@ -1,9 +1,11 @@
 import {
+  buildConfig,
   createStateFromDiskDynamics,
   SingleDiskBouncingNoDraw,
   TwoDimElasticCollisionNoDraw,
 } from "./config.js";
-import { eq, gt } from "./math.js";
+import { shuffleInPlace } from "./helper.js";
+import { eq, gt, gte, lenSqr } from "./math.js";
 
 function it(msg, assert) {
   return (...args) => {
@@ -317,6 +319,61 @@ export function testDiskHitArenaCorner() {
   return [TwoDimElasticCollisionNoDraw, init, asserts];
 }
 
+export function testEveryCollisionQueryAccessLatestDynamics() {
+  const init = () =>
+    createStateFromDiskDynamics({
+      entities: [1000, 1001],
+      position: [
+        [1000, { x: 50, y: 20.903040559116537 }],
+        [1001, { x: 50, y: 80.90304055911653 }],
+      ],
+      size: [
+        [1000, { w: 40, h: 40 }],
+        [1001, { w: 80, h: 80 }],
+      ],
+      velocity: [
+        [1000, { x: 0, y: -65.8024192 }],
+        [1001, { x: 0, y: -23.29185279999999 }],
+      ],
+      mass: [
+        [1000, 40],
+        [1001, 160],
+      ],
+      ARENA_W: 100,
+      ARENA_H: 200,
+    });
+  const asserts = [
+    it("rear disk should collide with front disk after front disk collides with arena", ({
+      elapsed,
+      position,
+      size,
+    }) => {
+      const pFront = position.get(1000);
+      const pRear = position.get(1001);
+      const sFront = size.get(1000);
+      const sRear = size.get(1001);
+      switch (elapsed) {
+        case 1:
+        case 2:
+          const dist = Math.sqrt(
+            lenSqr(pFront.x - pRear.x, pFront.y - pRear.y),
+          );
+          return gte(dist, sFront.w + sRear.w);
+        default:
+          return true;
+      }
+    }),
+  ];
+  return [
+    buildConfig
+      .from(TwoDimElasticCollisionNoDraw)
+      .system(({ entities }) => shuffleInPlace(entities))
+      .build(),
+    init,
+    asserts,
+  ];
+}
+
 export default [
   testDiskBouncingAgainstWall,
   testDiskBouncingAgainstWallHorizontal,
@@ -327,4 +384,5 @@ export default [
   testTwoArenaCollisionInTwoFrames,
   testCollisionIsNeverMissed,
   testRoundingErrorIsManageable2,
+  testEveryCollisionQueryAccessLatestDynamics,
 ];
