@@ -18,3 +18,7 @@ export function dumpContext(ctx) {
 function getRandomColor() {
   return "#" + Math.floor(0xffffff * Math.random()).toString(16);
 }
+
+export function isFunction(value) {
+  return Object.prototype.toString.call(value) === "[object Function]";
+}

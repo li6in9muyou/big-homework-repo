@@ -1,3 +1,4 @@
+import { isFunction } from "./helper.js";
 import {
   applyConservationOfMomentum,
   applyKeepMovingIfNoCollision,
@@ -35,27 +36,24 @@ export const twoDimElastic = [
 ];
 
 export function buildConfig() {
+  const addFnTo = (set) => (fnOrFnList) => {
+    if (isFunction(fnOrFnList)) {
+      set.add(fnOrFnList);
+    } else if (isFunction(fnOrFnList.forEach)) {
+      fnOrFnList.forEach((qq) => set.add(qq));
+    }
+    return configBuilder;
+  };
+
   const queries = new Set();
   const systems = new Set();
   const drawers = new Set();
   const debuggers = new Set();
   const configBuilder = {
-    query(q) {
-      q.forEach((qq) => queries.add(qq));
-      return configBuilder;
-    },
-    system(s) {
-      s.forEach((ss) => systems.add(ss));
-      return configBuilder;
-    },
-    drawer(d) {
-      d.forEach((dd) => drawers.add(dd));
-      return configBuilder;
-    },
-    debug(b) {
-      b.forEach((bb) => debuggers.add(bb));
-      return configBuilder;
-    },
+    query: addFnTo(queries),
+    system: addFnTo(systems),
+    drawer: addFnTo(drawers),
+    debug: addFnTo(debuggers),
     build() {
       return [queries, systems, drawers, debuggers];
     },
