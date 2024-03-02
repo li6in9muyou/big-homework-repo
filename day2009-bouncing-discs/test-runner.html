@@ -20,6 +20,11 @@
         const CONTEXT = init();
 
         console.groupCollapsed(`${test.name}`);
+
+        console.groupCollapsed(`config`);
+        console.log("config", CONFIG);
+        console.groupEnd();
+
         for (let i = 0; i < 100; i++) {
           CONTEXT.elapsed += 1;
           update(CONTEXT, ...CONFIG);
