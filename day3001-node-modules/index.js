@@ -1,7 +1,9 @@
-const { noop } = require("./sub-m/util.js");
-const { printModuleInfo } = require("./util.js");
+import subUtil from "./sub-m/util.js";
+import { printModuleInfo } from "./util.js";
 
-exports.printModuleInfo = printModuleInfo;
+const { noop } = subUtil;
 
-printModuleInfo(module);
+export { printModuleInfo };
+
+printModuleInfo(import.meta);
 noop();

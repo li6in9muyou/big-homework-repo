@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "day3001-node-modules",
   "version": "1.0.0",
   "main": "index.js",

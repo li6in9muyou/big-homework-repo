@@ -1,4 +1,5 @@
-const { printModuleInfo } = require("../util");
 exports.noop = function noop() {
-  printModuleInfo(module);
+  import("../index.js").then((m) => {
+    m.printModuleInfo(module);
+  });
 };
