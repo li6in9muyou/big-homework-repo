@@ -9,3 +9,6 @@ gen
 
 # vendor source
 vendor
+
+# node_modules
+node_modules
