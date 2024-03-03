@@ -7,5 +7,5 @@ gen
 # vscode project files
 .vscode
 
-#vendor source
+# vendor source
 vendor
