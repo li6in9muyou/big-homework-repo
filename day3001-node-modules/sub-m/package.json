@@ -1,0 +1,11 @@
+{
+  "name": "sub-m",
+  "version": "1.0.0",
+  "description": "",
+  "main": "util.js",
+  "scripts": {
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
