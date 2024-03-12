@@ -6,8 +6,9 @@ const FRONT_MATTER = "lorem ipsum\n";
 const FRONT_MATTER_ENCODED = Buffer.from(FRONT_MATTER, "utf-8");
 
 const [, , ...args] = process.argv;
-if (args.length === 2) {
-  const [rgx, dir, ..._] = args;
+if (args.length >= 1) {
+  const [rgx, _d, ..._] = args;
+  const dir = _d ?? ".";
   const RGX_PATTERN = new RegExp(rgx);
 
   const interestedFiles = (await fs.readdir(dir))
