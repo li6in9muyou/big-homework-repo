@@ -7,7 +7,7 @@ const FRONT_MATTER_ENCODED = Buffer.from(FRONT_MATTER, "utf-8");
 
 const [, , ...args] = process.argv;
 if (args.length >= 1) {
-  const [rgx, _d, ..._] = args;
+  const [rgx, _d] = args;
   const dir = _d ?? ".";
   const RGX_PATTERN = new RegExp(rgx);
 
