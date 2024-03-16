@@ -17,24 +17,25 @@ if (args.length >= 1) {
 
   for (const f of interestedFiles) {
     let isFirstChunk = true;
+    const prependFrontMatter = async function* (source) {
+      for await (const chunk of source) {
+        const isStartWithFrontMatter =
+          0 ===
+          chunk
+            .slice(0, FRONT_MATTER_ENCODED.length)
+            .compare(FRONT_MATTER_ENCODED);
+        if (isFirstChunk && !isStartWithFrontMatter) {
+          yield FRONT_MATTER_ENCODED;
+          isFirstChunk = false;
+        }
+        yield chunk;
+      }
+    };
+
     const after = f + "-lorem";
     await pipeline(
       createReadStream(f),
-      async function* (source) {
-        for await (const chunk of source) {
-          if (
-            isFirstChunk &&
-            0 !==
-              chunk
-                .slice(0, FRONT_MATTER_ENCODED.length)
-                .compare(FRONT_MATTER_ENCODED)
-          ) {
-            yield FRONT_MATTER_ENCODED;
-            isFirstChunk = false;
-          }
-          yield chunk;
-        }
-      },
+      prependFrontMatter,
       createWriteStream(after),
     );
     await fs.rm(f);
