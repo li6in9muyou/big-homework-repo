@@ -42,5 +42,9 @@ if (args.length >= 1) {
     await fs.rename(after, f);
   }
 } else {
-  console.info("helpful message");
+  console.info(
+    `prepend lorem ipsum to files in DIR that match REGEX_PATTERN
+
+usage: ${path.basename(process.argv[1])} REGEX_PATTERN [DIR]`,
+  );
 }
