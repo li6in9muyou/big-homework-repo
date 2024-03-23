@@ -3,6 +3,17 @@ const fs = require("fs");
 const path = require("path");
 const mp = require("multiparty");
 
+function discardFurtherAncestors(path, furthest) {
+  const firstIdxToTake = path.indexOf(furthest);
+  if (firstIdxToTake < 0) {
+    return [];
+  }
+
+  return path.slice(firstIdxToTake);
+}
+
+const UPLOAD_ROOT = "upload";
+
 const server = http.createServer((req, res) => {
   if (req.url !== "/upload") {
     res.writeHead(404);
@@ -32,13 +43,21 @@ const server = http.createServer((req, res) => {
           return;
         }
 
-        thisFile = path.join(__dirname, "upload", part.filename);
+        thisFile = path.join(__dirname, UPLOAD_ROOT, part.filename);
         const writeStream = fs.createWriteStream(thisFile);
         part.pipe(writeStream);
       });
 
       form.on("close", () => {
-        res.end(thisFile ?? "bad path");
+        if (thisFile === null) {
+          console.error("upload at close event, thisFile is null");
+          res.writeHead(500, "upload at close event, thisFile is null");
+        }
+
+        const pathFromUploadRoot = path.join(
+          ...discardFurtherAncestors(thisFile.split(path.sep), UPLOAD_ROOT),
+        );
+        res.end(pathFromUploadRoot);
       });
 
       form.parse(req);
