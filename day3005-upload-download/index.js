@@ -12,6 +12,10 @@ const server = http.createServer((req, res) => {
         const form = new mp.Form();
         let thisFile = null;
 
+        form.on("error", (e) => {
+          res.statusCode = 500;
+          res.end(`error: ${JSON.stringify(e)}`);
+        });
         form.on("part", (part) => {
           if (!part.filename) {
             return;
