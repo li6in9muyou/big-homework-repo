@@ -23,6 +23,12 @@ const server = http.createServer((req, res) => {
   switch (req.method) {
     case "GET":
       fs.readFile("upload.html", (err, data) => {
+        if (!!err) {
+          res.writeHead(200);
+          res.write("error while reading upload.html");
+          res.end();
+          return;
+        }
         res.writeHead(200, {
           "Content-Type": "text/html",
         });
